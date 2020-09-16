@@ -1,7 +1,8 @@
-from abc import ABC
-from typing import Dict, List
-import sqlite3
 import logging
+import sqlite3
+from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Dict, List, Union
 
 from src.project.settings import DB_PATH
 
@@ -10,6 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class Client(ABC):
+    """Базовый класс коннектора к базе, от которого наследуемся"""
+
+    @abstractmethod
+    def __init__(self):
+        self._conn = None
 
     @staticmethod
     def dict_factory(cursor, row) -> Dict:
@@ -20,13 +26,29 @@ class Client(ABC):
         return d
 
     def __enter__(self):
-        self.conn = sqlite3.connect(DB_PATH)
-        self.conn.row_factory = self.dict_factory
-        return self.conn.cursor()
+        return self.connect()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.conn.commit()
-        self.conn.close()
+        self.disconnect()
+
+    def connect(self):
+        """Устанавливаем подключение к базе, делаем чтобы возвращался словарь"""
+        self._conn = sqlite3.connect(DB_PATH)
+        self._conn.row_factory = self.dict_factory
+        return self._conn.cursor()
+
+    def disconnect(self):
+        """Коммитим. Закрываем подключение к базе."""
+        self._conn.commit()
+        self._conn.close()
+        self._conn = None
+
+    @property
+    def conn(self):
+        """Получаем доступ ко всем методам"""
+        if self._conn is None:
+            self.connect()
+        return self._conn
 
     def fetchall(self, query: str) -> List[Dict]:
         try:
@@ -51,7 +73,33 @@ class Client(ABC):
 
 
 class Database(Client):
-    def __init__(self):
+    """Запросы в базу"""
+
+    def __init__(self, chat_id: int):
+        super().__init__()
+        self.chat_id = chat_id
+        self._conn = None
+
+    def register_user(self, obj):
+        """Регистрация пользователя"""
+        query = """
+        INSERT INTO bot_users (chat_id, first_name, last_name, username, register, active)
+        VALUES (%s, '%s', '%s', '%s', '%s', %s)
+        """
+        self.execute((query % (
+            obj.chat_id, obj.first_name, obj.last_name, obj.username, datetime.utcnow(), True
+        )))
+
+    def init_user(self) -> bool:
+        """Инициализация пользователя(зареган ли он у нас уже)"""
+        query = """SELECT 1 FROM bot_users WHERE chat_id = %s"""
+        return bool(self.fetchall((query % self.chat_id)))
+
+    def add_feed(self, url: Union[List, str]):
         pass
 
+    def delete_feed(self) -> bool:
+        pass
 
+    def list_feed(self) -> List[str]:
+        pass
