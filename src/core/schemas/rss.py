@@ -50,17 +50,3 @@ class RssFeed(BaseModel):
     def remove_query(self):
         urlparse(r.feed[0].get('link'))._replace(query='', params='').geturl()
 
-
-# r = RssFeed(url_feed='https://habr.com/ru/rss/feed/posts/all/a255b8717341d7fd9ee45a88d3bdea00/?with_hubs=true:')
-# r.parse()
-# print(r.feed)
-# r = RssAggregator(url_feed='hello world')
-# pprint(r.feed[0].get('summary'))
-# url = urlparse(r.feed[0].get('link'))._replace(query='', params='').geturl()
-# url = url
-# print(url)
-
-# INSERT OR IGNORE
-
-
-# python src/manage.py runsslserver --certificate cert.pem --key private.key
