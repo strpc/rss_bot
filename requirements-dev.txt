@@ -1,1 +1,2 @@
+-r requirements.txt
 django-sslserver==0.22
