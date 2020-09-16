@@ -1,7 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Article, RSS, User
 
+
+admin.site.register(Article)
+admin.site.register(RSS)
+admin.site.register(User)
 
 
 admin.site.site_title = 'RSS bot'
