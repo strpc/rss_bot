@@ -10,12 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+import sys
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-
+sys.path.insert(0, str(BASE_DIR.parent))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -29,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '0.0.0.0',
-    'a9740923c3ed.sn.mynetname.net'
+    os.getenv('ALLOW_HOST')
 ]
 
 
@@ -138,6 +139,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 assert BOT_TOKEN, 'BOT_TOKEN is not found'
+API_BASE_URL = "https://api.telegram.org/"
+ATTEMPT_REQUEST = int(os.getenv('ATTEMPT_REQUEST', 5))
+DELAY_REQUEST = int(os.getenv('DELAY_REQUEST', 3))
 
 LOGS_ROOT = os.path.join(BASE_DIR, 'log')
 LOGGING = {
