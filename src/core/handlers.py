@@ -1,15 +1,30 @@
-from src.core.models.update import BaseMessage
+import logging
+
+from src.core.schemas.update import BotCommand
+from src.core.utils import list_urls
 
 
-def start_bot(message: BaseMessage):
-    pass
+logger = logging.getLogger(__name__)
 
 
-def add_feed(message: BaseMessage):
-    pass
+class CommandHandler:
+    @staticmethod
+    def start(message: BotCommand):
+        message.init_user()
+        if message.new_user:
+            message.register_user()
+        message.request.send_message('здарова дятел')
 
+    @staticmethod
+    def add_feed(message: BotCommand):
+        urls = list_urls(message.text.replace('/add_feed', ''))
 
-handlers_command = {
-    '/start': start_bot,
-    '/addfeed': add_feed
-}
+        pass  # INSERT OR IGNORE
+
+    @staticmethod
+    def delete_feed(message: BotCommand):
+        pass
+
+    @staticmethod
+    def list_feed(message: BotCommand):
+        pass
