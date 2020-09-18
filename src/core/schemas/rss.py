@@ -10,20 +10,26 @@ class UrlFeed(BaseModel):
     url_feed: HttpUrl = Field(...)
 
 
-class Urls(BaseModel):
-    urls: List[UrlFeed] = Field(...)
+class ListUrls(BaseModel):
+    list_urls: List[UrlFeed] = Field(...)
 
-    @validator('urls', pre=True, always=True)
+    @validator('list_urls', pre=True, always=True)
     def get_urls(cls, input_value: str):
-        urls_list = input_value.split('\n')
+        if not isinstance(input_value, str):
+            raise ValueError()
+        urls_str = input_value.replace('\n', ' ').replace(',', ' ')
         urls = []
-        for url in urls_list:
-            urls.append(UrlFeed(url_feed=url))
+        for url in urls_str.split(' '):
+            if url:  # был пробел - стал пустая строка
+                urls.append(UrlFeed(url_feed=url))
         return urls
 
+    def __iter__(self):
+        for elem in self.list_urls:
+            yield elem.url_feed
 
-class RssFeed(BaseModel):
-    url_feed: HttpUrl = Field()
+
+class RssFeed(UrlFeed):
     feed: Optional[str] = Field(None)
 
     @validator('url_feed')
