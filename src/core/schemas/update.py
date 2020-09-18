@@ -7,7 +7,7 @@ from src.core.requests.database import Database
 from src.core.requests.api import Request
 
 
-command_compile = re.compile(r'(^|\s)\/\b[a-zA-Z]+\b')
+command_compile = re.compile(r'(^|\s)\/\b[a-zA-Z_]+\b')
 
 
 class TypeUpdate(str, Enum):
@@ -27,7 +27,7 @@ class BaseMessage(ABC):
         # self.date = from_timestamp(_message.get('date'))
         self.text = ''
         self.command = ''
-        self.type_update = TypeUpdate.undefined.name
+        self.type_update = TypeUpdate.undefined.value
         self.new_user = False
 
     def _init_user(self) -> bool:
@@ -51,7 +51,7 @@ class BotCommand(BaseMessage):
             if re.search(command_compile, _text) else None
         self.text = re.sub(command_compile, '', _text)
         self.command_raw = self.command[1:] if self.command else None
-        self.type_update = TypeUpdate.command.name
+        self.type_update = TypeUpdate.command.value
 
     def register_user(self):
         self.database.register_user(self)
@@ -67,7 +67,7 @@ class Message(BaseMessage):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.text = kwargs.get('message').get('text')
-        self.type_update = TypeUpdate.message.name
+        self.type_update = TypeUpdate.message.value
 
     def __repr__(self):
         return f'Message: {self.text}. @{self.username}, {self.chat_id}'
