@@ -2,7 +2,8 @@ import logging
 import sqlite3
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Tuple
+import traceback
 
 from src.project.settings import DB_PATH
 
@@ -50,24 +51,40 @@ class Client(ABC):
             self.connect()
         return self._conn
 
-    def fetchall(self, query: str) -> List[Dict]:
+    def fetchall(self, query: str, values: Tuple = None) -> List[Dict]:
+        values = values or ()
         try:
             with self as database:
-                database.execute(query)
+                database.execute(query, None)
                 return database.fetchall()
 
         except Exception as error:
             logger.error(error)
+            logger.error(traceback.format_exc())
             logger.info(query)
 
-    def execute(self, query: str) -> bool:
+    def execute(self, query: str, values: Tuple = None) -> bool:
+        values = values or ()
         try:
             with self as database:
-                database.execute(query)
+                database.execute(query, values)
             return True
 
         except Exception as error:
             logger.error(error)
+            logger.error(traceback.format_exc())
+            logger.info(query)
+            return False
+
+    def executemany(self, query: str, values: List[Tuple]) -> bool:
+        try:
+            with self as database:
+                database.executemany(query, values)
+            return True
+
+        except Exception as error:
+            logger.error(error)
+            logger.error(traceback.format_exc())
             logger.info(query)
             return False
 
@@ -84,19 +101,45 @@ class Database(Client):
         """Регистрация пользователя"""
         query = """
         INSERT INTO bot_users (chat_id, first_name, last_name, username, register, active)
-        VALUES (%s, '%s', '%s', '%s', '%s', %s)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT (chat_id) DO UPDATE SET active = true
         """
-        self.execute((query % (
-            obj.chat_id, obj.first_name, obj.last_name, obj.username, datetime.utcnow(), True
-        )))
+        self.execute(query, (
+            obj.chat_id, obj.first_name, obj.last_name, obj.username, datetime.utcnow(), True,
+        )
+                     )
 
     def init_user(self) -> bool:
         """Инициализация пользователя(зареган ли он у нас уже)"""
-        query = """SELECT 1 FROM bot_users WHERE chat_id = %s"""
-        return bool(self.fetchall((query % self.chat_id)))
+        query = """SELECT 1 FROM bot_users WHERE chat_id = ? AND active = ?"""
+        return bool(
+            self.fetchall(query, (self.chat_id, True))
+        )
 
-    def add_feed(self, url: Union[List, str]):
-        pass
+    def disable_user(self):
+        """Пользователь отключился от бота"""
+        query = """
+        UPDATE bot_users
+        SET active = ?
+        WHERE chat_id = ?
+        """
+        self.execute(query, (
+            False, self.chat_id
+        ))
+
+    def add_feed(self, urls: Union[List, str]):
+        if isinstance(urls, str):
+            urls = [urls]
+        query = """
+        INSERT INTO bot_users_rss (url, added, active, chat_id_id)
+        VALUES (?, ?, ?, ?)
+        """
+        values = []
+        for url in urls:
+            values.append(
+                (str(url), datetime.utcnow(), True, self.chat_id)
+            )
+        self.executemany(query, values)
 
     def delete_feed(self) -> bool:
         pass
