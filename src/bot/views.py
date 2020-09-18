@@ -19,11 +19,13 @@ def token_handler(request: HttpRequest) -> JsonResponse:
     if request.method == "POST":
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
-        logger.info(body)
+        # logger.info(body)
+        print('body:')
         pprint(body)
         message: Union[BaseMessage, BotCommand] = Factory.register_message(body)
-
-        if message.type_update == TypeUpdate.command.name and \
+        print("\n\nfrom token_handler:")
+        pprint(message.__dict__)
+        if message.type_update == TypeUpdate.command.value and \
                 message.command_raw in CommandHandler.__dict__.keys():
             CommandHandler.__dict__[message.command_raw].__get__(CommandHandler)(message)
 
