@@ -2,10 +2,11 @@ import logging
 import sqlite3
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Dict, List, Union, Tuple
+from typing import Dict, List, Union, Tuple, Optional
 import traceback
 
 from src.project.settings import DB_PATH
+from src.core.utils import make_hash
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ class Client(ABC):
     def __enter__(self):
         return self.connect()
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback_):
         self.disconnect()
 
     def connect(self):
@@ -55,7 +56,7 @@ class Client(ABC):
         values = values or ()
         try:
             with self as database:
-                database.execute(query, None)
+                database.execute(query, values)
                 return database.fetchall()
 
         except Exception as error:
@@ -131,18 +132,48 @@ class Database(Client):
         if isinstance(urls, str):
             urls = [urls]
         query = """
-        INSERT INTO bot_users_rss (url, added, active, chat_id_id)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO bot_users_rss (url, added, active, chat_id_id, chatid_url_hash)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT (chatid_url_hash) DO UPDATE SET active = true
         """
         values = []
         for url in urls:
             values.append(
-                (str(url), datetime.utcnow(), True, self.chat_id)
+                (str(url), datetime.utcnow(), True, self.chat_id, make_hash(url, self.chat_id))
             )
         self.executemany(query, values)
 
-    def delete_feed(self) -> bool:
-        pass
+    def delete_feed(self, url: str) -> bool:
+        print(url)
+        if self.find_active_url(url):
+            print('hello. schas udalim')
+            query = """
+            UPDATE bot_users_rss
+            SET active = ?
+            WHERE url = ?
+            AND chat_id_id = ?
+            """
+            self.execute(query, (False, url, self.chat_id))
+            return True
+        return False
 
-    def list_feed(self) -> List[str]:
-        pass
+    def list_feed(self) -> List[Dict]:
+        query = """
+        SELECT url 
+        FROM bot_users_rss
+        WHERE chat_id_id = ?
+        """
+        return self.fetchall(query, (self.chat_id,))
+
+    def find_active_url(self, url: str) -> Optional[List[Dict]]:
+        query = """
+        SELECT *
+        FROM bot_users_rss
+        WHERE url = ?
+        AND chat_id_id = ?
+        AND active = ?
+        """
+        result = self.fetchall(query, (url, self.chat_id, 1))
+        # print(result)
+        # print(url)
+        return result or None
