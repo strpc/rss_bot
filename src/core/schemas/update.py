@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import List, Union
 import re
 
 # from src.core.utils import from_timestamp
@@ -41,6 +42,12 @@ class BaseMessage(ABC):
     @property
     def request(self):
         return Request(chat_id=self.chat_id)
+
+    def send_message(self, message_: str):
+        self.request.send_message(message_)
+
+    def add_feed(self, urls: Union[List, str]):
+        self.database.add_feed(urls)
 
 
 class BotCommand(BaseMessage):
