@@ -22,9 +22,9 @@ class CommandHandler:
     @staticmethod
     def add_feed(message: BotCommand):
         list_urls = ListUrls(list_urls=message.text)
-        # todo: сделать валидацию урлов
-        message.database.add_feed(list_urls)
-        # INSERT OR IGNORE
+        message.add_feed(list_urls)
+        message.send_message('Ваши урлы добавлены. Скоро будете '
+                                     'получать сообщения')
 
     @staticmethod
     def delete_feed(message: BotCommand):
