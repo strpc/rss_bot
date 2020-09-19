@@ -30,6 +30,9 @@ class RSS(models.Model):
     url = models.CharField('URL RSS', max_length=2000, null=False, blank=False)
     added: datetime = models.DateTimeField('Добавлено', auto_now_add=True)
     active = models.BooleanField('Активная', default=True, blank=False, null=False)
+    chatid_url_hash = models.CharField(
+        'Base64 hash', max_length=2500, null=False, blank=False, unique=True
+    )
 
     def __str__(self):
         return f'{self.chat_id.first_name} {self.chat_id.last_name} @{self.chat_id.username} ' \
