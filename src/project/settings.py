@@ -142,6 +142,7 @@ assert BOT_TOKEN, 'BOT_TOKEN is not found'
 API_BASE_URL = "https://api.telegram.org/"
 ATTEMPT_REQUEST = int(os.getenv('ATTEMPT_REQUEST', 5))
 DELAY_REQUEST = int(os.getenv('DELAY_REQUEST', 3))
+parse_mode_markdown = 'Markdown'
 
 LOGS_ROOT = os.path.join(BASE_DIR, 'log')
 LOGGING = {
