@@ -1,5 +1,5 @@
 import feedparser
-from pydantic import BaseModel, HttpUrl, Field, validator
+from pydantic import BaseModel, HttpUrl, Field, validator, ValidationError
 
 import re
 from urllib.parse import urlparse
@@ -19,10 +19,21 @@ class ListUrls(BaseModel):
             raise ValueError()
         urls_str = input_value.replace('\n', ' ').replace(',', ' ')
         urls = []
-        for url in urls_str.split(' '):
-            if url:  # был пробел - стал пустая строка
-                urls.append(UrlFeed(url_feed=url))
+        for url_ in urls_str.split(' '):
+            if url_:  # был пробел - стал пустая строка
+                if not url_.startswith(('http', 'https')):
+                    url_ = f'http://{url_}'
+                if cls.validate_feed(url_):
+                    try:
+                        urls.append(UrlFeed(url_feed=url_))
+                    except ValidationError:
+                        pass
         return urls
+
+    @staticmethod
+    def validate_feed(url_: str) -> bool:
+        """Валидируем, что урл - это фид, а не ссылка на гугл"""
+        return bool(feedparser.parse(url_).get('entries'))
 
     def __iter__(self):
         for elem in self.list_urls:
@@ -55,4 +66,3 @@ class RssFeed(UrlFeed):
     @staticmethod
     def remove_query(self):
         urlparse(r.feed[0].get('link'))._replace(query='', params='').geturl()
-
