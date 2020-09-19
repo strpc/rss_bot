@@ -43,11 +43,21 @@ class BaseMessage(ABC):
     def request(self):
         return Request(chat_id=self.chat_id)
 
-    def send_message(self, message_: str):
-        self.request.send_message(message_)
+    def send_message(
+            self, message_: str,
+            parse_mode: str = None,
+            disable_web_page_preview: bool = False
+    ):
+        self.request.send_message(message_, parse_mode, disable_web_page_preview)
 
     def add_feed(self, urls: Union[List, str]):
         self.database.add_feed(urls)
+
+    def list_feed(self):
+        return self.database.list_feed()
+
+    def delete_feed(self, url: str):
+        return self.database.delete_feed(url)
 
 
 class BotCommand(BaseMessage):
