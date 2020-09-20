@@ -18,8 +18,9 @@ class ListUrls(BaseModel):
         if not isinstance(input_value, str):
             raise ValueError()
         urls_str = input_value.replace('\n', ' ').replace(',', ' ')
+        list_urls = list(set(urls_str.split(' ')))
         urls = []
-        for url_ in urls_str.split(' '):
+        for url_ in list_urls:
             if url_:  # был пробел - стал пустая строка
                 if not url_.startswith(('http', 'https')):
                     url_ = f'http://{url_}'
@@ -38,6 +39,9 @@ class ListUrls(BaseModel):
     def __iter__(self):
         for elem in self.list_urls:
             yield elem.url_feed
+
+    def __len__(self):
+        return len(self.list_urls)
 
 
 class RssFeed(UrlFeed):
