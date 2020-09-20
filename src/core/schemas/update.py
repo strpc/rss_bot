@@ -6,6 +6,7 @@ import re
 # from src.core.utils import from_timestamp
 from src.core.requests.database import Database
 from src.core.requests.api import Request
+from src.core.schemas.rss import ListUrls
 
 
 command_compile = re.compile(r'(^|\s)\/\b[a-zA-Z_]+\b')
@@ -50,7 +51,7 @@ class BaseMessage(ABC):
     ):
         self.request.send_message(message_, parse_mode, disable_web_page_preview)
 
-    def add_feed(self, urls: Union[List, str]):
+    def add_feed(self, urls: Union[ListUrls, List, str]):
         self.database.add_feed(urls)
 
     def list_feed(self):
