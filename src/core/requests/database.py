@@ -144,9 +144,7 @@ class Database(Client):
         self.executemany(query, values)
 
     def delete_feed(self, url: str) -> bool:
-        print(url)
         if self.find_active_url(url):
-            print('hello. schas udalim')
             query = """
             UPDATE bot_users_rss
             SET active = ?
@@ -162,8 +160,9 @@ class Database(Client):
         SELECT url 
         FROM bot_users_rss
         WHERE chat_id_id = ?
+        AND active = ?
         """
-        return self.fetchall(query, (self.chat_id,))
+        return self.fetchall(query, (self.chat_id, True))
 
     def find_active_url(self, url: str) -> Optional[List[Dict]]:
         query = """
@@ -173,7 +172,5 @@ class Database(Client):
         AND chat_id_id = ?
         AND active = ?
         """
-        result = self.fetchall(query, (url, self.chat_id, 1))
-        # print(result)
-        # print(url)
+        result = self.fetchall(query, (url, self.chat_id, True))
         return result or None
