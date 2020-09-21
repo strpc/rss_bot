@@ -11,7 +11,7 @@ app.autodiscover_tasks([
 ])
 app.conf.beat_schedule = {
     "download_articles_send_msg": {
-        "task": "rss_bot.run_chain",
+        "task": "src.core.queues.tasks.run_chain",
         "schedule": crontab(minute=f"*/{INTERVAL_RUN_SEND}"),
     }
 }
