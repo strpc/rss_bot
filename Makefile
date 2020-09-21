@@ -13,8 +13,11 @@ makemigrations_django:
 migrate_django:
 	$(PYTHON) $(MANAGEPY) migrate
 
-#celery:
-	# celery -A src.core.app_celery:app worker --loglevel=info
+celery:
+	 celery -A src.core.queues.app:app worker --loglevel=info
+
+beat:
+	 celery beat -A src.core.queues.app:app --loglevel=info
 
 shutdown_celery:
 	celery control shutdown
