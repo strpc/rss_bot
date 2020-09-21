@@ -24,6 +24,10 @@ class ListUrls(BaseModel):
             if url_:  # был пробел - стал пустая строка
                 if not url_.startswith(('http', 'https')):
                     url_ = f'http://{url_}'
+
+                if url_.startswith('https://'):
+                    url_ = url_.replace('https://', 'http://')
+
                 if cls.validate_feed(url_):
                     try:
                         urls.append(UrlFeed(url_feed=url_))
