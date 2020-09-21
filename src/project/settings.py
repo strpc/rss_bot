@@ -141,7 +141,7 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 assert BOT_TOKEN, 'BOT_TOKEN is not found'
 BOT_BROKER = os.getenv('BOT_BROKER', 'amqp://guest:guest@127.0.0.1:5672/')
 API_BASE_URL = os.getenv('API_BASE_URL', "https://api.telegram.org/")
-INTERVAL_RUN_SEND = int(os.getenv('INTERVAL_RUN_SEND', 5))  # in minute
+INTERVAL_BEAT_TASK = int(os.getenv('INTERVAL_BEAT_TASK', 5))  # in minute
 
 ATTEMPT_REQUEST = int(os.getenv('ATTEMPT_REQUEST', 5))  # count of retry
 DELAY_REQUEST = int(os.getenv('DELAY_REQUEST', 3))  # in sec
