@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import random
 from pprint import pprint
@@ -6,7 +7,7 @@ from pydantic import ValidationError
 
 from src.core.schemas.update import BotCommand
 from src.core.schemas.rss import ListUrls, UrlFeed
-from src.core.utils import make_str_urls
+from src.core.utils import make_str_urls, make_hash
 from src.project.settings import PARSE_MODE_MARKDOWN
 
 
@@ -27,7 +28,15 @@ class CommandHandler:
     @staticmethod
     def add_feed(message: BotCommand):
         list_urls = ListUrls(list_urls=message.text)
-        message.add_feed(list_urls)
+
+        values_for_execute = []
+        for url in list_urls:
+            values_for_execute.append(
+                (str(url), datetime.utcnow(), True, message.chat_id,
+                 make_hash(url, message.chat_id))
+            )
+        message.add_feed(values_for_execute)
+
         text = 'твои ссылки - шляпа'  # заглушка, если вдруг пришла одна ссылка и она не rss
         if len(list_urls) > 1:
             text = f"URLs: {make_str_urls(list_urls)} \nhas beed added to your feed."
