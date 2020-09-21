@@ -148,8 +148,8 @@ DELAY_REQUEST = int(os.getenv('DELAY_REQUEST', 3))  # in sec
 
 PARSE_MODE_MARKDOWN = 'Markdown'
 
-COUNT_TITLE_SYMBOL = int(os.getenv('COUNT_TITLE_SYMBOL', 30))
-COUNT_TEXT_SYMBOL = int(os.getenv('COUNT_TEXT_SYMBOL', 30))
+COUNT_TITLE_SYMBOL = int(os.getenv('COUNT_TITLE_SYMBOL', 100))
+COUNT_TEXT_SYMBOL = int(os.getenv('COUNT_TEXT_SYMBOL', 250))
 COUNT_ARTICLE_UPDATE = int(os.getenv('COUNT_ARTICLE_UPDATE', 5))
 
 LOGS_ROOT = os.path.join(BASE_DIR, 'log')
