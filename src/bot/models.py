@@ -49,16 +49,18 @@ class Article(models.Model):
     chat_id: User = models.ForeignKey(
         User, to_field='chat_id', verbose_name='Пользователь', on_delete=models.CASCADE
     )
-    url_rss: RSS = models.ForeignKey(RSS, verbose_name='URL RSS', on_delete=models.CASCADE)
     url_article = models.TextField('Ссылка на статью', blank=False, null=False)
     title = models.CharField('Заголовок статьи', max_length=1000, blank=True, null=True)
     text = models.CharField('Текст статьи', max_length=2000, blank=True, null=True)
-    sended = models.BooleanField('Активная', default=True, blank=False, null=False)
+    sended = models.BooleanField('Отправлено', default=True, blank=False, null=False)
     added: datetime = models.DateTimeField('Добавлено', auto_now_add=True)
+    chatid_url_article_hash = models.CharField(
+        'Base64 hash', max_length=2500, null=False, blank=False, unique=True
+    )
 
     def __str__(self):
         return f'{self.chat_id.first_name} {self.chat_id.last_name} @{self.chat_id.username} ' \
-               f'{self.url_rss.url} {self.added.strftime("%d.%m.%Y %H:%M")} {self.sended}'
+               f'{self.added.strftime("%d.%m.%Y %H:%M")} {self.sended}'
 
     class Meta:
         db_table = 'bot_article'
