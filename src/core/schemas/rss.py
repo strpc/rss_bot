@@ -5,6 +5,10 @@ import re
 from urllib.parse import urlparse
 from typing import Optional, List
 
+from src.project.settings import (
+    COUNT_TITLE_SYMBOL, COUNT_TEXT_SYMBOL, COUNT_ARTICLE_UPDATE
+)
+
 
 class UrlFeed(BaseModel):
     url_feed: HttpUrl = Field(...)
@@ -48,29 +52,45 @@ class ListUrls(BaseModel):
         return len(self.list_urls)
 
 
-class RssFeed(UrlFeed):
-    feed: Optional[str] = Field(None)
+class RssFeed:
+    def __init__(self, url: str):
+        self.url = url
+        self.feed = None
 
-    @validator('url_feed')
-    def run_parse(cls, input_value):
-        # cls.parse()
-        return input_value
+    def parse(self) -> List['Article']:
+        self.feed = feedparser.parse(self.url).get('entries')
+
+        articles = []
+        for item in self.feed[:COUNT_ARTICLE_UPDATE]:
+            articles.append(
+                Article(
+                    url=item.get('link'),
+                    text=item.get('summary'),
+                    title=item.get('title')
+                )
+            )
+        return articles
+
+
+class Article:
+    def __init__(self, url: str, text: str, title: str = ''):
+        self.url = self._remove_query(url) if url else ''
+        self.text = self._remove_tags(text) if text else ''
+        self.title = self._remove_tags(title) if title else ''
+
+    def __repr__(self):
+        return f"{self.url} - {self.title[:COUNT_TITLE_SYMBOL]}... - " \
+               f"{self.text[:COUNT_TEXT_SYMBOL]}..."
 
     @staticmethod
     def _remove_tags(text: str) -> str:
-        if isinstance(text, str):
-            cleanr = re.compile(r'<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
-            cleantext = re.sub(cleanr, '', text)
-            return cleantext.replace('\n', ' ')
-        return text
+        if not isinstance(text, str):
+            return text
 
-    def parse(self):
-        self.feed = feedparser.parse(self.url_feed).get('entries')
-
-        for item in self.feed:
-            for k in item:
-                item[k] = self._remove_tags(item[k])
+        cleanr = re.compile(r'<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+        cleantext = re.sub(cleanr, '', text)
+        return cleantext.replace('\n', ' ')
 
     @staticmethod
-    def remove_query(self):
-        urlparse(r.feed[0].get('link'))._replace(query='', params='').geturl()
+    def _remove_query(url: str) -> str:
+        return urlparse(url)._replace(query='', params='').geturl()
