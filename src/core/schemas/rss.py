@@ -75,7 +75,7 @@ class RssFeed:
 class Article:
     def __init__(self, url: str, text: str, title: str = ''):
         self.url = self._remove_query(url) if url else ''
-        self.text = self._remove_tags(text) if text else ''
+        self.text = self._remove_tags(text).rstrip() if text else ''
         self.title = self._remove_tags(title) if title else ''
 
     def __repr__(self):
