@@ -116,7 +116,7 @@ class Database(Client):
             self.fetchall(query, (self.chat_id, True))
         )
 
-    def disable_user(self):
+    def disable_user(self, chat_id: int):
         """Пользователь отключился от бота"""
         query = """
         UPDATE bot_users
@@ -124,7 +124,7 @@ class Database(Client):
         WHERE chat_id = ?
         """
         self.execute(query, (
-            False, self.chat_id
+            False, chat_id
         ))
 
     def add_feed(self, values: Union[List, Tuple]):
@@ -181,11 +181,10 @@ class Database(Client):
     def insert_articles(self, values: Union[List, Tuple]):
         """Сохраняем статьи"""
         query = """
-        INSERT INTO bot_article (
+        INSERT OR IGNORE INTO bot_article (
         url_article, title, text, added, sended, chatid_url_article_hash, chat_id_id 
         )
         VALUES (?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT (chatid_url_article_hash) DO UPDATE SET sended = false
         """
         self.executemany(query, values)
 
@@ -199,3 +198,13 @@ class Database(Client):
         WHERE bot_article.sended = False
         """
         return self.fetchall(query) or None
+
+    def mark_sended(self, values: Union[List, Tuple]):
+        """Отмечаем, что статья отправлена пользователю"""
+        query = """
+        UPDATE bot_article
+        SET sended = True
+        WHERE url_article = ? 
+        AND chat_id_id = ?
+        """
+        self.executemany(query, values)
