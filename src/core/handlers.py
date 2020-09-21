@@ -74,10 +74,3 @@ class CommandHandler:
                 )
             else:
                 message.send_message('такого урла не найдено')
-
-
-# {
-#   "ok": false,
-#   "error_code": 403,
-#   "description": "Forbidden: bot was blocked by the user"
-# }
