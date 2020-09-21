@@ -6,7 +6,6 @@ from typing import Dict, List, Union, Tuple, Optional
 import traceback
 
 from src.project.settings import DB_PATH
-from src.core.utils import make_hash
 
 
 logger = logging.getLogger(__name__)
@@ -93,7 +92,7 @@ class Client(ABC):
 class Database(Client):
     """Запросы в базу"""
 
-    def __init__(self, chat_id: int):
+    def __init__(self, chat_id: int = 0):
         super().__init__()
         self.chat_id = chat_id
         self._conn = None
@@ -128,19 +127,12 @@ class Database(Client):
             False, self.chat_id
         ))
 
-    def add_feed(self, urls: Union[List, str]):
-        if isinstance(urls, str):
-            urls = [urls]
+    def add_feed(self, values: Union[List, Tuple]):
         query = """
         INSERT INTO bot_users_rss (url, added, active, chat_id_id, chatid_url_hash)
         VALUES (?, ?, ?, ?, ?)
         ON CONFLICT (chatid_url_hash) DO UPDATE SET active = true
         """
-        values = []
-        for url in urls:
-            values.append(
-                (str(url), datetime.utcnow(), True, self.chat_id, make_hash(url, self.chat_id))
-            )
         self.executemany(query, values)
 
     def delete_feed(self, url: str) -> bool:
@@ -174,3 +166,36 @@ class Database(Client):
         """
         result = self.fetchall(query, (url, self.chat_id, True))
         return result or None
+
+    def get_active_feeds(self) -> Optional[List[Dict]]:
+        """Получаем активные фиды активных юзеров"""
+        query = """
+        SELECT bot_users_rss.url, bot_users_rss.chat_id_id
+        FROM bot_users_rss
+        JOIN bot_users ON bot_users_rss.chat_id_id = bot_users.chat_id 
+        AND bot_users.active = True
+        WHERE bot_users_rss.active = True
+        """
+        return self.fetchall(query) or None
+
+    def insert_articles(self, values: Union[List, Tuple]):
+        """Сохраняем статьи"""
+        query = """
+        INSERT INTO bot_article (
+        url_article, title, text, added, sended, chatid_url_article_hash, chat_id_id 
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (chatid_url_article_hash) DO UPDATE SET sended = false
+        """
+        self.executemany(query, values)
+
+    def get_ready_articles(self) -> Optional[List[Dict]]:
+        """Получаем готовые к отправке статьи активных юзеров"""
+        query = """
+        SELECT url_article, title, text, chat_id_id
+        FROM bot_article
+        JOIN bot_users ON bot_article.chat_id_id = bot_users.chat_id 
+        AND bot_users.active = True
+        WHERE bot_article.sended = False
+        """
+        return self.fetchall(query) or None
