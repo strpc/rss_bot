@@ -52,7 +52,7 @@ class Article(models.Model):
     url_article = models.TextField('Ссылка на статью', blank=False, null=False)
     title = models.CharField('Заголовок статьи', max_length=1000, blank=True, null=True)
     text = models.CharField('Текст статьи', max_length=2000, blank=True, null=True)
-    sended = models.BooleanField('Отправлено', default=True, blank=False, null=False)
+    sended = models.BooleanField('Отправлено', default=False, blank=False, null=False)
     added: datetime = models.DateTimeField('Добавлено', auto_now_add=True)
     chatid_url_article_hash = models.CharField(
         'Base64 hash', max_length=2500, null=False, blank=False, unique=True
