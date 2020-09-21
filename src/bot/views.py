@@ -25,9 +25,9 @@ def token_handler(request: HttpRequest) -> JsonResponse:
         message: Union[BaseMessage, BotCommand] = Factory.register_message(body)
         print("\n\nfrom token_handler:")
         pprint(message.__dict__)
-        if message.type_update == TypeUpdate.command.value and \
-                message.command_raw in CommandHandler.__dict__.keys():
-            CommandHandler.__dict__[message.command_raw].__get__(CommandHandler)(message)
+        if (message.type_update == TypeUpdate.command.value and
+                message.command_raw in CommandHandler.__dict__.keys()):
+            getattr(CommandHandler, message.command_raw)(message)
 
         elif message.type_update == TypeUpdate.message.name:
             pass  # пришло обычное сообщение. нужно сделать заглушку.
