@@ -55,10 +55,14 @@ class Client(ABC):
         if r.status_code == 200:
             return r
 
-        elif r.status_code != 200 and attempt:
+        elif (
+                r.status_code != 200
+                and r.json().get('description') != "Forbidden: bot was blocked by the user"
+                and attempt
+        ):
             sleep(DELAY_REQUEST)
             attempt -= 1
-            self.post(method, params, body, data, attempt)
+            return self.post(method, params, body, data, attempt)
 
         else:
             logger.error(
