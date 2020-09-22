@@ -1,10 +1,10 @@
 from celery import Celery, signals
 from celery.schedules import crontab
 
-from src.project.settings import BOT_BROKER, INTERVAL_BEAT_TASK
+from src.project.settings import RSS_BOT_BROKER, INTERVAL_BEAT_TASK
 
 
-app = Celery('rss_bot', broker=BOT_BROKER, timezone='UTC')
+app = Celery('rss_bot', broker=RSS_BOT_BROKER, timezone='UTC')
 app.control.purge()  # !DEV
 app.autodiscover_tasks([
     'src.core.queues.tasks',

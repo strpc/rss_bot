@@ -5,12 +5,12 @@ import logging
 
 import httpx
 
-from src.project.settings import BOT_TOKEN, API_BASE_URL, ATTEMPT_REQUEST, DELAY_REQUEST
+from src.project.settings import RSS_BOT_TOKEN, API_BASE_URL, ATTEMPT_REQUEST, DELAY_REQUEST
 
 
 logger = logging.getLogger(__name__)
 API_BASE_URL = API_BASE_URL[:-1] if API_BASE_URL.endswith('/') else API_BASE_URL
-REQUEST_URL = f"{API_BASE_URL}/bot{BOT_TOKEN}/"
+REQUEST_URL = f"{API_BASE_URL}/bot{RSS_BOT_TOKEN}/"
 
 
 class Client(ABC):

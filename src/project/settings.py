@@ -137,9 +137,9 @@ if DEBUG is False:
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-assert BOT_TOKEN, 'BOT_TOKEN is not found'
-BOT_BROKER = os.getenv('BOT_BROKER', 'amqp://guest:guest@127.0.0.1:5672/')
+RSS_BOT_TOKEN = os.getenv('RSS_BOT_TOKEN')
+assert RSS_BOT_TOKEN, 'RSS_BOT_TOKEN is not found'
+RSS_BOT_BROKER = os.getenv('RSS_BOT_BROKER', 'amqp://guest:guest@127.0.0.1:5672/')
 API_BASE_URL = os.getenv('API_BASE_URL', "https://api.telegram.org/")
 INTERVAL_BEAT_TASK = int(os.getenv('INTERVAL_BEAT_TASK', 5))  # in minute
 

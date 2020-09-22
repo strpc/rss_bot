@@ -5,5 +5,5 @@ from .views import token_handler
 
 
 urlpatterns = [
-    path(settings.BOT_TOKEN, token_handler)
+    path(settings.RSS_BOT_TOKEN, token_handler)
 ]
