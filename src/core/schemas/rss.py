@@ -21,7 +21,7 @@ class ListUrls(BaseModel):
     def get_urls(cls, input_value: str):
         if not isinstance(input_value, str):
             raise ValueError()
-        urls_str = input_value.replace('\n', ' ').replace(',', ' ')
+        urls_str = input_value.replace('\n', ' ').replace(',', ' ').lower()
         list_urls = list(set(urls_str.split(' ')))
         urls = []
         for url_ in list_urls:
