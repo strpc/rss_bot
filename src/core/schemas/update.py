@@ -49,10 +49,10 @@ class BaseMessage(ABC):
             parse_mode: str = None,
             disable_web_page_preview: bool = False
     ):
-        self.request.send_message(message_, parse_mode, disable_web_page_preview)
+        return self.request.send_message(message_, parse_mode, disable_web_page_preview)
 
     def add_feed(self, urls: Union[ListUrls, List, str]):
-        self.database.add_feed(urls)
+        return self.database.add_feed(urls)
 
     def list_feed(self):
         return self.database.list_feed()
