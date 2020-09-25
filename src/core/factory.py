@@ -8,6 +8,8 @@ class ObjectFactory:
         self._builders = list_obj
 
     def register_message(self, message: Dict):
+        if 'message' not in message.keys():
+            return
         type_msg = 'message'
         entitles = message.get('message').get('entities')
         if entitles:
@@ -22,6 +24,7 @@ class ObjectFactory:
 
 type_obj = {
     'bot_command': BotCommand,
+    'code': BotCommand,
     'message': Message,
 }
 
