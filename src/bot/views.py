@@ -23,14 +23,22 @@ def token_handler(request: HttpRequest) -> JsonResponse:
         print('body:')
         pprint(body)
         message: Union[BaseMessage, BotCommand] = Factory.register_message(body)
+        if not message:
+            # пришло какое-то событие, которое мы не отслеживаем.
+            return JsonResponse({'success': 'true'}, status=200)
         print("\n\nfrom token_handler:")
         pprint(message.__dict__)
         if (message.type_update == TypeUpdate.command.value and
                 message.command_raw in CommandHandler.__dict__.keys()):
             getattr(CommandHandler, message.command_raw)(message)
 
-        elif message.type_update == TypeUpdate.message.name:
+        elif (
+                message.type_update == TypeUpdate.message.value
+                or message.type_update == TypeUpdate.command.value
+        ):
             pass  # пришло обычное сообщение. нужно сделать заглушку.
+            print('обычное сообщение')
+            print(message.text)
 
         return JsonResponse({'success': 'true'}, status=200)
 
