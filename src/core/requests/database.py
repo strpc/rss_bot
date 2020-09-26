@@ -170,7 +170,7 @@ class Database(Client):
     def get_active_feeds(self) -> Optional[List[Dict]]:
         """Получаем активные фиды активных юзеров"""
         query = """
-        SELECT bot_users_rss.url, bot_users_rss.chat_id_id
+        SELECT bot_users_rss.url, bot_users_rss.chat_id_id, bot_users_rss.chatid_url_hash
         FROM bot_users_rss
         JOIN bot_users ON bot_users_rss.chat_id_id = bot_users.chat_id 
         AND bot_users.active = True
@@ -182,9 +182,9 @@ class Database(Client):
         """Сохраняем статьи"""
         query = """
         INSERT OR IGNORE INTO bot_article (
-        url_article, title, text, added, sended, chatid_url_article_hash, chat_id_id 
+        url_article, title, text, added, sended, chatid_url_article_hash, rss_url_id, chat_id_id
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
         self.executemany(query, values)
 
