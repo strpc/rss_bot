@@ -13,8 +13,10 @@ class User(models.Model):
     active = models.BooleanField('Активный', default=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name} @{self.username} ' \
-               f'{self.register.strftime("%d.%m.%Y %H:%M")}'
+        return f'{self.first_name if self.first_name else ""} ' \
+               f'{self.last_name if self.last_name else ""} ' \
+               f'@{self.username if self.username else ""} ' \
+               f'{self.register.astimezone().strftime("%d.%m.%Y %H:%M")}'
 
     class Meta:
         db_table = 'bot_users'
@@ -35,8 +37,10 @@ class RSS(models.Model):
     )
 
     def __str__(self):
-        return f'{self.chat_id.first_name} {self.chat_id.last_name} @{self.chat_id.username} ' \
-               f'{self.url} {self.added.strftime("%d.%m.%Y %H:%M")}'
+        return f'{self.chat_id.first_name if self.chat_id.first_name else ""} ' \
+               f'{self.chat_id.last_name if self.chat_id.last_name else ""} ' \
+               f'@{self.chat_id.username if self.chat_id.username else ""} {self.url} ' \
+               f'{self.added.astimezone().strftime("%d.%m.%Y %H:%M")}'
 
     class Meta:
         db_table = 'bot_users_rss'
@@ -54,13 +58,18 @@ class Article(models.Model):
     text = models.CharField('Текст статьи', max_length=2000, blank=True, null=True)
     sended = models.BooleanField('Отправлено', default=False, blank=False, null=False)
     added: datetime = models.DateTimeField('Добавлено', auto_now_add=True)
+    rss_url = models.ForeignKey(
+        RSS, to_field='chatid_url_hash', verbose_name='RSS', on_delete=models.CASCADE
+    )
     chatid_url_article_hash = models.CharField(
         'Base64 hash', max_length=2500, null=False, blank=False, unique=True
     )
 
     def __str__(self):
-        return f'{self.chat_id.first_name} {self.chat_id.last_name} @{self.chat_id.username} ' \
-               f'{self.added.strftime("%d.%m.%Y %H:%M")} {self.sended}'
+        return f'{self.chat_id.first_name if self.chat_id.first_name else ""}' \
+               f' {self.chat_id.last_name if self.chat_id.last_name else ""} ' \
+               f'@{self.chat_id.username if self.chat_id.username else ""} ' \
+               f'{self.added.astimezone().strftime("%d.%m.%Y %H:%M")} Sended: {self.sended}'
 
     class Meta:
         db_table = 'bot_article'
