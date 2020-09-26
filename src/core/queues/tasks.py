@@ -25,6 +25,7 @@ def load_new_articles(*args, **kwargs):
     for item in active_feeds:
         url_rss = item['url']
         chat_id = item['chat_id_id']
+        rss_hash = item['chatid_url_hash']
         feed = RssFeed(url=url_rss)
         articles = feed.parse()
 
@@ -32,7 +33,7 @@ def load_new_articles(*args, **kwargs):
         for article in articles:
             values_for_execute.append(
                 (article.url, article.title, article.text, datetime.utcnow(),
-                 False, make_hash(article.url, chat_id), chat_id)
+                 False, make_hash(article.url, chat_id), rss_hash, chat_id)
             )
         db.insert_articles(values_for_execute)
 
@@ -46,7 +47,7 @@ def send_new_articles(*args, **kwargs):
         return
     for item in ready_articles:
         text = f"*{item['title'][:COUNT_TITLE_SYMBOL]}*\n\n" if item['title'] else ''
-        text += f"{item['text'][:COUNT_TEXT_SYMBOL]}...\n\n" if item['title'] else ''
+        text += f"{item['text'][:COUNT_TEXT_SYMBOL]}...\n\n" if item['text'] else ''
         text += item['url_article']
 
         message = FromDB(item['chat_id_id'])
@@ -54,8 +55,10 @@ def send_new_articles(*args, **kwargs):
 
         values_for_execute.append((item['url_article'], item['chat_id_id']))
 
-        if (response.status_code != 200 and
-                response.json().get('description') == "Forbidden: bot was blocked by the user"):
+        if (
+                response.status_code != 200
+                and response.json().get('description') == "Forbidden: bot was blocked by the user"
+        ):
             # пользователь остановил бота
             db.disable_user(item['chat_id_id'])
         elif response.status_code != 200:
