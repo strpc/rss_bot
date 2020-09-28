@@ -9,6 +9,7 @@ app.control.purge()  # !DEV
 app.autodiscover_tasks([
     'src.core.queues.tasks',
 ])
+app.conf.task_default_queue = 'rss_bot.download_articles_send_msg'
 app.conf.beat_schedule = {
     "download_articles_send_msg": {
         "task": "src.core.queues.tasks.run_chain",
