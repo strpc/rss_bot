@@ -69,6 +69,7 @@ class Article(models.Model):
         return f'{self.chat_id.first_name if self.chat_id.first_name else ""}' \
                f' {self.chat_id.last_name if self.chat_id.last_name else ""} ' \
                f'@{self.chat_id.username if self.chat_id.username else ""} ' \
+               f'{self.url_article} ' \
                f'{self.added.astimezone().strftime("%d.%m.%Y %H:%M")} Sended: {self.sended}'
 
     class Meta:
