@@ -62,5 +62,5 @@ def send_new_articles(*args, **kwargs):
             # пользователь остановил бота
             db.disable_user(item['chat_id_id'])
         elif response.status_code != 200:
-            message.send_message(text, disable_web_page_preview=False)
+            message.send_message(text.replace('*', ''), disable_web_page_preview=False)
     db.mark_sended(values_for_execute)
