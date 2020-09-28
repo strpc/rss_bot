@@ -18,7 +18,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    os.getenv('ALLOW_HOST')
+    os.getenv('ALLOWED_HOSTS')
 ]
 
 
