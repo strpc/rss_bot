@@ -13,6 +13,9 @@ app.conf.beat_schedule = {
     "download_articles_send_msg": {
         "task": "src.core.queues.tasks.run_chain",
         "schedule": crontab(minute=f"*/{INTERVAL_BEAT_TASK}"),
+        "options": {
+            "queue": "rss_bot.download_articles_send_msg"
+        }
     }
 }
 
