@@ -23,6 +23,7 @@ class CommandHandler:
             message.request.send_message('здарова дятел')
             # первый старт/рестарт пользователем
         # повторный /start без остановки бота
+        message.send_message('hello world')
         print('hello method start')
 
     @staticmethod
