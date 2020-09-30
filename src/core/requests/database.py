@@ -1,9 +1,9 @@
 import logging
 import sqlite3
+import traceback
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Dict, List, Union, Tuple, Optional
-import traceback
 
 from src.project.settings import DB_PATH
 
@@ -17,6 +17,7 @@ class Client(ABC):
     @abstractmethod
     def __init__(self):
         self._conn = None
+        self._cursor = None
 
     @staticmethod
     def dict_factory(cursor, row) -> Dict:
@@ -27,7 +28,8 @@ class Client(ABC):
         return d
 
     def __enter__(self):
-        return self.connect()
+        self.connect()
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback_):
         self.disconnect()
@@ -36,27 +38,30 @@ class Client(ABC):
         """Устанавливаем подключение к базе, делаем чтобы возвращался словарь"""
         self._conn = sqlite3.connect(DB_PATH)
         self._conn.row_factory = self.dict_factory
-        return self._conn.cursor()
+        self._cursor = self._conn.cursor()
 
     def disconnect(self):
         """Коммитим. Закрываем подключение к базе."""
         self._conn.commit()
         self._conn.close()
         self._conn = None
+        self._cursor = None
 
     @property
     def conn(self):
         """Получаем доступ ко всем методам"""
-        if self._conn is None:
+        if self._conn is None or self._cursor is None:
             self.connect()
         return self._conn
 
-    def fetchall(self, query: str, values: Tuple = None) -> List[Dict]:
+    def fetchall(self, query: str, values: Tuple = None) -> Optional[List[Dict]]:
+        """Фетчолим запрос со значениями(или без)"""
         values = values or ()
         try:
-            with self as database:
-                database.execute(query, values)
-                return database.fetchall()
+            if self._conn is None or self._cursor is None:
+                self.connect()
+            self._cursor.execute(query, values)
+            return self._cursor.fetchall() or None
 
         except Exception as error:
             logger.error(error)
@@ -64,10 +69,12 @@ class Client(ABC):
             logger.info(query)
 
     def execute(self, query: str, values: Tuple = None) -> bool:
+        """Экзекьютим запрос со значениями(или без)"""
         values = values or ()
         try:
-            with self as database:
-                database.execute(query, values)
+            if self._conn is None or self._cursor is None:
+                self.connect()
+            self._conn.execute(query, values)
             return True
 
         except Exception as error:
@@ -77,9 +84,11 @@ class Client(ABC):
             return False
 
     def executemany(self, query: str, values: List[Tuple]) -> bool:
+        """Экзекьютим сразу несколько записей"""
         try:
-            with self as database:
-                database.executemany(query, values)
+            if self._conn is None or self._cursor is None:
+                self.connect()
+            self._conn.executemany(query, values)
             return True
 
         except Exception as error:
@@ -128,6 +137,7 @@ class Database(Client):
         ))
 
     def add_feed(self, values: Union[List, Tuple]):
+        """Добавляем новый RSS"""
         query = """
         INSERT INTO bot_users_rss (url, added, active, chat_id_id, chatid_url_hash)
         VALUES (?, ?, ?, ?, ?)
@@ -136,6 +146,7 @@ class Database(Client):
         self.executemany(query, values)
 
     def delete_feed(self, url: str) -> bool:
+        """Удаляем(отключаем) RSS пользователя"""
         if self.find_active_url(url):
             query = """
             UPDATE bot_users_rss
@@ -147,7 +158,8 @@ class Database(Client):
             return True
         return False
 
-    def list_feed(self) -> List[Dict]:
+    def list_feed(self) -> Optional[List[Dict]]:
+        """Получаем список RSS, на который подписан пользователь"""
         query = """
         SELECT url 
         FROM bot_users_rss
@@ -157,6 +169,7 @@ class Database(Client):
         return self.fetchall(query, (self.chat_id, True))
 
     def find_active_url(self, url: str) -> Optional[List[Dict]]:
+        """Ищем активный RSS у пользователя"""
         query = """
         SELECT *
         FROM bot_users_rss
