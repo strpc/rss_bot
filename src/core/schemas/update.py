@@ -52,13 +52,16 @@ class BaseMessage(ABC):
         return self.request.send_message(message_, parse_mode, disable_web_page_preview)
 
     def add_feed(self, urls: Union[ListUrls, List, str]):
-        return self.database.add_feed(urls)
+        with self.database as db:
+            db.add_feed(urls)
 
     def list_feed(self):
-        return self.database.list_feed()
+        with self.database as db:
+            db.list_feed()
 
     def delete_feed(self, url: str):
-        return self.database.delete_feed(url)
+        with self.database as db:
+            db.delete_feed(url)
 
 
 class BotCommand(BaseMessage):
@@ -72,7 +75,8 @@ class BotCommand(BaseMessage):
         self.type_update = TypeUpdate.command.value
 
     def register_user(self):
-        self.database.register_user(self)
+        with self.database as db:
+            db.register_user(self)
 
     def init_user(self):
         return self._init_user()
