@@ -1,0 +1,8 @@
+version: "3.6"
+services:
+  rabbimq:
+    image: rabbitmq
+    container_name: rabbitmq_rss_bot
+    restart: always
+    ports:
+      - 5672:5672
