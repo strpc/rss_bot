@@ -36,32 +36,34 @@ class Client(ABC):
 
     def connect(self):
         """Устанавливаем подключение к базе, делаем чтобы возвращался словарь"""
-        self._conn = sqlite3.connect(DB_PATH)
-        self._conn.row_factory = self.dict_factory
-        self._cursor = self._conn.cursor()
+        if self._conn is None or self._cursor is None:
+            self._conn = sqlite3.connect(DB_PATH)
+            self._conn.row_factory = self.dict_factory
+            self._cursor = self._conn.cursor()
 
     def disconnect(self):
         """Коммитим. Закрываем подключение к базе."""
-        self._conn.commit()
-        self._conn.close()
-        self._conn = None
-        self._cursor = None
+        if self._conn is not None:
+            self._conn.commit()
+            self._conn.close()
+            self._conn = None
+            self._cursor = None
 
     @property
     def conn(self):
         """Получаем доступ ко всем методам"""
         if self._conn is None or self._cursor is None:
             self.connect()
-        return self._conn
+        yield self._conn
+        self.disconnect()
 
     def fetchall(self, query: str, values: Tuple = None) -> Optional[List[Dict]]:
         """Фетчолим запрос со значениями(или без)"""
         values = values or ()
         try:
-            if self._conn is None or self._cursor is None:
-                self.connect()
-            self._cursor.execute(query, values)
-            return self._cursor.fetchall() or None
+            with self:
+                self._cursor.execute(query, values)
+                return self._cursor.fetchall() or None
 
         except Exception as error:
             logger.error(error)
@@ -72,10 +74,9 @@ class Client(ABC):
         """Экзекьютим запрос со значениями(или без)"""
         values = values or ()
         try:
-            if self._conn is None or self._cursor is None:
-                self.connect()
-            self._conn.execute(query, values)
-            return True
+            with self:
+                self._conn.execute(query, values)
+                return True
 
         except Exception as error:
             logger.error(error)
@@ -86,10 +87,9 @@ class Client(ABC):
     def executemany(self, query: str, values: List[Tuple]) -> bool:
         """Экзекьютим сразу несколько записей"""
         try:
-            if self._conn is None or self._cursor is None:
-                self.connect()
-            self._conn.executemany(query, values)
-            return True
+            with self:
+                self._conn.executemany(query, values)
+                return True
 
         except Exception as error:
             logger.error(error)
