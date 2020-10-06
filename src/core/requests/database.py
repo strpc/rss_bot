@@ -1,7 +1,7 @@
 import logging
 import sqlite3
 import traceback
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from datetime import datetime
 from typing import Dict, List, Union, Tuple, Optional
 
@@ -98,7 +98,16 @@ class Client(ABC):
             return False
 
 
-class Database(Client):
+class MetaSingleton(ABCMeta):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(MetaSingleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class Database(Client, metaclass=MetaSingleton):
     """Запросы в базу"""
 
     def __init__(self, chat_id: int = 0):
