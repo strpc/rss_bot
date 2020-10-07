@@ -245,10 +245,3 @@ class Database(Client, metaclass=MetaSingleton):
         AND chat_id_id = ?
         """
         self.executemany(query, values)
-
-
-if __name__ == '__main__':
-    with Database() as db:
-        a = db.fetchall('SELECT * FROM bot_users')
-        print(a[0])
-        print(type(a[0]))
