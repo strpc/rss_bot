@@ -11,28 +11,19 @@ from src.project.settings import DB_PATH
 logger = logging.getLogger(__name__)
 
 
-class Obj:
+class Obj(dict):
     @staticmethod
     def from_db(cursor: Iterable, row: Iterable) -> 'Obj':
         obj = Obj()
         for column, value in zip(cursor, row):
-            if not hasattr(obj, column):
-                setattr(obj, column, value)
+            obj[column] = value
         return obj
 
-    def to_dict(self) -> Dict:
-        result = {}
-        for k in self.__dict__:
-            if not k.startswith('_'):
-                result[k] = self.__dict__[k]
-        return result
+    def __getattr__(self, item):
+        if item not in self.keys():
+            raise AttributeError
+        return self[item]
 
-    def __str__(self):
-        text = ''
-        for k in self.__dict__:
-            if not k.startswith('_'):
-                text += f"{k}: {self.__dict__[k]}\n"
-        return text
 
 
 class Client(ABC):
@@ -254,3 +245,10 @@ class Database(Client, metaclass=MetaSingleton):
         AND chat_id_id = ?
         """
         self.executemany(query, values)
+
+
+if __name__ == '__main__':
+    with Database() as db:
+        a = db.fetchall('SELECT * FROM bot_users')
+        print(a[0])
+        print(type(a[0]))
