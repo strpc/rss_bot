@@ -3,7 +3,7 @@ import sqlite3
 import traceback
 from abc import ABC, ABCMeta, abstractmethod
 from datetime import datetime
-from typing import Dict, List, Union, Tuple, Optional, Type
+from typing import Dict, List, Union, Tuple, Optional, Iterable
 
 from src.project.settings import DB_PATH
 
@@ -11,20 +11,28 @@ from src.project.settings import DB_PATH
 logger = logging.getLogger(__name__)
 
 
-class ObjMeta(type):
-    def __getattr__(self, item):
-        if item not in self.__dict__:
-            return None
-        return item
+class Obj:
+    @staticmethod
+    def from_db(cursor: Iterable, row: Iterable) -> 'Obj':
+        obj = Obj()
+        for column, value in zip(cursor, row):
+            if not hasattr(obj, column):
+                setattr(obj, column, value)
+        return obj
 
+    def to_dict(self) -> Dict:
+        result = {}
+        for k in self.__dict__:
+            if not k.startswith('_'):
+                result[k] = self.__dict__[k]
+        return result
 
-class Obj(metaclass=ObjMeta):
-    @classmethod
-    def from_db(cls, cursor, row) -> Type['Obj']:
-        for column, value in zip(cursor.description, row):
-            if not hasattr(cls, column[0]):
-                setattr(cls, column[0], value)
-        return cls
+    def __str__(self):
+        text = ''
+        for k in self.__dict__:
+            if not k.startswith('_'):
+                text += f"{k}: {self.__dict__[k]}\n"
+        return text
 
 
 class Client(ABC):
@@ -38,10 +46,10 @@ class Client(ABC):
     @staticmethod
     def dict_factory(cursor, row) -> Dict:
         """Делаем словарь из ответа базы {"поле": "значение"}"""
-        d = {}
+        data = {}
         for column, value in zip(cursor.description, row):
-            d[column[0]] = value
-        return d
+            data[column[0]] = value
+        return data
 
     def __enter__(self):
         self.connect()
