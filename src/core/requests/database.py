@@ -3,12 +3,28 @@ import sqlite3
 import traceback
 from abc import ABC, ABCMeta, abstractmethod
 from datetime import datetime
-from typing import Dict, List, Union, Tuple, Optional
+from typing import Dict, List, Union, Tuple, Optional, Type
 
 from src.project.settings import DB_PATH
 
 
 logger = logging.getLogger(__name__)
+
+
+class ObjMeta(type):
+    def __getattr__(self, item):
+        if item not in self.__dict__:
+            return None
+        return item
+
+
+class Obj(metaclass=ObjMeta):
+    @classmethod
+    def from_db(cls, cursor, row) -> Type['Obj']:
+        for column, value in zip(cursor.description, row):
+            if not hasattr(cls, column[0]):
+                setattr(cls, column[0], value)
+        return cls
 
 
 class Client(ABC):
@@ -23,8 +39,8 @@ class Client(ABC):
     def dict_factory(cursor, row) -> Dict:
         """Делаем словарь из ответа базы {"поле": "значение"}"""
         d = {}
-        for idx, col in enumerate(cursor.description):
-            d[col[0]] = row[idx]
+        for column, value in zip(cursor.description, row):
+            d[column[0]] = value
         return d
 
     def __enter__(self):
