@@ -25,7 +25,6 @@ class Obj(dict):
         return self[item]
 
 
-
 class Client(ABC):
     """Базовый класс коннектора к базе, от которого наследуемся"""
 
@@ -160,7 +159,7 @@ class Database(Client, metaclass=MetaSingleton):
             False, chat_id
         ))
 
-    def add_feed(self, values: Union[List, Tuple]):
+    def add_feed(self, values: List[Tuple]):
         """Добавляем новый RSS"""
         query = """
         INSERT INTO bot_users_rss (url, added, active, chat_id_id, chatid_url_hash)
