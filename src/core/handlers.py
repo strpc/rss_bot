@@ -28,13 +28,13 @@ class CommandHandler:
 
     @staticmethod
     def add_feed(message: BotCommand):
-        list_urls = ListUrls(list_urls=message.text)
+        list_urls = ListUrls.get_instance(message.text)
 
         values_for_execute = []
         for url in list_urls:
+            hash_url_chat_id = make_hash(url, message.chat_id)
             values_for_execute.append(
-                (str(url), datetime.utcnow(), True, message.chat_id,
-                 make_hash(url, message.chat_id))
+                (str(url), datetime.utcnow(), True, message.chat_id, hash_url_chat_id)
             )
         message.add_feed(values_for_execute)
 
@@ -47,15 +47,18 @@ class CommandHandler:
 
     @staticmethod
     def list_feed(message: BotCommand):
-        list_dicts_urls = message.list_feed()
-        list_str_urls = [i.get('url') for i in list_dicts_urls]
-        msg = f'You are subscribed to:\n{make_str_urls(list_str_urls)}'
+        list_dicts_urls = message.list_feed(message.chat_id)
+        if list_dicts_urls is None:
+            msg = "You not have active subscriptions."
+        else:
+            list_str_urls = [i.get('url') for i in list_dicts_urls]
+            msg = f'You are subscribed to:\n{make_str_urls(list_str_urls)}'
         message.send_message(msg, disable_web_page_preview=True)
 
     @staticmethod
     def delete_feed(message: BotCommand):
         if not message.text:
-            list_dicts_urls = message.list_feed()
+            list_dicts_urls = message.list_feed(message.chat_id)
             text = 'For unsubscribe send:\n'
             for item in range(0, len(list_dicts_urls)):
                 url = random.choice(list_dicts_urls)
@@ -68,7 +71,7 @@ class CommandHandler:
             except ValidationError:
                 message.send_message('Bad url')
                 return
-            if message.delete_feed(url.url_feed):
+            if message.delete_feed(url.url_feed, message.chat_id):
                 message.send_message(
                     f'URL {url.url_feed} has been removed from your feed',
                     disable_web_page_preview=True
