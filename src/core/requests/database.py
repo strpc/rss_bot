@@ -124,10 +124,10 @@ class MetaSingleton(ABCMeta):
 class Database(Client, metaclass=MetaSingleton):
     """Запросы в базу"""
 
-    def __init__(self, chat_id: int = 0):
+    def __init__(self):
         super().__init__()
-        self.chat_id = chat_id
         self._conn = None
+        self._cursor = None
 
     def register_user(self, obj):
         """Регистрация пользователя"""
@@ -141,11 +141,11 @@ class Database(Client, metaclass=MetaSingleton):
         )
                      )
 
-    def init_user(self) -> bool:
+    def init_user(self, chat_id: int) -> bool:
         """Инициализация пользователя(зареган ли он у нас уже)"""
         query = """SELECT 1 FROM bot_users WHERE chat_id = ? AND active = ?"""
         return bool(
-            self.fetchall(query, (self.chat_id, True))
+            self.fetchall(query, (chat_id, True))
         )
 
     def disable_user(self, chat_id: int):
@@ -168,30 +168,30 @@ class Database(Client, metaclass=MetaSingleton):
         """
         self.executemany(query, values)
 
-    def delete_feed(self, url: str) -> bool:
+    def delete_feed(self, url: str, chat_id: int) -> bool:
         """Удаляем(отключаем) RSS пользователя"""
-        if self.find_active_url(url):
+        if self.find_active_url(url, chat_id):
             query = """
             UPDATE bot_users_rss
             SET active = ?
             WHERE url = ?
             AND chat_id_id = ?
             """
-            self.execute(query, (False, url, self.chat_id))
+            self.execute(query, (False, url, chat_id))
             return True
         return False
 
-    def list_feed(self) -> Optional[List[Dict]]:
+    def list_feed(self, chat_id: int) -> Optional[List[Dict]]:
         """Получаем список RSS, на который подписан пользователь"""
         query = """
-        SELECT url 
+        SELECT url
         FROM bot_users_rss
         WHERE chat_id_id = ?
         AND active = ?
         """
-        return self.fetchall(query, (self.chat_id, True))
+        return self.fetchall(query, (chat_id, True)) or None
 
-    def find_active_url(self, url: str) -> Optional[List[Dict]]:
+    def find_active_url(self, url: str, chat_id: int) -> Optional[List[Dict]]:
         """Ищем активный RSS у пользователя"""
         query = """
         SELECT *
@@ -200,7 +200,7 @@ class Database(Client, metaclass=MetaSingleton):
         AND chat_id_id = ?
         AND active = ?
         """
-        result = self.fetchall(query, (url, self.chat_id, True))
+        result = self.fetchall(query, (url, chat_id, True))
         return result or None
 
     def get_active_feeds(self) -> Optional[List[Dict]]:
@@ -208,7 +208,7 @@ class Database(Client, metaclass=MetaSingleton):
         query = """
         SELECT bot_users_rss.url, bot_users_rss.chat_id_id, bot_users_rss.chatid_url_hash
         FROM bot_users_rss
-        JOIN bot_users ON bot_users_rss.chat_id_id = bot_users.chat_id 
+        JOIN bot_users ON bot_users_rss.chat_id_id = bot_users.chat_id
         AND bot_users.active = True
         WHERE bot_users_rss.active = True
         """
@@ -240,7 +240,7 @@ class Database(Client, metaclass=MetaSingleton):
         query = """
         UPDATE bot_article
         SET sended = True
-        WHERE url_article = ? 
+        WHERE url_article = ?
         AND chat_id_id = ?
         """
         self.executemany(query, values)
