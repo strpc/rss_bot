@@ -58,12 +58,17 @@ class Article(models.Model):
     text = models.CharField('Текст статьи', max_length=2000, blank=True, null=True)
     sended = models.BooleanField('Отправлено', default=False, blank=False, null=False)
     added: datetime = models.DateTimeField('Добавлено', auto_now_add=True)
-    rss_url = models.ForeignKey(
+    rss_url: RSS = models.ForeignKey(
         RSS, to_field='chatid_url_hash', verbose_name='RSS', on_delete=models.CASCADE
     )
     chatid_url_article_hash = models.CharField(
         'Base64 hash', max_length=2500, null=False, blank=False, unique=True
     )
+
+    def get_rss_url(self):
+        result = str(self.rss_url.url)
+        return result[:40] if len(result) < 41 else result[:40] + '...'
+    get_rss_url.short_description = 'RSS url'
 
     def __str__(self):
         return f'{self.chat_id.first_name if self.chat_id.first_name else ""}' \
