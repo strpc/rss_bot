@@ -1,11 +1,11 @@
+import re
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import List, Union
-import re
+from typing import List, Union, Optional, Dict
 
+from src.core.requests.api import Request
 # from src.core.utils import from_timestamp
 from src.core.requests.database import Database
-from src.core.requests.api import Request
 from src.core.schemas.rss import ListUrls
 
 
@@ -33,19 +33,20 @@ class BaseMessage(ABC):
         self.new_user = False
 
     def _init_user(self) -> bool:
-        self.new_user = False if self.database.init_user() else True
+        self.new_user = False if self.database.init_user(self.chat_id) else True
         return self.new_user
 
     @property
     def database(self):
-        return Database(chat_id=self.chat_id)
+        return Database()
 
     @property
     def request(self):
         return Request(chat_id=self.chat_id)
 
     def send_message(
-            self, message_: str,
+            self,
+            message_: str,
             parse_mode: str = None,
             disable_web_page_preview: bool = False
     ):
@@ -53,15 +54,15 @@ class BaseMessage(ABC):
 
     def add_feed(self, urls: Union[ListUrls, List, str]):
         with self.database as db:
-            db.add_feed(urls)
+            return db.add_feed(urls)
 
-    def list_feed(self):
+    def list_feed(self, chat_id: int) -> Optional[List[Dict]]:
         with self.database as db:
-            db.list_feed()
+            return db.list_feed(chat_id)
 
-    def delete_feed(self, url: str):
+    def delete_feed(self, url: str, chat_id: int) -> bool:
         with self.database as db:
-            db.delete_feed(url)
+            return db.delete_feed(url, chat_id)
 
 
 class BotCommand(BaseMessage):
