@@ -18,7 +18,7 @@ class ListUrls(BaseModel):
     list_urls: List[UrlFeed] = Field(...)
 
     @validator('list_urls', pre=True, always=True)
-    def get_urls(cls, input_value: str):
+    def _validate_urls(cls, input_value: str):
         if not isinstance(input_value, str):
             raise ValueError()
         urls_str = input_value.replace('\n', ' ').replace(',', ' ').lower()
@@ -43,6 +43,10 @@ class ListUrls(BaseModel):
     def validate_feed(url_: str) -> bool:
         """Валидируем, что урл - это фид, а не ссылка на гугл"""
         return bool(feedparser.parse(url_).get('entries'))
+
+    @classmethod
+    def get_instance(cls, text: str) -> 'ListUrls':
+        return cls(list_urls=text)
 
     def __iter__(self):
         for elem in self.list_urls:
