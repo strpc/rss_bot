@@ -13,7 +13,7 @@ sys.path.insert(0, str(BASE_DIR.parent))
 SECRET_KEY = 'j7*x%xov%()xej75d69gww!suk59bwi((j8%7@m)s#j=$vajkd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -32,10 +32,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # 'sslserver',  # DEV
-
     'bot',
 ]
+
+
+if DEBUG is True:
+    INSTALLED_APPS.append('sslserver')
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -126,9 +129,12 @@ if DEBUG is False:
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
 RSS_BOT_TOKEN = os.getenv('RSS_BOT_TOKEN')
-assert RSS_BOT_TOKEN, 'RSS_BOT_TOKEN is not found'
-RSS_BOT_BROKER = os.getenv('RSS_BOT_BROKER', 'amqp://guest:guest@127.0.0.1:5672/')
+RSS_BOT_BROKER = os.getenv('RSS_BOT_BROKER')
+if all([RSS_BOT_TOKEN, RSS_BOT_BROKER]) is False:
+    raise ValueError(f'Config values is not found. {RSS_BOT_TOKEN=}, {RSS_BOT_BROKER=}')
+
 API_BASE_URL = os.getenv('API_BASE_URL', "https://api.telegram.org/")
 INTERVAL_BEAT_TASK = int(os.getenv('INTERVAL_BEAT_TASK', 5))  # in minute
 
@@ -137,7 +143,7 @@ DELAY_REQUEST = int(os.getenv('DELAY_REQUEST', 3))  # in sec
 
 PARSE_MODE_MARKDOWN = 'Markdown'
 
-COUNT_TITLE_SYMBOL = int(os.getenv('COUNT_TITLE_SYMBOL', 100))
+COUNT_TITLE_SYMBOL = int(os.getenv('COUNT_TITLE_SYMBOL', 500))
 COUNT_TEXT_SYMBOL = int(os.getenv('COUNT_TEXT_SYMBOL', 250))
 COUNT_ARTICLE_UPDATE = int(os.getenv('COUNT_ARTICLE_UPDATE', 5))
 
