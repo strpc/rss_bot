@@ -1,10 +1,11 @@
 PYTHON=.venv/bin/python3
-MANAGEPY=src/manage.py
+MANAGEPY=app/manage.py
+.DEFAULT_GOAL := run
 
-#run:
-	#$(PYTHON) $(MANAGEPY) runserver 0.0.0.0:8080
+run:
+	$(PYTHON) $(MANAGEPY) runsslserver 0.0.0.0:8000 --certificate cert.pem --key private.key
 
-db_change:
+db_migrate:
 	make makemigrations_django && make migrate_django
 
 makemigrations_django:
@@ -14,10 +15,10 @@ migrate_django:
 	$(PYTHON) $(MANAGEPY) migrate
 
 celery:
-	 celery -A src.core.queues.app:app worker --loglevel=info
+	 celery -A app.core.queues.app:app worker --loglevel=info -n rss_bot@%h -Q rss_bot.download_articles_send_msg --loglevel=info
 
 beat:
-	 celery beat -A src.core.queues.app:app --loglevel=info
+	 celery beat -A app.core.queues.app:app --loglevel=info
 
 shutdown_celery:
 	celery control shutdown
