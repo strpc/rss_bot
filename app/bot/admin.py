@@ -72,10 +72,10 @@ class AdminArticle(admin.ModelAdmin):
     empty_value_display = "Недоступно"
     ordering = ('added', 'chat_id__pk')
     fields = (
-        'view_username', 'title', 'get_rss_url', 'added', 'sended'
+        'view_username', 'title', 'get_rss_url', 'added', 'sended', 'text',
     )
     readonly_fields = (
-        'view_username', 'title', 'get_rss_url', 'added', 'sended'
+        'view_username', 'title', 'get_rss_url', 'added', 'sended', 'text',
     )
     list_display = (
         'view_username', 'title', 'get_rss_url', 'added', 'sended'
