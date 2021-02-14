@@ -1,2 +1,4 @@
 -r requirements.txt
 django-sslserver==0.22
+pylint
+flake8
