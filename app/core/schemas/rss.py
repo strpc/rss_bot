@@ -1,13 +1,12 @@
-import feedparser
-from pydantic import BaseModel, HttpUrl, Field, validator, ValidationError
-
 import re
+from typing import List
 from urllib.parse import urlparse
-from typing import Optional, List
 
-from app.project.settings import (
-    COUNT_TITLE_SYMBOL, COUNT_TEXT_SYMBOL, COUNT_ARTICLE_UPDATE
-)
+import feedparser
+from pydantic import BaseModel, Field, HttpUrl, ValidationError, validator
+
+from app.project.settings import (COUNT_ARTICLE_UPDATE, COUNT_TEXT_SYMBOL,
+                                  COUNT_TITLE_SYMBOL)
 
 
 class UrlFeed(BaseModel):
