@@ -1,13 +1,13 @@
 from celery import Celery, signals
 from celery.schedules import crontab
 
-from src.project.settings import RSS_BOT_BROKER, INTERVAL_BEAT_TASK
+from app.project.settings import RSS_BOT_BROKER, INTERVAL_BEAT_TASK
 
 
 app = Celery('rss_bot', broker=RSS_BOT_BROKER, timezone='UTC')
 app.control.purge()  # !DEV
 app.autodiscover_tasks([
-    'src.core.queues.tasks',
+    'app.core.queues.tasks',
 ])
 app.conf.task_default_queue = 'rss_bot.download_articles_send_msg'
 app.conf.beat_schedule = {

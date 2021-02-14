@@ -5,7 +5,7 @@ from abc import ABC, ABCMeta, abstractmethod
 from datetime import datetime
 from typing import Dict, List, Union, Tuple, Optional, Iterable
 
-from src.project.settings import DB_PATH
+from app.project.settings import DB_PATH
 
 
 logger = logging.getLogger(__name__)

@@ -1,14 +1,13 @@
 from datetime import datetime
 import logging
 import random
-from pprint import pprint
 
 from pydantic import ValidationError
 
-from src.core.schemas.update import BotCommand
-from src.core.schemas.rss import ListUrls, UrlFeed
-from src.core.utils import make_str_urls, make_hash
-from src.project.settings import PARSE_MODE_MARKDOWN
+from app.core.schemas.update import BotCommand
+from app.core.schemas.rss import ListUrls, UrlFeed
+from app.core.utils import make_str_urls, make_hash
+from app.project.settings import PARSE_MODE_MARKDOWN
 
 
 logger = logging.getLogger(__name__)

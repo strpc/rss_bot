@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from src.core.queues.app import app
-from src.core.requests.database import Database
-from src.core.schemas.rss import RssFeed
-from src.core.schemas.update import FromDB
-from src.core.utils import make_hash
-from src.project.settings import (COUNT_TEXT_SYMBOL, COUNT_TITLE_SYMBOL, PARSE_MODE_MARKDOWN,
+from app.core.queues.app import app
+from app.core.requests.database import Database
+from app.core.schemas.rss import RssFeed
+from app.core.schemas.update import FromDB
+from app.core.utils import make_hash
+from app.project.settings import (COUNT_TEXT_SYMBOL, COUNT_TITLE_SYMBOL, PARSE_MODE_MARKDOWN,
                                   )
 
 

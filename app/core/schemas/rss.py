@@ -5,7 +5,7 @@ import re
 from urllib.parse import urlparse
 from typing import Optional, List
 
-from src.project.settings import (
+from app.project.settings import (
     COUNT_TITLE_SYMBOL, COUNT_TEXT_SYMBOL, COUNT_ARTICLE_UPDATE
 )
 

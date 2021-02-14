@@ -6,9 +6,9 @@ from typing import Union, Optional
 from django.http import JsonResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 
-from src.core.factory import Factory
-from src.core.handlers import CommandHandler
-from src.core.schemas.update import BaseMessage, BotCommand, TypeUpdate
+from app.core.factory import Factory
+from app.core.handlers import CommandHandler
+from app.core.schemas.update import BaseMessage, BotCommand, TypeUpdate
 
 
 logger = logging.getLogger(__name__)
@@ -40,4 +40,3 @@ def token_handler(request: HttpRequest) -> JsonResponse:
             print(message.text)
 
         return JsonResponse({'success': 'true'}, status=200)
-

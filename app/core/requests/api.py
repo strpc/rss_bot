@@ -5,7 +5,7 @@ import logging
 
 import httpx
 
-from src.project.settings import RSS_BOT_TOKEN, API_BASE_URL, ATTEMPT_REQUEST, DELAY_REQUEST
+from app.project.settings import RSS_BOT_TOKEN, API_BASE_URL, ATTEMPT_REQUEST, DELAY_REQUEST
 
 
 logger = logging.getLogger(__name__)

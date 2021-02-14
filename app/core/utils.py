@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List, Union
 import base64
 
-from src.core.schemas.rss import ListUrls
+from app.core.schemas.rss import ListUrls
 
 
 def from_timestamp(unixtime: Optional[int] = None) -> Optional[datetime]:

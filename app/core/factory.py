@@ -1,6 +1,6 @@
 from typing import Dict
 
-from src.core.schemas.update import Message, BotCommand
+from app.core.schemas.update import Message, BotCommand
 
 
 class ObjectFactory:
