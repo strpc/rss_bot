@@ -9,7 +9,7 @@ class User(models.Model):
     first_name = models.CharField('Имя', max_length=150, null=True, blank=True)
     last_name = models.CharField('Фамилия', max_length=150, null=True, blank=True)
     username = models.CharField('Username', max_length=150, null=True, blank=True)
-    register: datetime = models.DateTimeField('Зарегестрировался', auto_now_add=True)
+    register: datetime = models.DateTimeField('Зарегестрирован', auto_now_add=True)
     active = models.BooleanField('Активный', default=True)
 
     def __str__(self):
