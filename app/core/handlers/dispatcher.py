@@ -1,11 +1,13 @@
 import logging
 import traceback
-from typing import Dict, Union, Optional, Type
+from typing import Dict, Optional, Union
 
 from pydantic import ValidationError
 
-from app.core import schemas
 from app.core import models
+from app.core import schemas
+from app.core.schemas.input.base import TypeUpdate
+
 # from app.core.handlers.commands import CommandHandler
 # from app.core.schemas.update import BaseMessage, BotCommand, TypeUpdate
 # from app.core.factory import Factory
@@ -14,40 +16,65 @@ from app.core import models
 logger = logging.getLogger(__name__)
 
 
-def detect_update(
-        *,
-        body: Dict,
-        message: Type[schemas.Message],
-        callback: Type[schemas.Callback],
-) -> Optional[Union[schemas.Callback, schemas.Message]]:
+def identify_update(body: Dict) -> Optional[
+    Union[schemas.Callback, schemas.Message, schemas.EditedMessage]
+]:
     msg = None
     try:
-        msg = message.parse_obj(body)
+        msg = schemas.Message.parse_obj(body)
+        return msg
     except ValidationError:
-        msg = callback.parse_obj(body)
-    except Exception as error:
-        logger.error('%s, %s\n\n%s', error, body, traceback.format_exc())
+        pass
+
+    try:
+        msg = schemas.Callback.parse_obj(body)
+        return msg
+    except ValidationError:
+        pass
+
+    try:
+        msg = schemas.EditedMessage.parse_obj(body)
+    except ValidationError as error:
+        logger.warning('%s\nUnsupported type update. Body:\n%s', error, body)
     return msg
 
 
-def process(body: Dict):
-    update = detect_update(body=body, message=schemas.Message, callback=schemas.Callback)
+def verify_update(
+        update: Optional[
+            Union[schemas.Callback, schemas.Message, schemas.EditedMessage]
+        ]) -> bool:
+    if (
+            update is None
+            or update.type_update is TypeUpdate.edited_message
+            or update.type_update is TypeUpdate.message and update.message.text is None
+    ):
+        return False
+    return True
 
-    if update is None:
-        # пришло какое-то событие, которое мы не отслеживаем.
+
+def process(body: Dict):
+    update = identify_update(body=body)
+
+    if verify_update(update) is False:
+        logger.warning('Unsupported update. body=%s', update)
+        # пришло какое-то событие, которое мы не отслеживаем. todo: Сделать заглушку?
         return
 
-    if isinstance(update, schemas.Message):
-        result = models.Message(
-            chat_id=update.message.chat.id,
-            first_name=update.message.user.first_name,
-            last_name=update.message.user.last_name,
-            username=update.message.user.username,
-            text=update.message.text,
-        )
+    logger.debug(update.type_update)
+
+    if True:
+        pass
+        # result = models.Message(
+        #     chat_id=update.message.chat.id,
+        #     first_name=update.message.user.first_name,
+        #     last_name=update.message.user.last_name,
+        #     username=update.message.user.username,
+        #     text=update.message.text,
+        # )
         # todo: обработка сообщения
     else:
-        result = models.Callback()  # TODO IN PROGRESS: обработка коллбека
+        pass
+        # result = models.Callback()  # TODO IN PROGRESS: обработка коллбека
 
     # if (message.type_update == TypeUpdate.command.value and
     #         message.command_raw in CommandHandler.__dict__.keys()):
