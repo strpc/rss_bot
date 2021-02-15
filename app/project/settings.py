@@ -13,7 +13,7 @@ sys.path.insert(0, str(BASE_DIR.parent))
 SECRET_KEY = 'j7*x%xov%()xej75d69gww!suk59bwi((j8%7@m)s#j=$vajkd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', False)
+DEBUG = os.getenv('DEBUG', False) in ('True', 'true')
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -34,7 +34,6 @@ INSTALLED_APPS = [
 
     'bot',
 ]
-
 
 if DEBUG is True:
     INSTALLED_APPS.append('sslserver')
