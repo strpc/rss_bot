@@ -135,7 +135,8 @@ if all([RSS_BOT_TOKEN, RSS_BOT_BROKER]) is False:
     raise ValueError(f'Config values is not found. {RSS_BOT_TOKEN=}, {RSS_BOT_BROKER=}')
 
 API_BASE_URL = os.getenv('API_BASE_URL', "https://api.telegram.org/")
-INTERVAL_BEAT_TASK = int(os.getenv('INTERVAL_BEAT_TASK', 5))  # in minute
+INTERVAL_BEAT_MINUTE = os.getenv('INTERVAL_BEAT_MINUTE', '5')
+INTERVAL_BEAT_HOUR = os.getenv('INTERVAL_BEAT_HOUR', '*')
 
 ATTEMPT_REQUEST = int(os.getenv('ATTEMPT_REQUEST', 5))  # count of retry
 DELAY_REQUEST = int(os.getenv('DELAY_REQUEST', 3))  # in sec

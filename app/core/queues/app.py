@@ -1,7 +1,7 @@
 from celery import Celery, signals
 from celery.schedules import crontab
 
-from app.project.settings import RSS_BOT_BROKER, INTERVAL_BEAT_TASK
+from app.project.settings import RSS_BOT_BROKER, INTERVAL_BEAT_MINUTE, INTERVAL_BEAT_HOUR
 
 
 app = Celery('rss_bot', broker=RSS_BOT_BROKER, timezone='UTC')
@@ -13,7 +13,10 @@ app.conf.task_default_queue = 'rss_bot.download_articles_send_msg'
 app.conf.beat_schedule = {
     "download_articles_send_msg": {
         "task": "src.core.queues.tasks.run_chain",
-        "schedule": crontab(minute=f"*/{INTERVAL_BEAT_TASK}"),
+        "schedule": crontab(
+            hour=INTERVAL_BEAT_HOUR,
+            minute=INTERVAL_BEAT_MINUTE,
+        ),
         "options": {
             "queue": "rss_bot.download_articles_send_msg"
         }
