@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from app.core.schemas.input.base import User, TypeUpdate
+from app.core.schemas.input.base import TypeUpdate, User
 from app.core.schemas.input.message import MessageBody
 
 
