@@ -160,9 +160,8 @@ LOGGING = {
         }
     },
     'formatters': {
-        'main_formatter': {
-            'format': '%(levelname)s:%(name)s: %(message)s '
-                      '(%(asctime)s; %(filename)s:%(lineno)d)',
+        'main_formatter':  {
+            'format': '%(asctime)s %(levelname)s %(module)s: %(funcName)s: %(message)s',
             'datefmt': "%Y-%m-%d %H:%M:%S",
         },
     },
