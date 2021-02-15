@@ -1,35 +1,18 @@
 import logging
 import sqlite3
 import traceback
-from abc import ABC, ABCMeta, abstractmethod
-from datetime import datetime
-from typing import Dict, List, Union, Tuple, Optional, Iterable
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from app.project.settings import DB_PATH
-
+from app.core.db.base import Database
 
 logger = logging.getLogger(__name__)
 
 
-class Obj(dict):
-    @staticmethod
-    def from_db(cursor: Iterable, row: Iterable) -> 'Obj':
-        obj = Obj()
-        for column, value in zip(cursor, row):
-            obj[column] = value
-        return obj
-
-    def __getattr__(self, item):
-        if item not in self.keys():
-            raise AttributeError
-        return self[item]
-
-
-class Client(ABC):
+class SQLiteClient:
     """Базовый класс коннектора к базе, от которого наследуемся"""
 
-    @abstractmethod
-    def __init__(self):
+    def __init__(self, db_path: str):
+        self._db_path = db_path
         self._conn = None
         self._cursor = None
 
@@ -51,7 +34,7 @@ class Client(ABC):
     def connect(self):
         """Устанавливаем подключение к базе, делаем чтобы возвращался словарь"""
         if self._conn is None or self._cursor is None:
-            self._conn = sqlite3.connect(DB_PATH)
+            self._conn = sqlite3.connect(self._db_path)
             self._conn.row_factory = self.dict_factory
             self._cursor = self._conn.cursor()
 
@@ -63,81 +46,52 @@ class Client(ABC):
             self._conn = None
             self._cursor = None
 
-    @property
-    def conn(self):
-        """Получаем доступ ко всем методам"""
-        if self._conn is None or self._cursor is None:
-            self.connect()
-        yield self._conn
-        self.disconnect()
-
-    def fetchall(self, query: str, values: Tuple = None) -> Optional[List[Dict]]:
+    def fetchall(self, query: str, values: Optional[Tuple] = None) -> Optional[List[Dict]]:
         """Фетчолим запрос со значениями(или без)"""
         values = values or ()
         try:
-            with self:
-                self._cursor.execute(query, values)
-                return self._cursor.fetchall() or None
-
+            self._cursor.execute(query, values)
+            return self._cursor.fetchall() or None
         except Exception as error:
             logger.error(error)
             logger.error(traceback.format_exc())
-            logger.info(query)
+            logger.warning(query)
 
-    def execute(self, query: str, values: Tuple = None) -> bool:
+    def execute(self, query: str, values: Optional[Tuple] = None) -> bool:
         """Экзекьютим запрос со значениями(или без)"""
         values = values or ()
         try:
-            with self:
-                self._conn.execute(query, values)
-                return True
-
+            self._conn.execute(query, values)
+            return True
         except Exception as error:
             logger.error(error)
             logger.error(traceback.format_exc())
-            logger.info(query)
+            logger.warning(query)
             return False
 
     def executemany(self, query: str, values: List[Tuple]) -> bool:
         """Экзекьютим сразу несколько записей"""
         try:
-            with self:
-                self._conn.executemany(query, values)
-                return True
-
+            self._conn.executemany(query, values)
+            return True
         except Exception as error:
             logger.error(error)
             logger.error(traceback.format_exc())
-            logger.info(query)
+            logger.warning(query)
             return False
 
 
-class MetaSingleton(ABCMeta):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(MetaSingleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-class Database(Client, metaclass=MetaSingleton):
+class SQLiteDB(Database, SQLiteClient):
     """Запросы в базу"""
-
-    def __init__(self):
-        super().__init__()
-        self._conn = None
-        self._cursor = None
-
-    def register_user(self, obj):
+    def register_user(self, obj: Tuple[Any]):
         """Регистрация пользователя"""
         query = """
         INSERT INTO bot_users (chat_id, first_name, last_name, username, register, active)
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, datetime('now'))
         ON CONFLICT (chat_id) DO UPDATE SET active = true
         """
         self.execute(query, (
-            obj.chat_id, obj.first_name, obj.last_name, obj.username, datetime.utcnow(), True,
+            obj.chat_id, obj.first_name, obj.last_name, obj.username, True,
         )
                      )
 
