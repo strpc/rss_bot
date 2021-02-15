@@ -10,7 +10,7 @@ sys.path.insert(0, str(BASE_DIR.parent))
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'j7*x%xov%()xej75d69gww!suk59bwi((j8%7@m)s#j=$vajkd'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', False) in ('True', 'true')
