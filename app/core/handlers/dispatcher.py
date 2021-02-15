@@ -1,5 +1,5 @@
 import logging
-import traceback
+import re
 from typing import Dict, Optional, Union
 
 from pydantic import ValidationError
@@ -14,6 +14,7 @@ from app.core.schemas.input.base import TypeUpdate
 
 
 logger = logging.getLogger(__name__)
+command_compile = re.compile(r'(^|\s)\/\b[a-zA-Z_]+\b')  # ! возможно нужно брать -1 элемент
 
 
 def identify_update(body: Dict) -> Optional[
@@ -50,6 +51,12 @@ def verify_update(
     ):
         return False
     return True
+
+
+def detect_command(update: schemas.Message) -> Optional[str]:
+    text = update.message.text
+    command = re.search(command_compile, text)[0] if re.search(command_compile, text) else None
+    return command
 
 
 def process(body: Dict):
