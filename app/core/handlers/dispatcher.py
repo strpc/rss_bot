@@ -4,13 +4,12 @@ from typing import Dict, Optional, Union
 
 from pydantic import ValidationError
 
-from app.core import models
 from app.core import schemas
+from app.core.api import Client, TelegramClient
+from app.core.db import SQLiteDB
+from app.core.handlers.commands import CommandHandler
 from app.core.schemas.input.base import TypeUpdate
-
-# from app.core.handlers.commands import CommandHandler
-# from app.core.schemas.update import BaseMessage, BotCommand, TypeUpdate
-# from app.core.factory import Factory
+from app.project.settings import DB_PATH
 
 
 logger = logging.getLogger(__name__)
@@ -69,28 +68,22 @@ def process(body: Dict):
 
     logger.debug(update.type_update)
 
-    if True:
+    if update.type_update is TypeUpdate.callback:
+        # TODO: обрабатываем коллбек
         pass
-        # result = models.Message(
-        #     chat_id=update.message.chat.id,
-        #     first_name=update.message.user.first_name,
-        #     last_name=update.message.user.last_name,
-        #     username=update.message.user.username,
-        #     text=update.message.text,
-        # )
-        # todo: обработка сообщения
+
+    command = detect_command(update)
+    if command is not None and command in CommandHandler.__dict__.keys():
+        telegram = TelegramClient(Client())
+        with SQLiteDB(DB_PATH) as db:
+            handler = CommandHandler(database=db, telegram=telegram)
+            getattr(handler, command)(update)
+            return
     else:
         pass
-        # result = models.Callback()  # TODO IN PROGRESS: обработка коллбека
+        # !пришло обычное сообщение. нужно сделать заглушку.
 
-    # if (message.type_update == TypeUpdate.command.value and
-    #         message.command_raw in CommandHandler.__dict__.keys()):
-    #     getattr(CommandHandler, message.command_raw)(message)
-    #
-    # elif (
-    #         message.type_update == TypeUpdate.message.value
-    #         or message.type_update == TypeUpdate.command.value
-    # ):
-    #     pass  # пришло обычное сообщение. нужно сделать заглушку.
-    #     print('обычное сообщение')
-    #     print(message.text)
+    # todo:
+    # !детектим команду
+    # !если команда есть такая, то пускаем в оборот
+    # !если команды такой нет, то идет пользователь нахер
