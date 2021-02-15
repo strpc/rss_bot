@@ -1,6 +1,13 @@
+include deploy/.env
+
+.SILENT:
+.DEFAULT_GOAL := run
+
+env_file = deploy/.env
 PYTHON=.venv/bin/python3
 MANAGEPY=app/manage.py
-.DEFAULT_GOAL := run
+
+export $(shell sed 's/=.*//' $(env_file))
 
 run:
 	$(PYTHON) $(MANAGEPY) runsslserver 0.0.0.0:8000 --certificate cert.pem --key private.key
