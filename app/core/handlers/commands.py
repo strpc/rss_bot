@@ -1,12 +1,14 @@
-from datetime import datetime
 import logging
 import random
+from datetime import datetime
 
 from pydantic import ValidationError
 
-from app.core.schemas.update import BotCommand
+from app.core.api import Telegram
+from app.core.db import Database
 from app.core.schemas.rss import ListUrls, UrlFeed
-from app.core.utils import make_str_urls, make_hash
+from app.core.schemas.update import BotCommand
+from app.core.utils import make_hash, make_str_urls
 from app.project.settings import PARSE_MODE_MARKDOWN
 
 
@@ -14,6 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class CommandHandler:
+    def __init__(self, *, database: Database, telegram: Telegram):
+        self._db = database
+        self._telegram = telegram
+
     @staticmethod
     def start(message: BotCommand):
         message.init_user()
