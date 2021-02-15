@@ -1,7 +1,13 @@
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+
+
+class TypeUpdate(str, Enum):
+    message = 'message'
+    callback = 'callback'
+    edited_message = 'edited_message'
 
 
 class TypeChat(str, Enum):
@@ -38,32 +44,9 @@ class User(BaseModel):
     language_code: Optional[str] = None
 
 
-class MessageEntity(BaseModel):
-    length: int
-    offset: int
-    type: TypeEntity
-    url: Optional[str] = None
-    user: Optional[str] = None
-    language: Optional[str] = None
-
-
 class Chat(BaseModel):
     id: int
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     type: TypeChat
     username: Optional[str] = None
-
-
-class MessageBody(BaseModel):
-    chat: Chat
-    date: int
-    entities: Optional[List[MessageEntity]] = None
-    user: User = Field(..., alias='from')
-    message_id: int
-    text: Optional[str] = None
-
-
-class Message(BaseModel):
-    message: MessageBody
-    update_id: int

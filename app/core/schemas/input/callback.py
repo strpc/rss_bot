@@ -2,7 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from app.core.schemas.message import MessageBody, User
+from app.core.schemas.input.base import User, TypeUpdate
+from app.core.schemas.input.message import MessageBody
 
 
 class Callback(BaseModel):
@@ -11,3 +12,4 @@ class Callback(BaseModel):
     message: Optional[MessageBody] = None
     inline_message_id: Optional[str] = None
     data: Optional[str] = None
+    type_update: TypeUpdate = TypeUpdate.callback
