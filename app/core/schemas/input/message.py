@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from app.core.schemas.input.base import TypeEntity, User, Chat, TypeUpdate
+from app.core.schemas.input.base import Chat, TypeEntity, TypeUpdate, User
 
 
 class MessageEntity(BaseModel):
