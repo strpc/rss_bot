@@ -1,9 +1,10 @@
 import logging
 import sqlite3
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from app.core.db.base import IDatabase
+
 
 logger = logging.getLogger(__name__)
 
@@ -82,25 +83,51 @@ class SQLiteClient:
 
 
 class SQLiteDB(IDatabase, SQLiteClient):
+    """Класс для работы с SQLite"""
+
+    def registered_user(self, chat_id: int) -> bool:
+        """
+        Инициализация пользователя: зареган ли он у нас.
+        Args:
+            chat_id(int): chat_id пользователя
+
+        Returns:
+            bool: True, если да, False - если нет.
+        """
+        query = """SELECT 1 FROM bot_users WHERE chat_id = ? AND active = ?"""
+        return bool(self.fetchall(query, (chat_id, True)))
+
     """Запросы в базу"""
-    def register_user(self, obj: Tuple[Any]):
-        """Регистрация пользователя"""
+
+    def register_user(self, chat_id: int, first_name: str, last_name: str, username: str):
+        """
+        Регистрация пользователя. Если такой уже есть, но выключен - активация.
+        Args:
+            chat_id(int): chat_id с юзером.
+            first_name(str): Имя пользователя.
+            last_name(str): Фамилия пользователя.
+            username(str): Никнейм пользователя
+        """
         query = """
         INSERT INTO bot_users (chat_id, first_name, last_name, username, register, active)
-        VALUES (?, ?, ?, ?, ?, datetime('now'))
+        VALUES (?, ?, ?, ?, true, datetime('now'))
         ON CONFLICT (chat_id) DO UPDATE SET active = true
         """
-        self.execute(query, (
-            obj.chat_id, obj.first_name, obj.last_name, obj.username, True,
-        )
-                     )
+        self.execute(query, (chat_id, first_name, last_name, username))
 
-    def init_user(self, chat_id: int) -> bool:
-        """Инициализация пользователя(зареган ли он у нас уже)"""
-        query = """SELECT 1 FROM bot_users WHERE chat_id = ? AND active = ?"""
-        return bool(
-            self.fetchall(query, (chat_id, True))
-        )
+    def get_service_message(self, title: str) -> Dict:
+        """
+        Получение сервисных сообщений из базы.
+        Args:
+            title(str): Заголовок, для которого нужно получить сообщение.
+
+        Returns:
+            dict: Словарь с найденным сообщением.
+        """  # TODO: дополнить примером
+        query = ""
+        # self.fetchall('')
+        print(self.fetchall, title, query)
+        return {"message": "Добро пожаловаться"}
 
     def disable_user(self, chat_id: int):
         """Пользователь отключился от бота"""
@@ -109,18 +136,22 @@ class SQLiteDB(IDatabase, SQLiteClient):
         SET active = ?
         WHERE chat_id = ?
         """
-        self.execute(query, (
-            False, chat_id
-        ))
+        self.execute(query, (False, chat_id))
 
-    def add_feed(self, values: List[Tuple]):
-        """Добавляем новый RSS"""
+    def add_feed(self, *, url: str, chat_id: int, hash_url: str):
+        """
+        Добавляем новый RSS пользователя.
+        Args:
+            url(str): url фида.
+            chat_id: chat_id с юзером.
+            hash_url(str): хеш url+chat_id
+        """
         query = """
-        INSERT INTO bot_users_rss (url, added, active, chat_id_id, chatid_url_hash)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO bot_users_rss (url, chat_id_id, chatid_url_hash, added, active)
+        VALUES (?, ?, ?, datetime('now'), true)
         ON CONFLICT (chatid_url_hash) DO UPDATE SET active = true
         """
-        self.executemany(query, values)
+        self.execute(query, (url, chat_id, hash_url))
 
     def delete_feed(self, url: str, chat_id: int) -> bool:
         """Удаляем(отключаем) RSS пользователя"""
@@ -183,7 +214,7 @@ class SQLiteDB(IDatabase, SQLiteClient):
         query = """
         SELECT url_article, title, text, chat_id_id
         FROM bot_article
-        JOIN bot_users ON bot_article.chat_id_id = bot_users.chat_id 
+        JOIN bot_users ON bot_article.chat_id_id = bot_users.chat_id
         AND bot_users.active = True
         WHERE bot_article.sended = False
         """
