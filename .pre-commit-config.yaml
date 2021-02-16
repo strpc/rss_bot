@@ -17,7 +17,7 @@ repos:
       - id: flake8
         exclude: ^butler_bot/|^billing/|^common/|^migrations/
         args: [
-            "--max-line-length=120",
+            "--max-line-length=100",
             "--exclude=*migrations*",
         ]
 
@@ -27,7 +27,7 @@ repos:
       - id: black
         language_version: python3
         args: [
-                "--line-length=119",
+                "--line-length=100",
 #                "--check",
 #                "--diff",
         ]
