@@ -4,7 +4,7 @@ from typing import Optional
 
 import httpx
 
-from app.core.clients.requests_ import IClient
+from app.core.clients import IClient
 
 logger = logging.getLogger(__name__)
 
