@@ -6,22 +6,31 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.7.0
-    hooks:
-      - id: isort
+#  - repo: https://github.com/pre-commit/mirrors-isort
+#    rev: v5.7.0
+#    hooks:
+#      - id: isort
 
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.4
     hooks:
       - id: flake8
+        exclude: ^butler_bot/|^billing/|^common/|^migrations/
+        args: [
+            "--max-line-length=120",
+            "--exclude=*migrations*",
+        ]
 
   - repo: https://github.com/psf/black
     rev: 20.8b1
     hooks:
       - id: black
         language_version: python3
-        args: [--check, --diff]
+        args: [
+                "--line-length=119",
+#                "--check",
+#                "--diff",
+        ]
 
 #  - repo: https://github.com/PyCQA/pylint
 #    rev: pylint-2.6.0
