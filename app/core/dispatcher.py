@@ -5,7 +5,7 @@ from typing import Dict, Optional, Union
 from pydantic import ValidationError
 
 from app.core import schemas
-from app.core.api import Client, TelegramClient
+from app.core.clients.api import Client, TelegramClient
 from app.core.db import SQLiteDB
 from app.core.handlers.commands import CommandHandler
 from app.core.schemas.input.base import TypeUpdate
