@@ -2,6 +2,7 @@ import os
 import sys
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 sys.path.insert(0, str(BASE_DIR.parent))
@@ -152,7 +153,7 @@ LOGGING = {
     },
     "formatters": {
         "main_formatter": {
-            "format": "%(asctime)s | %(levelname)s \t| %(module)s: %(funcName)s: %(message)s",
+            "format": "%(asctime)s |\t%(levelname)s\t| %(module)s: %(funcName)s: %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
