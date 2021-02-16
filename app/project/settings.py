@@ -134,7 +134,7 @@ RSS_BOT_BROKER = os.getenv('RSS_BOT_BROKER')
 if all([RSS_BOT_TOKEN, RSS_BOT_BROKER]) is False:
     raise ValueError(f'Config values is not found. {RSS_BOT_TOKEN=}, {RSS_BOT_BROKER=}')
 
-API_BASE_URL = os.getenv('API_BASE_URL', "https://api.telegram.org/")
+BASE_URL_TELEGRAM_API = os.getenv('BASE_URL_TELEGRAM_API', "https://api.telegram.org/")
 INTERVAL_BEAT_MINUTE = os.getenv('INTERVAL_BEAT_MINUTE', '5')
 INTERVAL_BEAT_HOUR = os.getenv('INTERVAL_BEAT_HOUR', '*')
 
