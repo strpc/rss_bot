@@ -11,8 +11,8 @@ def from_timestamp(unixtime: Optional[int] = None) -> Optional[datetime]:
     return datetime.fromtimestamp(unixtime)
 
 
-def make_hash(*args) -> str:
-    hash_ = ''
+def get_hash(*args) -> str:
+    hash_ = ""
     for i in args:
         if not isinstance(i, (str, int)):
             continue
@@ -21,4 +21,4 @@ def make_hash(*args) -> str:
 
 
 def make_str_urls(urls: Union[List, ListUrls]) -> str:
-    return '\n'.join(urls)
+    return "\n".join(urls)
