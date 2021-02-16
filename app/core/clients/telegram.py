@@ -38,8 +38,8 @@ class Telegram(ITelegram):
             "chat_id": chat_id,
             "text": text
         }
-        if parse_mode:
+        if parse_mode is not None:
             body['parse_mode'] = parse_mode
-        if disable_web_page_preview:
+        if disable_web_page_preview is True:
             body['disable_web_page_preview'] = True
         return self._client.post(method=method, body=body)
