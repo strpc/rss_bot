@@ -15,6 +15,7 @@ class ITelegram(ABC):
     @abstractmethod
     def send_message(
         self,
+        *,
         chat_id: int,
         text: str,
         parse_mode: Optional[str] = None,
@@ -25,14 +26,16 @@ class ITelegram(ABC):
 
 class Telegram(ITelegram):
     def __init__(
-        self, token: str, client: IRequests, base_url_api: Optional[str] = None
+        self,
+        *,
+        token: str,
+        client: IRequests,
+        base_url_api: Optional[str] = None,
     ):
         self._token = token
         self._client = client
         if base_url_api is not None:
-            self._base_url = (
-                base_url_api[:-1] if base_url_api.endswith("/") else base_url_api
-            )
+            self._base_url = base_url_api[:-1] if base_url_api.endswith("/") else base_url_api
         else:
             self._base_url = BASE_URL[:-1] if BASE_URL.endswith("/") else BASE_URL
 
@@ -46,6 +49,7 @@ class Telegram(ITelegram):
 
     def send_message(
         self,
+        *,
         chat_id: int,
         text: str,
         parse_mode: Optional[str] = None,
