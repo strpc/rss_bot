@@ -3,7 +3,7 @@ import sqlite3
 import traceback
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from app.core.db.base import Database
+from app.core.db.base import IDatabase
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ class SQLiteClient:
             return False
 
 
-class SQLiteDB(Database, SQLiteClient):
+class SQLiteDB(IDatabase, SQLiteClient):
     """Запросы в базу"""
     def register_user(self, obj: Tuple[Any]):
         """Регистрация пользователя"""

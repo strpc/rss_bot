@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 
-class Database(ABC):
+class IDatabase(ABC):
     @abstractmethod
     def register_user(self, obj: Tuple[Any]): ...
 

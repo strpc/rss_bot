@@ -5,7 +5,7 @@ from datetime import datetime
 from pydantic import ValidationError
 
 from app.core.clients import ITelegram
-from app.core.db import Database
+from app.core.db import IDatabase
 from app.core.schemas.rss import ListUrls, UrlFeed
 from app.core.schemas.update import BotCommand
 from app.core.utils import make_hash, make_str_urls
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class CommandHandler:
-    def __init__(self, *, database: Database, telegram: ITelegram):
+    def __init__(self, *, database: IDatabase, telegram: ITelegram):
         self._db = database
         self._telegram = telegram
 
