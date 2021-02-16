@@ -9,13 +9,11 @@ from app.core.clients import Requests, Telegram
 from app.core.db import SQLiteDB
 from app.core.handlers.commands import CommandHandler
 from app.core.schemas.input.base import TypeUpdate
-from app.project.settings import DB_PATH
+from app.project.settings import DB_PATH, RSS_BOT_TOKEN
 
 
 logger = logging.getLogger(__name__)
-command_compile = re.compile(
-    r"(^|\s)\/\b[a-zA-Z_]+\b"
-)  # ! возможно нужно брать -1 элемент
+command_compile = re.compile(r"(^|\s)\/\b[a-zA-Z_]+\b")  # ! возможно нужно брать -1 элемент
 
 
 def identify_update(
@@ -56,11 +54,8 @@ def verify_update(
 
 def detect_command(update: schemas.Message) -> Optional[str]:
     text = update.message.text
-    command = (
-        re.search(command_compile, text)[0]
-        if re.search(command_compile, text)
-        else None
-    )
+    command = re.search(command_compile, text)[0][1:] if re.search(command_compile, text) else None
+    logger.info("Detected command=%s", command)
     return command
 
 
@@ -72,7 +67,7 @@ def process(body: Dict):
         # пришло какое-то событие, которое мы не отслеживаем. todo: Сделать заглушку?
         return
 
-    logger.debug(update.type_update)
+    logger.debug("TypeUpdate=%s", update.type_update)
 
     if update.type_update is TypeUpdate.callback:
         # TODO: обрабатываем коллбек
@@ -80,8 +75,9 @@ def process(body: Dict):
 
     command = detect_command(update)
     if command is not None and command in CommandHandler.__dict__.keys():
-        telegram = Telegram(Requests())
+        telegram = Telegram(token=RSS_BOT_TOKEN, client=Requests())
         with SQLiteDB(DB_PATH) as db:
+            logger.debug("Inside to command handler...")
             handler = CommandHandler(database=db, telegram=telegram)
             getattr(handler, command)(update)
             return
