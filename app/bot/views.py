@@ -5,7 +5,7 @@ import traceback
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from app.core.handlers import dispatcher
+from app.core import dispatcher
 
 logger = logging.getLogger(__name__)
 
