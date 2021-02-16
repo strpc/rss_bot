@@ -48,6 +48,9 @@ down:
 isort:
 	git status -s --untracked-files=no | awk '{ print $2}' | xargs isort --lines-after-imports=2
 
+black:
+	black --check --diff app
+
 clean:
 	@rm -rf `find . -name __pycache__`
 	@rm -rf `find . -name .hash`
