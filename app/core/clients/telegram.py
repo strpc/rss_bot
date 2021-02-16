@@ -9,7 +9,7 @@ from app.core.clients.requests_ import IClient
 logger = logging.getLogger(__name__)
 
 
-class Telegram(ABC):
+class ITelegram(ABC):
     @abstractmethod
     def send_message(
             self,
@@ -20,7 +20,7 @@ class Telegram(ABC):
     ): ...
 
 
-class TelegramClient(Telegram):
+class Telegram(ITelegram):
 
     def __init__(self, client: IClient):
         self._client = client

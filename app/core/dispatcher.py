@@ -5,7 +5,7 @@ from typing import Dict, Optional, Union
 from pydantic import ValidationError
 
 from app.core import schemas
-from app.core.clients.telegram import Client, TelegramClient
+from app.core.clients import Client, Telegram
 from app.core.db import SQLiteDB
 from app.core.handlers.commands import CommandHandler
 from app.core.schemas.input.base import TypeUpdate
@@ -74,7 +74,7 @@ def process(body: Dict):
 
     command = detect_command(update)
     if command is not None and command in CommandHandler.__dict__.keys():
-        telegram = TelegramClient(Client())
+        telegram = Telegram(Client())
         with SQLiteDB(DB_PATH) as db:
             handler = CommandHandler(database=db, telegram=telegram)
             getattr(handler, command)(update)
