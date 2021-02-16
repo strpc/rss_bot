@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pydantic import ValidationError
 
-from app.core.clients.api import Telegram
+from app.core.clients.telegram import Telegram
 from app.core.db import Database
 from app.core.schemas.rss import ListUrls, UrlFeed
 from app.core.schemas.update import BotCommand
