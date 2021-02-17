@@ -58,6 +58,15 @@ class SQLiteClient:
             logger.error(traceback.format_exc())
             logger.warning(query)
 
+    def fetchone(self, query: str, values: Optional[Tuple] = None):
+        try:
+            self._cursor.execute(query, values)
+            return self._cursor.fetchone() or None
+        except Exception as error:
+            logger.error(error)
+            logger.error(traceback.format_exc())
+            logger.warning(query)
+
     def execute(self, query: str, values: Optional[Tuple] = None) -> bool:
         """Экзекьютим запрос со значениями(или без)"""
         values = values or ()
