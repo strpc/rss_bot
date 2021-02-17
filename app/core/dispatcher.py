@@ -74,8 +74,12 @@ def process(body: Dict):
         pass
 
     command = detect_command(update)
-    if command is not None and command in CommandHandler.__dict__.keys():
-        telegram = Telegram(token=RSS_BOT_TOKEN, client=Requests())
+    telegram = Telegram(token=RSS_BOT_TOKEN, client=Requests())
+    if (
+        command is not None
+        and not command.startswith("_")
+        and command in CommandHandler.__dict__.keys()
+    ):
         with SQLiteDB(DB_PATH) as db:
             logger.debug("Inside to command handler...")
             handler = CommandHandler(database=db, telegram=telegram)
