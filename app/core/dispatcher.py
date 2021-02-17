@@ -13,7 +13,7 @@ from app.project.settings import DB_PATH, RSS_BOT_TOKEN
 
 
 logger = logging.getLogger(__name__)
-command_compile = re.compile(r"(^|\s)\/\b[a-zA-Z_]+\b")  # ! возможно нужно брать -1 элемент
+command_compile = re.compile(r"(^|\s)\/\b[^_][a-zA-Z_]+\b")
 
 
 def identify_update(
