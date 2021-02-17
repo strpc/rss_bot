@@ -12,7 +12,7 @@ class IDatabase(ABC):
         ...
 
     @abstractmethod
-    def get_service_message(self, title: str) -> Dict:
+    def get_service_message(self, title: str) -> Optional[Dict]:
         ...
 
     @abstractmethod

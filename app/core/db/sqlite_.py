@@ -124,19 +124,19 @@ class SQLiteDB(IDatabase, SQLiteClient):
         """
         self.execute(query, (chat_id, first_name, last_name, username))
 
-    def get_service_message(self, title: str) -> Dict:
+    def get_service_message(self, title: str) -> Optional[Dict]:
         """
         Получение сервисных сообщений из базы.
         Args:
             title(str): Заголовок, для которого нужно получить сообщение.
 
         Returns:
-            dict: Словарь с найденным сообщением.
-        """  # TODO: дополнить примером
-        query = ""
-        # self.fetchall('')
-        print(self.fetchall, title, query)
-        return {"message": "Добро пожаловаться"}
+            dict: Словарь с найденным сообщением, если он есть в базе:
+            {'text': 'hello_world'}
+            None: если в базе сообщения нет.
+        """
+        query = "SELECT text FROM bot_service_message WHERE title = ?"
+        return self.fetchone(query, (title,))
 
     def disable_user(self, chat_id: int):
         """Пользователь отключился от бота"""
