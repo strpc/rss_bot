@@ -99,6 +99,9 @@ class ServiceMessage(models.Model):
     title = models.CharField("Заголовок сообщения", max_length=250, blank=False, null=False)
     text = models.CharField("Текст сообщения", max_length=5000, blank=False, null=False)
 
+    def __str__(self):
+        return f"{self.title}"
+
     class Meta:
         db_table = "bot_service_message"
         verbose_name = "Сервисное сообщение"
