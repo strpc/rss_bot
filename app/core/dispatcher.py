@@ -62,9 +62,15 @@ def detect_command(update: schemas.Message) -> Optional[str]:
 def process(body: Dict):
     update = identify_update(body=body)
 
+    telegram = Telegram(token=RSS_BOT_TOKEN, client=Requests())
+
     if verify_update(update) is False:
         logger.warning("Unsupported update. body=%s", update)
-        # пришло какое-то событие, которое мы не отслеживаем. todo: Сделать заглушку?
+        if update.type_update is not TypeUpdate.message:
+            return
+        with SQLiteDB(DB_PATH) as db:
+            text = db.get_service_message("unsupported_update")
+            telegram.send_message(chat_id=update.message.chat.id, text=text["text"])
         return
 
     logger.debug("TypeUpdate=%s", update.type_update)
@@ -74,18 +80,13 @@ def process(body: Dict):
         pass
 
     command = detect_command(update)
-    telegram = Telegram(token=RSS_BOT_TOKEN, client=Requests())
     if command is not None and command in CommandHandler.__dict__.keys():
         with SQLiteDB(DB_PATH) as db:
             logger.debug("Inside to command handler...")
             handler = CommandHandler(database=db, telegram=telegram)
             getattr(handler, command)(update)
             return
-    else:
-        pass
-        # !пришло обычное сообщение. нужно сделать заглушку.
-
-    # todo:
-    # !детектим команду
-    # !если команда есть такая, то пускаем в оборот
-    # !если команды такой нет, то идет пользователь нахер
+    elif update.type_update is TypeUpdate.message:
+        with SQLiteDB(DB_PATH) as db:
+            text = db.get_service_message("show_help")
+            telegram.send_message(chat_id=update.message.chat.id, text=text["text"])
