@@ -37,7 +37,7 @@ class CommandHandler:
             update.message.chat.id,
         )
         message = self._db.get_service_message("hello_user")
-        self._telegram.send_message(chat_id=update.message.chat.id, text=message["message"])
+        self._telegram.send_message(chat_id=update.message.chat.id, text=message["text"])
 
     def add_feed(self, update: schemas.Message):
         # todo: добавить ограничение на кол-во записей зараз. из конфига
@@ -87,7 +87,8 @@ class CommandHandler:
                 return
             if message.delete_feed(url.url_feed, message.chat_id):
                 message.send_message(
-                    f"URL {url.url_feed} has been removed from your feed", disable_web_page_preview=True
+                    f"URL {url.url_feed} has been removed from your feed",
+                    disable_web_page_preview=True,
                 )
             else:
                 message.send_message("такого урла не найдено")
