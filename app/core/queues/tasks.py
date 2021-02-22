@@ -1,7 +1,7 @@
 from app.core.clients import Requests, Telegram
 from app.core.db import SQLiteDB
 from app.core.queues.app import app
-from app.core.services.feed import Article, Feed
+from app.core.services.feed import Feed
 from app.core.utils import get_hash
 from app.project.settings import (
     COUNT_ARTICLE_UPDATE,
@@ -34,12 +34,8 @@ def load_new_articles(*args, **kwargs):
             feed = Feed(url=url_rss)
             values_for_execute = []
 
-            for article_raw in feed.parse(limit=COUNT_ARTICLE_UPDATE):
-                article = Article(
-                    url=article_raw.get("link"),
-                    text=article_raw.get("summary"),
-                    title=article_raw.get("title"),
-                )
+            for article in feed.parse(limit=COUNT_ARTICLE_UPDATE):
+
                 values_for_execute.append(
                     (
                         article.url,

@@ -1,6 +1,5 @@
 import re
 from collections.abc import Iterator
-from typing import Dict
 from urllib.parse import urlparse
 
 import feedparser
@@ -39,7 +38,12 @@ class Feed:
         self.url = url
         self.feed = None
 
-    def parse(self, limit: int) -> Iterator[Dict]:
+    def parse(self, limit: int) -> Iterator[Article]:
         self.feed = feedparser.parse(self.url).get("entries")
         for item in self.feed[:limit]:
-            yield item
+            article = Article(
+                url=item.get("link"),
+                text=item.get("summary"),
+                title=item.get("title"),
+            )
+            yield article
