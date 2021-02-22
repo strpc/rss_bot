@@ -1,8 +1,9 @@
 import base64
 from datetime import datetime
-from typing import List, Optional, Union
+from typing import Iterable, Optional
+from urllib.parse import urlparse
 
-from app.core.schemas.rss import ListUrls
+import feedparser
 
 
 def from_timestamp(unixtime: Optional[int] = None) -> Optional[datetime]:
@@ -20,5 +21,14 @@ def get_hash(*args) -> str:
     return base64.b64encode(hash_.encode()).decode()
 
 
-def make_str_urls(urls: Union[List, ListUrls]) -> str:
+def make_str_urls(urls: Iterable[str]) -> str:
     return "\n".join(urls)
+
+
+def validate_feed(url: str) -> bool:
+    return bool(feedparser.parse(url).get("entries"))
+
+
+def validate_url(url: str) -> bool:
+    parsed = urlparse(url)
+    return all([parsed.scheme, parsed.netloc])
