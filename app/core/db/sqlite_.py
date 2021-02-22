@@ -200,7 +200,7 @@ class SQLiteDB(IDatabase, SQLiteClient):
     def get_active_feeds(self) -> Optional[List[Dict]]:
         """Получаем активные фиды активных юзеров"""
         query = """
-        SELECT bot_users_rss.url, bot_users_rss.chat_id_id, bot_users_rss.chatid_url_hash
+        SELECT bot_users_rss.url, bot_users_rss.chat_id_id as chat_id, bot_users_rss.chatid_url_hash
         FROM bot_users_rss
         JOIN bot_users ON bot_users_rss.chat_id_id = bot_users.chat_id
         AND bot_users.active = True
@@ -221,7 +221,7 @@ class SQLiteDB(IDatabase, SQLiteClient):
     def get_ready_articles(self) -> Optional[List[Dict]]:
         """Получаем готовые к отправке статьи активных юзеров"""
         query = """
-        SELECT url_article, title, text, chat_id_id
+        SELECT url_article, title, text, chat_id_id as chat_id
         FROM bot_article
         JOIN bot_users ON bot_article.chat_id_id = bot_users.chat_id
         AND bot_users.active = True
