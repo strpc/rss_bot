@@ -5,6 +5,7 @@ celery==4.4.6
 certifi==2020.6.20
 chardet==3.0.4
 Django==3.1.1
+easy-notifyer==0.1.2
 feedparser==6.0.0
 future==0.18.2
 h11==0.9.0
