@@ -214,7 +214,7 @@ class SQLiteDB(IDatabase, SQLiteClient):
         INSERT OR IGNORE INTO bot_article (
         url_article, title, text, added, sended, chatid_url_article_hash, rss_url_id, chat_id_id
         )
-        VALUES (?, ?, ?, datetime('now'), ?, ?, ?, ?)
+        VALUES (?, ?, ?, datetime('now'), False, ?, ?, ?)
         """
         self.executemany(query, values)
 

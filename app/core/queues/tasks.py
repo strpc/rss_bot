@@ -41,7 +41,6 @@ def load_new_articles(*args, **kwargs):
                         article.url,
                         article.title,
                         article.text,
-                        False,
                         get_hash(article.url, chat_id),
                         rss_hash,
                         chat_id,
