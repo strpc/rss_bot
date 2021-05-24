@@ -5,11 +5,16 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
+        exclude: README.md
 
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.7.0
     hooks:
       - id: isort
+        args: [
+                "-m", "VERTICAL_HANGING_INDENT",
+                "--trailing-comma",
+      ]
 
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.4
@@ -17,8 +22,8 @@ repos:
       - id: flake8
         exclude: ^butler_bot/|^billing/|^common/|^migrations/
         args: [
-            "--max-line-length=100",
-            "--exclude=*migrations*",
+                "--max-line-length=100",
+                "--exclude=*migrations*",
         ]
 
   - repo: https://github.com/psf/black
@@ -28,8 +33,6 @@ repos:
         language_version: python3
         args: [
                 "--line-length=100",
-#                "--check",
-#                "--diff",
         ]
 
 #  - repo: https://github.com/PyCQA/pylint
