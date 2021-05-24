@@ -4,6 +4,7 @@ billiard==3.6.3.0
 celery==4.4.6
 certifi==2020.6.20
 chardet==3.0.4
+dj-database-url==0.5.0
 Django==3.1.1
 easy-notifyer==0.1.2
 feedparser==6.0.0
