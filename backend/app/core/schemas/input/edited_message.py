@@ -7,7 +7,7 @@ from app.core.schemas.input.base import Chat, TypeUpdate, User
 
 class EditedMessageBody(BaseModel):
     message_id: int
-    user: User = Field(..., alias='from')
+    user: User = Field(..., alias="from")
     chat: Chat
     date: datetime
     edit_date: datetime

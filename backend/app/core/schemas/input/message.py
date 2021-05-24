@@ -19,7 +19,7 @@ class MessageBody(BaseModel):
     chat: Chat
     date: datetime
     entities: Optional[List[MessageEntity]] = None
-    user: User = Field(..., alias='from')
+    user: User = Field(..., alias="from")
     message_id: int
     text: Optional[str] = None
 

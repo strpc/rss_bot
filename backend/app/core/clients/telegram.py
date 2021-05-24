@@ -2,10 +2,9 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Optional
 
-from httpx import Response
-
 from app.core.clients import IRequests
 from app.project.settings import BASE_URL_TELEGRAM_API as BASE_URL
+from httpx import Response
 
 
 logger = logging.getLogger(__name__)
@@ -63,3 +62,21 @@ class Telegram(ITelegram):
         if disable_web_page_preview is True:
             body["disable_web_page_preview"] = True
         return self._send_post_request(method=method, body=body)
+
+
+# if __name__ == "__main__":
+#     title = "*Мониторинг NetApp Volumes через HTTP*\n\n"
+#     text = (
+#         "Хабы: Блог компании ДомКлик, *nix, API Всем привет. В продолжение прош_лой стат"
+#         "ьи, связанной с костылями и SSH для мониторинга места и метрик производительности досту"
+#         "пных нам томов на NetApp, хочу поделиться и описать более прав"
+#         "ильный способ мониторин...\n\nhttps://habr.com/ru/post/542122/".replace(
+#             "_", "\\_"
+#         )
+#         .replace("*", "\\*")
+#         .replace("[", "\\[")
+#         .replace("`", "\\`")
+#         .replace(".", "\\.")
+#     )
+#     telegram = Telegram(token=RSS_BOT_TOKEN, client=Requests())
+#     telegram.send_message(chat_id=126471094, text=title + text, parse_mode="MarkdownV2")

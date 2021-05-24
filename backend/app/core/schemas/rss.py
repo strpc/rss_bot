@@ -1,8 +1,7 @@
 from typing import List
 
-from pydantic import BaseModel, Field, HttpUrl, ValidationError, validator
-
 from app.core.utils import validate_feed, validate_url
+from pydantic import BaseModel, Field, HttpUrl, ValidationError, validator
 
 
 class Feed(BaseModel):

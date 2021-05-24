@@ -5,9 +5,9 @@ from pydantic import BaseModel
 
 
 class ParseMode(str, Enum):
-    MarkdownV2 = 'MarkdownV2'
-    HTML = 'HTML'
-    Markdown = 'Markdown'
+    MarkdownV2 = "MarkdownV2"
+    HTML = "HTML"
+    Markdown = "Markdown"
 
 
 class InlineKeyboardButton(BaseModel):

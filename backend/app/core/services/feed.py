@@ -3,7 +3,6 @@ from collections.abc import Iterator
 from urllib.parse import urlparse
 
 import feedparser
-
 from app.project.settings import COUNT_TEXT_SYMBOL, COUNT_TITLE_SYMBOL
 
 

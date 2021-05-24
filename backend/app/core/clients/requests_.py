@@ -4,7 +4,6 @@ from time import sleep
 from typing import Dict
 
 import httpx
-
 from app.project.settings import ATTEMPT_REQUEST, DELAY_REQUEST
 
 
@@ -17,9 +16,7 @@ class IRequests(ABC):
         ...
 
     @abstractmethod
-    def post(
-        self, url: str, params=None, body=None, data=None, attempt=ATTEMPT_REQUEST
-    ):
+    def post(self, url: str, params=None, body=None, data=None, attempt=ATTEMPT_REQUEST):
         ...
 
 
@@ -55,8 +52,7 @@ class Requests(IRequests):
 
         if (  # !ВОПРОСЫ
             response.status_code != 200
-            and response.json().get("description")
-            != "Forbidden: bot was blocked by the user"
+            and response.json().get("description") != "Forbidden: bot was blocked by the user"
             and attempt
         ):
             sleep(DELAY_REQUEST)
