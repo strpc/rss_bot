@@ -11,7 +11,7 @@ sys.path.insert(0, str(BASE_DIR.parent))
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "hello_world")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", False) in ("True", "true")
@@ -69,11 +69,10 @@ WSGI_APPLICATION = "project.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DB_PATH = BASE_DIR / "db.sqlite3"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": DB_PATH,
+        "NAME": os.getenv("DB_PATH", "db.sqlite3"),
     }
 }
 
@@ -125,24 +124,24 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-RSS_BOT_TOKEN = os.getenv("RSS_BOT_TOKEN")
-RSS_BOT_BROKER = os.getenv("RSS_BOT_BROKER")
-if all([RSS_BOT_TOKEN, RSS_BOT_BROKER]) is False:
-    raise ValueError(f"Config values is not found. {RSS_BOT_TOKEN=}, {RSS_BOT_BROKER=}")
-
-BASE_URL_TELEGRAM_API = os.getenv("BASE_URL_TELEGRAM_API", "https://api.telegram.org/")
-INTERVAL_BEAT_MINUTE = os.getenv("INTERVAL_BEAT_MINUTE", "5")
-INTERVAL_BEAT_HOUR = os.getenv("INTERVAL_BEAT_HOUR", "*")
-
-ATTEMPT_REQUEST = int(os.getenv("ATTEMPT_REQUEST", 5))  # count of retry
-DELAY_REQUEST = int(os.getenv("DELAY_REQUEST", 3))  # in sec
-
-PARSE_MODE_MARKDOWN = "Markdown"
-
-COUNT_TITLE_SYMBOL = int(os.getenv("COUNT_TITLE_SYMBOL", 500))
-COUNT_TEXT_SYMBOL = int(os.getenv("COUNT_TEXT_SYMBOL", 250))
-COUNT_ARTICLE_UPDATE = int(os.getenv("COUNT_ARTICLE_UPDATE", 5))
-COUNT_FEED_FOR_ADD = int(os.getenv("COUNT_FEED_FOR_ADD"))
+# RSS_BOT_TOKEN = os.getenv("RSS_BOT_TOKEN")
+# RSS_BOT_BROKER = os.getenv("RSS_BOT_BROKER")
+# if all([RSS_BOT_TOKEN, RSS_BOT_BROKER]) is False:
+#     raise ValueError(f"Config values is not found. {RSS_BOT_TOKEN=}, {RSS_BOT_BROKER=}")
+#
+# BASE_URL_TELEGRAM_API = os.getenv("BASE_URL_TELEGRAM_API", "https://api.telegram.org/")
+# INTERVAL_BEAT_MINUTE = os.getenv("INTERVAL_BEAT_MINUTE", "5")
+# INTERVAL_BEAT_HOUR = os.getenv("INTERVAL_BEAT_HOUR", "*")
+#
+# ATTEMPT_REQUEST = int(os.getenv("ATTEMPT_REQUEST", 5))  # count of retry
+# DELAY_REQUEST = int(os.getenv("DELAY_REQUEST", 3))  # in sec
+#
+# PARSE_MODE_MARKDOWN = "Markdown"
+#
+# COUNT_TITLE_SYMBOL = int(os.getenv("COUNT_TITLE_SYMBOL", 500))
+# COUNT_TEXT_SYMBOL = int(os.getenv("COUNT_TEXT_SYMBOL", 250))
+# COUNT_ARTICLE_UPDATE = int(os.getenv("COUNT_ARTICLE_UPDATE", 5))
+# COUNT_FEED_FOR_ADD = int(os.getenv("COUNT_FEED_FOR_ADD"))
 
 LOGS_ROOT = BASE_DIR / "log"
 LOGGING = {
