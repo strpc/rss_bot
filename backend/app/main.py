@@ -67,4 +67,4 @@ def shutdown_event(application: FastAPI) -> Callable:
     return shutdown
 
 
-app: FastAPI = init_app()
+fastapi_app: FastAPI = init_app()
