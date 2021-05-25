@@ -1,14 +1,13 @@
 import logging
 import random
 
+from app.core import schemas
 from app.core.clients import ITelegram
 from app.core.db import IDatabase
 from app.core.schemas.rss import Feed, ListFeeds
 from app.core.utils import get_hash, make_str_urls
 from app.project.settings import COUNT_FEED_FOR_ADD, PARSE_MODE_MARKDOWN
 from pydantic import ValidationError
-
-from app.core import schemas
 
 
 logger = logging.getLogger(__name__)
