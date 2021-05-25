@@ -4,6 +4,6 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.post("/message/")
-async def new_message():
+@router.post("/")
+async def new_callback():
     return True
