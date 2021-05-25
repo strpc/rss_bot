@@ -1,4 +1,6 @@
--r requirements.txt
+-r admin/requirements.txt
+-r backend/requirements.txt
+-r worker/requirements.txt
 django-sslserver==0.22
 pylint
 flake8
