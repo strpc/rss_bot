@@ -12,13 +12,19 @@ class LogLevelEnum(str, Enum):
     DEBUG = "DEBUG"
 
 
-class EasyNotifyerConfig(BaseSettings):
+class TelegramConfig(BaseSettings):
     token: str
+
+    class Config:
+        env_prefix = "telegram_"
+
+
+class EasyNotifyerConfig(TelegramConfig):
     chat_id: Union[str, int, List[int], List[str]]
     service_name: str
 
     class Config:
-        env_prefix = "telegram_"
+        env_prefix = "easy_notifyer_"
 
 
 class AppSettings(BaseSettings):
@@ -27,10 +33,14 @@ class AppSettings(BaseSettings):
 
 
 class DBSettings(BaseSettings):
-    uri: str = "sqlite:///db.sqlite3"
+    path: str = "db.sqlite3"
+
+    class Config:
+        env_prefix = "database_"
 
 
 class MainConfig(BaseSettings):
     app: AppSettings = AppSettings()
     db: DBSettings = DBSettings()
-    telegram: EasyNotifyerConfig = EasyNotifyerConfig()
+    easy_notifyer: EasyNotifyerConfig = EasyNotifyerConfig()
+    telegram: TelegramConfig = TelegramConfig()
