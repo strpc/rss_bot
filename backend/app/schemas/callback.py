@@ -1,8 +1,9 @@
 from typing import Optional
 
+from pydantic import BaseModel, Field
+
 from app.schemas.enums import TypeUpdate
 from app.schemas.message import MessageBody, User
-from pydantic import BaseModel, Field
 
 
 class Callback(BaseModel):

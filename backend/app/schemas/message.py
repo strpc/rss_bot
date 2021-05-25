@@ -2,8 +2,9 @@ import re
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from app.schemas.enums import TypeChat, TypeEntity, TypeUpdate
 from pydantic import BaseModel, Field, validator
+
+from app.schemas.enums import TypeChat, TypeEntity, TypeUpdate
 
 
 class User(BaseModel):

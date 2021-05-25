@@ -1,7 +1,8 @@
-from app.core.command.manager import CommandManager
-from app.schemas.message import Message
 from fastapi import APIRouter, Body, Response
 from loguru import logger
+
+from app.core.command.manager import CommandManager
+from app.schemas.message import Message
 
 
 router = APIRouter()

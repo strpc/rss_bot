@@ -2,14 +2,14 @@ import logging
 import re
 from typing import Dict, Optional, Union
 
-from app.core.clients import Requests, Telegram
-from app.core.db import SQLiteDB
-from app.core.handlers.commands import CommandHandler
-from app.project.settings import DB_PATH, RSS_BOT_TOKEN
 from pydantic import ValidationError
 
 from app.core import schemas
+from app.core.clients import Requests, Telegram
+from app.core.db import SQLiteDB
+from app.core.handlers.commands import CommandHandler
 from app.core.schemas.input.base import TypeUpdate
+from app.project.settings import DB_PATH, RSS_BOT_TOKEN
 
 
 logger = logging.getLogger(__name__)

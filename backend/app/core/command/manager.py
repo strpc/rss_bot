@@ -1,3 +1,5 @@
+from fastapi import Depends
+
 from app.core import deps
 from app.core.clients.telegram import Telegram
 from app.core.command.add_feed.service import AddFeedCommand
@@ -5,7 +7,6 @@ from app.core.command.delete_feed.service import DeleteFeedCommand
 from app.core.command.list_feed.service import ListFeedCommand
 from app.core.command.start.service import StartCommand
 from app.schemas.message import Message
-from fastapi import Depends
 
 
 class CommandManager:

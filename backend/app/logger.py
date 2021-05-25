@@ -1,5 +1,6 @@
-from app.config import LogLevelEnum
 from loguru import logger
+
+from app.config import LogLevelEnum
 
 
 def configure_logging(log_level: LogLevelEnum):

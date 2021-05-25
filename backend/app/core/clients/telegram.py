@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 from json import JSONDecodeError
 from typing import Dict, Optional
 
+from loguru import logger
+
 from app.core.clients.http_ import HttpClientABC, Response
 from app.schemas.enums import ParseMode
-from loguru import logger
 
 
 class TelegramABC(ABC):

@@ -1,14 +1,15 @@
 from typing import Callable
 
+from easy_notifyer import Telegram
+from fastapi import FastAPI, Response
+from fastapi.exceptions import RequestValidationError
+from loguru import logger
+
 from app import __version__
 from app.config import MainConfig
 from app.core.clients.database import Database
 from app.endpoints import callback, message
 from app.logger import configure_logging
-from easy_notifyer import Telegram
-from fastapi import FastAPI, Response
-from fastapi.exceptions import RequestValidationError
-from loguru import logger
 
 
 def init_app() -> FastAPI:
