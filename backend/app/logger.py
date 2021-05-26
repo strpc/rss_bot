@@ -3,5 +3,5 @@ from loguru import logger
 from app.config import LogLevelEnum
 
 
-def configure_logging(log_level: LogLevelEnum):
+def configure_logging(log_level: LogLevelEnum) -> None:
     logger.add("docker/logs/celery_log.log", rotation="10 MB", level=log_level)

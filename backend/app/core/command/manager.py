@@ -15,7 +15,7 @@ class CommandManager:
         update: Message,
         telegram: Telegram = Depends(deps.get_telegram),
         repository: str = "qwe",
-    ):
+    ) -> None:
         await StartCommand(telegram).handle(update, repository)
 
     @staticmethod
@@ -23,7 +23,7 @@ class CommandManager:
         update: Message,
         telegram: Telegram = Depends(deps.get_telegram),
         repository: str = "qwe",
-    ):
+    ) -> None:
         await AddFeedCommand(telegram).handle(update, repository)
 
     @staticmethod
@@ -31,7 +31,7 @@ class CommandManager:
         update: Message,
         telegram: Telegram = Depends(deps.get_telegram),
         repository: str = "qwe",
-    ):
+    ) -> None:
         await ListFeedCommand(telegram).handle(update, repository)
 
     @staticmethod
@@ -39,5 +39,5 @@ class CommandManager:
         update: Message,
         telegram: Telegram = Depends(deps.get_telegram),
         repository: str = "qwe",
-    ):
+    ) -> None:
         await DeleteFeedCommand(telegram).handle(update, repository)

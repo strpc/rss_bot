@@ -43,7 +43,7 @@ class MessageBody(BaseModel):
     command: Optional[str] = None
 
     @validator("command", always=True)
-    def validate_command(cls, v, values: Dict) -> Optional[str]:
+    def validate_command(cls, v: None, values: Dict) -> Optional[str]:
         text = values.get("text")
         if text is None:
             return v

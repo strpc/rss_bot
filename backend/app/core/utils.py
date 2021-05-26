@@ -1,6 +1,6 @@
 import base64
 from datetime import datetime
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 from urllib.parse import urlparse
 
 import feedparser
@@ -21,7 +21,7 @@ def bold_markdown(text: str) -> str:
     return f"*{text}*"
 
 
-def get_hash(*args) -> str:
+def get_hash(*args: Union[str, int]) -> str:
     hash_ = ""
     for i in args:
         if not isinstance(i, (str, int)):

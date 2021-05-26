@@ -6,5 +6,5 @@ class AddFeedCommand:
     def __init__(self, telegram: Telegram):
         self._telegram = telegram
 
-    async def handle(self, update: Message, repository):
+    async def handle(self, update: Message, repository) -> None:  # type: ignore  # FIXME PLEASE
         pass

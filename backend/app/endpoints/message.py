@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/")
-async def new_message(update: Message = Body(...)):
+async def new_message(update: Message = Body(...)) -> Response:
     try:
         if not update.message.command:
             logger.warning("Unsupported update. body={}", update.dict(exclude_none=True))
@@ -24,4 +24,4 @@ async def new_message(update: Message = Body(...)):
     except Exception as error:
         logger.exception(error)
     finally:
-        Response(status_code=200)
+        return Response(status_code=200)

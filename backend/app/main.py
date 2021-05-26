@@ -1,7 +1,7 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from easy_notifyer import Telegram
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from loguru import logger
 
@@ -49,20 +49,20 @@ def init_config() -> MainConfig:
     return MainConfig()
 
 
-async def validation_exception_handler(request, exc):
+async def validation_exception_handler(request: Request, exc: Optional[BaseException]) -> Response:
     logger.error(str(exc))
     return Response(status_code=200)
 
 
 def startup_event(application: FastAPI) -> Callable:
-    async def startup():
+    async def startup() -> None:
         await application.state.db.connect()
 
     return startup
 
 
 def shutdown_event(application: FastAPI) -> Callable:
-    async def shutdown():
+    async def shutdown() -> None:
         await application.state.db.disconnect()
 
     return shutdown
