@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 import logging
 import re
 from typing import Dict, Optional, Union
