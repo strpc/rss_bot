@@ -67,8 +67,13 @@ def get_command_start_repository(db: Database = Depends(get_database)) -> Comman
 def get_command_start_service(
     repository: CommandStartRepository = Depends(get_command_start_repository),
     telegram: Telegram = Depends(get_telegram_client),
+    service_messages: ServiceMessagesService = Depends(get_service_messages_service),
 ) -> CommandStartService:
-    return CommandStartService(telegram=telegram, repository=repository)
+    return CommandStartService(
+        repository=repository,
+        telegram=telegram,
+        service_messages=service_messages,
+    )
 
 
 def get_command_add_feed_repository(db: Database = Depends(get_database)) -> CommandStartRepository:
@@ -78,8 +83,13 @@ def get_command_add_feed_repository(db: Database = Depends(get_database)) -> Com
 def get_command_add_feed_service(
     repository: CommandAddFeedRepository = Depends(get_command_add_feed_repository),
     telegram: Telegram = Depends(get_telegram_client),
+    service_messages: ServiceMessagesService = Depends(get_service_messages_service),
 ) -> CommandAddFeedService:
-    return CommandAddFeedService(repository=repository, telegram=telegram)
+    return CommandAddFeedService(
+        repository=repository,
+        telegram=telegram,
+        service_messages=service_messages,
+    )
 
 
 def get_command_list_feed_repository(
@@ -91,8 +101,13 @@ def get_command_list_feed_repository(
 def get_command_list_feed_service(
     repository: CommandListFeedRepository = Depends(get_command_list_feed_repository),
     telegram: Telegram = Depends(get_telegram_client),
+    service_messages: ServiceMessagesService = Depends(get_service_messages_service),
 ) -> CommandListFeedService:
-    return CommandListFeedService(repository=repository, telegram=telegram)
+    return CommandListFeedService(
+        repository=repository,
+        telegram=telegram,
+        service_messages=service_messages,
+    )
 
 
 def get_command_delete_feed_repository(
@@ -104,8 +119,13 @@ def get_command_delete_feed_repository(
 def get_command_delete_feed_service(
     repository: CommandDeleteFeedRepository = Depends(get_command_delete_feed_repository),
     telegram: Telegram = Depends(get_telegram_client),
+    service_messages: ServiceMessagesService = Depends(get_service_messages_service),
 ) -> CommandDeleteFeedService:
-    return CommandDeleteFeedService(repository=repository, telegram=telegram)
+    return CommandDeleteFeedService(
+        repository=repository,
+        telegram=telegram,
+        service_messages=service_messages,
+    )
 
 
 def get_users_repository(db: Database = Depends(get_database)) -> UsersRepository:
