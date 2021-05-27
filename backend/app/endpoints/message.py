@@ -1,26 +1,43 @@
-from fastapi import APIRouter, Body, Response
+from typing import Union
+
+from fastapi import APIRouter, Body, Depends, Response
 from loguru import logger
 
-from app.core.command.manager import CommandManager
+from app.core.commands.add_feed.service import CommandAddFeedService
+from app.core.commands.delete_feed.service import CommandDeleteFeedService
+from app.core.commands.list_feed.service import CommandListFeedService
+from app.core.commands.start.service import CommandStartService
+from app.core.custom_router import LoggingRoute
+from app.core.deps import get_command_service, get_current_user, get_service_messages_service
+from app.core.service_messages.models import ServiceMessage
+from app.core.service_messages.service import ServiceMessagesService
+from app.core.users.models import User
 from app.schemas.message import Message
 
 
-router = APIRouter()
+router = APIRouter(route_class=LoggingRoute)
+CommandsServicesType = Union[
+    CommandStartService, CommandAddFeedService, CommandListFeedService, CommandDeleteFeedService
+]
 
 
 @router.post("/")
-async def new_message(update: Message = Body(...)) -> Response:
+async def new_message(
+    update: Message = Body(...),
+    command_service: CommandsServicesType = Depends(get_command_service),
+    service_messages: ServiceMessagesService = Depends(get_service_messages_service),
+    current_user: User = Depends(get_current_user),
+) -> Response:
     try:
-        if not update.message.command:
-            logger.warning("Unsupported update. body={}", update.dict(exclude_none=True))
-            pass  # todo: обработать случай
+        if update.message.command is None:
+            logger.warning("Неподдерживаемое событие. body={}", update.dict(exclude_none=True))
+            await service_messages.send(
+                current_user.chat_id,
+                ServiceMessage.unsupported_update,
+            )
             return Response(status_code=200)
-        if update.message.command in vars(CommandManager) and not update.message.command.startswith(
-            "_"
-        ):
-            attr = getattr(CommandManager, update.message.command)
-            await attr(update)
 
+        await command_service.handle(update)
     except Exception as error:
         logger.exception(error)
     finally:
