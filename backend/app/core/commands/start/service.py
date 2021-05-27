@@ -1,3 +1,5 @@
+from loguru import logger
+
 from app.core.clients.telegram import Telegram
 from app.core.commands.start.repository import CommandStartRepository
 from app.core.service_messages.service import ServiceMessagesService
@@ -17,4 +19,5 @@ class CommandStartService:
         self._service_messages = service_messages
 
     async def handle(self, update: Message) -> None:  # type: ignore
+        logger.debug("hello command /start")
         pass
