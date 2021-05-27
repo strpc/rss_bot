@@ -76,8 +76,10 @@ def get_command_start_service(
     )
 
 
-def get_command_add_feed_repository(db: Database = Depends(get_database)) -> CommandStartRepository:
-    return CommandStartRepository(database=db)
+def get_command_add_feed_repository(
+    db: Database = Depends(get_database),
+) -> CommandAddFeedRepository:
+    return CommandAddFeedRepository(database=db)
 
 
 def get_command_add_feed_service(
