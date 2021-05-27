@@ -57,6 +57,7 @@ async def validation_exception_handler(request: Request, exc: Optional[BaseExcep
 def startup_event(application: FastAPI) -> Callable:
     async def startup() -> None:
         await application.state.db.connect()
+        logger.info("Database is connected!")
 
     return startup
 
@@ -64,8 +65,9 @@ def startup_event(application: FastAPI) -> Callable:
 def shutdown_event(application: FastAPI) -> Callable:
     async def shutdown() -> None:
         await application.state.db.disconnect()
+        logger.info("Database is disconnected.")
 
     return shutdown
 
 
-fastapi_app: FastAPI = init_app()
+app: FastAPI = init_app()
