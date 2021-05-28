@@ -43,8 +43,8 @@ repos:
                 "--disallow-untyped-defs",
                 "--ignore-missing-imports",
                 "--exclude=.env|.venv|tests|migrations",
+                "--no-warn-no-return",
         ]
-
 
 
 #  - repo: https://github.com/PyCQA/pylint
