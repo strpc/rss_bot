@@ -1,0 +1,17 @@
+[Unit]
+Description=rss_bot_django
+
+[Service]
+Type=idle
+EnvironmentFile=/super_dir/rss_bot/deploy/.env
+Environment="PYTHONPATH=/super_dir/rss_bot/"
+WorkingDirectory=/super_dir/rss_bot/
+ExecStart=/usr/bin/env bash -c "PATH=.venv/bin:$PATH exec ./bin/start_bot.sh"
+StandardOutput=append:/super_dir/deploy/logs/rss_bot_django.log
+StandardError=append:/super_dir/deploy/logs/rss_bot_django.log
+User=ubuntu
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
