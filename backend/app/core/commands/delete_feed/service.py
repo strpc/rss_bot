@@ -1,5 +1,5 @@
 from app.core.clients.telegram import Telegram
-from app.core.commands.delete_feed.repository import CommandDeleteFeedRepository
+from app.core.feeds.service import FeedsService
 from app.core.service_messages.service import ServiceMessagesService
 from app.schemas.message import Message
 
@@ -8,11 +8,11 @@ class CommandDeleteFeedService:
     def __init__(
         self,
         *,
-        repository: CommandDeleteFeedRepository,
+        feeds_service: FeedsService,
         telegram: Telegram,
         service_messages: ServiceMessagesService,
     ):
-        self._repository = repository
+        self._feeds_service = feeds_service
         self._telegram = telegram
         self._service_messages = service_messages
 
