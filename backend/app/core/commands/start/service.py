@@ -20,5 +20,5 @@ class CommandStartService:
         self._service_messages = service_messages
 
     async def handle(self, update: Message) -> None:
-        logger.debug("hello command /start")
+        logger.debug("Start handle command /start")
         await self._service_messages.send(update.message.chat.id, ServiceMessage.hello_user)
