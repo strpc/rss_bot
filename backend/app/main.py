@@ -8,7 +8,7 @@ from loguru import logger
 from app import __version__
 from app.config import MainConfig
 from app.core.clients.database import Database
-from app.endpoints import callback, message
+from app.endpoints import message
 from app.logger import configure_logging
 
 
@@ -30,8 +30,7 @@ def init_app() -> FastAPI:
 
     application.add_exception_handler(RequestValidationError, validation_exception_handler)
 
-    application.include_router(message.router, prefix="/message")
-    application.include_router(callback.router, prefix="/callback")
+    application.include_router(message.router)
 
     if not config.app.debug:
         logger.info("Service is started.")
