@@ -44,8 +44,17 @@ repos:
                 "--ignore-missing-imports",
                 "--exclude=.env|.venv|tests|migrations",
                 "--no-warn-no-return",
-        ]
+                ]
+  - repo: https://github.com/myint/docformatter
+    rev: v1.3.1
+    hooks:
+      - id: docformatter
+        args: ['--in-place']
 
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.1.0
+    hooks:
+      - id: add-trailing-comma
 
 #  - repo: https://github.com/PyCQA/pylint
 #    rev: pylint-2.6.0
