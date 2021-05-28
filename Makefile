@@ -73,3 +73,6 @@ clean:
 	@rm -f .flake
 	@rm -f .install-deps
 	@rm -f .install-cython
+
+django:
+	cd admin && DEBUG=True python3 app/manage.py runserver
