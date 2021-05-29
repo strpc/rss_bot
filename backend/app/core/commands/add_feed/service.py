@@ -25,13 +25,16 @@ class CommandAddFeedService:
 
     @staticmethod
     def _strip_scheme(url: ParsedUrl) -> str:
+        logger.debug("Уберем схему из url={}...", url)
         scheme = f"{url.scheme}://"
         return url.geturl().replace(scheme, "", 1)
 
     @staticmethod
     def _validate_url(url: str) -> Optional[ParsedUrl]:
+        logger.debug("Провалидируем url {} ...", url)
         parsed_url = urlparse(url)
         if all([parsed_url.scheme, parsed_url.netloc, parsed_url.path]):
+            logger.debug("URL={} валиден. {}", url, parsed_url)
             return parsed_url
         return None
 
