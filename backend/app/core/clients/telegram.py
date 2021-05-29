@@ -78,9 +78,9 @@ class Telegram(TelegramABC):
         parse_mode: Optional[ParseMode] = None,
         disable_web_page_preview: bool = False,
         attempt: int = 5,
-        delay: int = 5,
+        delay: int = 0,  # TODO: DEBUG MODE!
     ) -> Response:
-        """Отправка сообщений пользователю"""
+        """Отправка сообщений пользователю."""
         method = "sendMessage"
         body = {"chat_id": chat_id, "text": text}
 
