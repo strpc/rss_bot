@@ -40,3 +40,12 @@ class FeedsRepository:
         rows = await self._db.fetchall(query, (chat_id,))
         if rows is not None:
             return tuple(itertools.chain.from_iterable(rows))
+
+    async def disable_feed(self, url: str, chat_id: int) -> None:
+        query = f"""
+        UPDATE bot_users_rss
+        SET active = False
+        WHERE url = {self._paramstyle}
+        AND chat_id_id = {self._paramstyle}
+        """
+        await self._db.execute(query, (url, chat_id))
