@@ -1,9 +1,18 @@
-import base64
-from datetime import datetime
-from typing import Iterable, Optional, Union
-from urllib.parse import urlparse
+import asyncio
 
-import feedparser
+
+try:
+    import contextvars
+
+    contextvars_exists = True
+except ImportError:
+    contextvars_exists = False
+
+import base64
+import functools
+from datetime import datetime
+from typing import Any, Callable, Iterable, Optional, Union
+from urllib.parse import urlparse
 
 
 def shielding_markdown_text(text: str) -> str:
@@ -48,5 +57,22 @@ def make_str_urls(urls: Iterable[str]) -> str:
     return "\n".join(urls)
 
 
-def validate_feed(url: str) -> bool:
-    return bool(feedparser.parse(url).get("entries"))
+async def run_in_threadpool(func: Callable, *args: Any, **kwargs: Any) -> Any:
+    """
+    Run sync func in async code in thread pool.
+    Args:
+        func(callable): func to run
+        *args:
+        **kwargs:
+    Returns:
+        same as func
+    """
+    loop = asyncio.get_event_loop()
+    if contextvars_exists:
+        child = functools.partial(func, *args, **kwargs)
+        context = contextvars.copy_context()
+        func = context.run
+        args = (child,)
+    elif kwargs:
+        func = functools.partial(func, **kwargs)
+    return await loop.run_in_executor(None, func, *args)
