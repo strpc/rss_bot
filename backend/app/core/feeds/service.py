@@ -1,6 +1,9 @@
+from http.client import InvalidURL
+from typing import Optional, Tuple
 from urllib.error import URLError
 
 import feedparser
+from loguru import logger
 
 from app.core.feeds.repository import FeedsRepository
 from app.core.utils import get_hash, run_in_threadpool
@@ -15,11 +18,15 @@ class FeedsService:
 
     @staticmethod
     async def validate_feed(url: str) -> bool:
+        logger.debug("Проверяем валидность фида {}...", url)
         try:
             return bool((await run_in_threadpool(feedparser.parse, url)).get("entries"))
-        except URLError:
+        except (URLError, InvalidURL):
             return False
 
     async def add_feed(self, url: str, chat_id: int) -> None:
         hash_url_chat_id = get_hash(url, chat_id)
         await self._repository.add_feed(url, chat_id, hash_url_chat_id)
+
+    async def get_active_feeds(self, chat_id: int) -> Optional[Tuple[str, ...]]:
+        return await self._repository.get_active_feeds(chat_id)
