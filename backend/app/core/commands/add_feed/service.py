@@ -1,5 +1,3 @@
-from typing import Optional
-from urllib.parse import ParseResult as ParsedUrl
 from urllib.parse import urlparse
 
 from loguru import logger
@@ -9,6 +7,7 @@ from app.core.commands.command_abc import CommandServiceABC
 from app.core.feeds.service import FeedsService
 from app.core.service_messages.models import ServiceMessage
 from app.core.service_messages.service import ServiceMessagesService
+from app.core.utils import validate_url
 from app.schemas.message import Message
 
 
@@ -25,19 +24,11 @@ class CommandAddFeedService(CommandServiceABC):
         self._service_messages = service_messages
 
     @staticmethod
-    def _strip_scheme(url: ParsedUrl) -> str:
+    def _strip_scheme(url: str) -> str:
         logger.debug("Уберем схему из url={}...", url)
-        scheme = f"{url.scheme}://"
-        return url.geturl().replace(scheme, "", 1)
-
-    @staticmethod
-    def _validate_url(url: str) -> Optional[ParsedUrl]:
-        logger.debug("Провалидируем url {} ...", url)
         parsed_url = urlparse(url)
-        if all([parsed_url.scheme, parsed_url.netloc, parsed_url.path]):
-            logger.debug("URL={} валиден. {}", url, parsed_url)
-            return parsed_url
-        return None
+        scheme = f"{parsed_url.scheme}://"
+        return url.replace(scheme, "", 1)
 
     async def _exists_active_feed_user(self, chat_id: int, url: str) -> bool:
         return await self._feeds_service.exists_active_feed_user(chat_id=chat_id, url=url)
@@ -48,14 +39,13 @@ class CommandAddFeedService(CommandServiceABC):
     async def handle(self, update: Message) -> None:
         chat_id = update.message.chat.id
         url = update.message.text.replace("/add_feed", "", 1).strip().split()[0]
-        validated_url = self._validate_url(url)
 
-        if validated_url is None:
+        if not validate_url(url):
             logger.warning("Некорректный url. {}", url)
             await self._service_messages.send(chat_id, ServiceMessage.incorrect_rss)
             return
 
-        url_without_schema = self._strip_scheme(validated_url)
+        url_without_schema = self._strip_scheme(url)
         if not await self._is_feed(url):
             logger.warning("URL не является фидом. url={}", url)
             await self._service_messages.send(chat_id, ServiceMessage.incorrect_rss)
