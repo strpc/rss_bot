@@ -22,6 +22,7 @@ class FeedsService:
         try:
             return bool((await run_in_threadpool(feedparser.parse, url)).get("entries"))
         except (URLError, InvalidURL):
+            logger.warning("Фид невалиден {}", url)
             return False
 
     async def add_feed(self, url: str, chat_id: int) -> None:
