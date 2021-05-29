@@ -48,6 +48,8 @@ class Database:
         values: Optional[Iterable[Any]] = None,
         as_dict: bool = False,
     ) -> Optional[Union[DictAny, TupleAny]]:
+        logger.debug("query\n{}\nvalues\n{}", query, values)
+
         self._db.row_factory = self._dict_factory if as_dict else None  # type: ignore
         try:
             return await self._db.execute_fetchall(query, values) or None  # type: ignore
@@ -60,8 +62,9 @@ class Database:
         values: Optional[Iterable[Any]] = None,
         as_dict: bool = False,
     ) -> Optional[Union[DictAny, Tuple[Any]]]:
-        self._db.row_factory = self._dict_factory if as_dict else None  # type: ignore
         logger.debug("query\n{}\nvalues\n{}", query, values)
+
+        self._db.row_factory = self._dict_factory if as_dict else None  # type: ignore
         try:
             cursor = await self._db.execute(query, values)
             row = await cursor.fetchone()
@@ -76,6 +79,8 @@ class Database:
         values: Optional[Iterable[Any]] = None,
         autocommit: bool = True,
     ) -> None:
+        logger.debug("query\n{}\nvalues\n{}", query, values)
+
         await self._db.execute(query, values)
         if autocommit:
             await self._db.commit()
@@ -86,6 +91,8 @@ class Database:
         values: Iterable[Iterable[Any]],
         autocommit: bool = True,
     ) -> None:
+        logger.debug("query\n{}\nvalues\n{}", query, values)
+
         await self._db.executemany(query, values)
         if autocommit:
             await self._db.commit()
