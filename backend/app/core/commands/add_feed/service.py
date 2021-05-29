@@ -46,7 +46,7 @@ class CommandAddFeedService:
 
     async def handle(self, update: Message) -> None:
         chat_id = update.message.chat.id
-        url = update.message.text.replace("/add_feed", "", 1).strip()
+        url = update.message.text.replace("/add_feed", "", 1).strip().split()[0]
         validated_url = self._validate_url(url)
 
         if validated_url is None:
