@@ -19,7 +19,7 @@ class LoggingRoute(APIRoute):
             with logger.contextualize(chat_id=chat_id, username=username, uuid=uuid):
                 response: Response = await original_route_handler(request)
                 duration = time.time() - before
-                logger.debug("Время на обработку запроса составило {}", duration)
+                logger.debug("Время на обработку запроса составило {} сек", round(duration, 4))
                 return response
 
         return custom_route_handler
