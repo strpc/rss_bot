@@ -3,13 +3,14 @@ from typing import Tuple
 from loguru import logger
 
 from app.core.clients.telegram import Telegram
+from app.core.commands.command_abc import CommandServiceABC
 from app.core.feeds.service import FeedsService
 from app.core.service_messages.models import ServiceMessage
 from app.core.service_messages.service import ServiceMessagesService
 from app.schemas.message import Message
 
 
-class CommandListFeedService:
+class CommandListFeedService(CommandServiceABC):
     def __init__(
         self,
         *,
