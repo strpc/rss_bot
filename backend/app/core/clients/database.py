@@ -29,12 +29,9 @@ class Database:
         await self.disconnect()
 
     @staticmethod
-    def _dict_factory(cursor: aiosqlite.Cursor, row: sqlite3.Row) -> Dict:
+    def _dict_factory(cursor: aiosqlite.Cursor, row: sqlite3.Row) -> Dict[str, Any]:
         """Делаем словарь из ответа базы {"поле": "значение"}"""
-        data = {}
-        for column, value in zip(cursor.description, row):
-            data[column[0]] = value
-        return data
+        return dict(zip([col[0] for col in cursor.description], row))
 
     async def connect(self) -> "Database":
         await self._db
