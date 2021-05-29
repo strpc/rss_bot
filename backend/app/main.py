@@ -23,7 +23,7 @@ def init_app() -> FastAPI:
     configure_logging(config.app.log_level)
 
     application.state.config = config
-    application.state.db = Database(config.db.path)
+    application.state.db = Database(config.db.path, config.db.paramstyle)
 
     application.add_event_handler("startup", startup_event(application))
     application.add_event_handler("shutdown", shutdown_event(application))
