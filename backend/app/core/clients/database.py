@@ -44,6 +44,7 @@ class Database:
         self,
         query: str,
         values: Optional[Iterable[Any]] = None,
+        *,
         as_dict: bool = False,
     ) -> Optional[Union[DictAny, TupleAny]]:
         logger.debug("query\n{}\nvalues\n{}", query, values)
@@ -58,6 +59,7 @@ class Database:
         self,
         query: str,
         values: Optional[Iterable[Any]] = None,
+        *,
         as_dict: bool = False,
     ) -> Optional[Union[DictAny, Tuple[Any]]]:
         logger.debug("query\n{}\nvalues\n{}", query, values)
@@ -75,6 +77,7 @@ class Database:
         self,
         query: str,
         values: Optional[Iterable[Any]] = None,
+        *,
         autocommit: bool = True,
     ) -> None:
         logger.debug("query\n{}\nvalues\n{}", query, values)
@@ -87,6 +90,7 @@ class Database:
         self,
         query: str,
         values: Iterable[Iterable[Any]],
+        *,
         autocommit: bool = True,
     ) -> None:
         logger.debug("query\n{}\nvalues\n{}", query, values)
