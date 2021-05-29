@@ -3,3 +3,4 @@ databases
 pydantic
 loguru
 uvicorn
+aiocache
