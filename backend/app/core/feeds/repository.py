@@ -1,3 +1,6 @@
+import itertools
+from typing import Optional, Tuple
+
 from app.core.clients.database import Database
 
 
@@ -25,3 +28,14 @@ class FeedsRepository:
         ON CONFLICT (chatid_url_hash) DO UPDATE SET active = true
         """
         await self._db.execute(query, (url, chat_id, hash_url_chat_id))
+
+    async def get_active_feeds(self, chat_id: int) -> Optional[Tuple[str, ...]]:
+        query = """
+        SELECT url
+        FROM bot_users_rss
+        WHERE chat_id_id = ?
+        AND active = True
+        """
+        rows = await self._db.fetchall(query, (chat_id,))
+        if rows is not None:
+            return tuple(itertools.chain.from_iterable(rows))
