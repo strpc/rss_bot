@@ -9,7 +9,7 @@ class UsersRepository:
         self._db = database
         self._paramstyle = self._db.paramstyle
 
-    async def get_user(self, chat_id: int) -> Optional[User]:  # type: ignore # FIXME
+    async def get_user(self, chat_id: int) -> Optional[User]:
         query = f"""
         SELECT
         id as id,
