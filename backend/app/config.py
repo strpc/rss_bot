@@ -34,6 +34,7 @@ class AppSettings(BaseSettings):
 
 class DBSettings(BaseSettings):
     path: str = "db.sqlite3"
+    paramstyle: str = "?"  # SELECT * FROM users WHERE users.id = ?
 
     class Config:
         env_prefix = "database_"
