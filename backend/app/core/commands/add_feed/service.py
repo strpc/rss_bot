@@ -59,5 +59,5 @@ class CommandAddFeedService(CommandServiceABC):
         logger.debug("Новый feed. {}", url)
         await self._feeds_service.add_feed(url, chat_id)
         text = f"{url} was added."
-        await self._telegram.send_message(chat_id, text)
+        await self._telegram.send_message(chat_id, text, disable_web_page_preview=True)
         return
