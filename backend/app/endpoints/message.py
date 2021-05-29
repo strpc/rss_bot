@@ -7,18 +7,21 @@ from app.core.commands.add_feed.service import CommandAddFeedService
 from app.core.commands.delete_feed.service import CommandDeleteFeedService
 from app.core.commands.list_feed.service import CommandListFeedService
 from app.core.commands.start.service import CommandStartService
-from app.core.custom_router import LoggingRoute
 from app.core.service_messages.deps import get_service_messages_service
 from app.core.service_messages.models import ServiceMessage
 from app.core.service_messages.service import ServiceMessagesService
 from app.core.services_deps import get_command_service, get_current_user
 from app.core.users.models import User
+from app.custom_router import LoggingRoute
 from app.schemas.message import Message
 
 
 router = APIRouter(route_class=LoggingRoute)
 CommandsServicesType = Union[
-    CommandStartService, CommandAddFeedService, CommandListFeedService, CommandDeleteFeedService
+    CommandStartService,
+    CommandAddFeedService,
+    CommandListFeedService,
+    CommandDeleteFeedService,
 ]
 
 
