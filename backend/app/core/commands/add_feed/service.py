@@ -42,7 +42,6 @@ class CommandAddFeedService:
         return await self._feeds_service.validate_feed(url)
 
     async def handle(self, update: Message) -> None:
-        logger.debug("Start handle command /add_feed")
         chat_id = update.message.chat.id
         url = update.message.text.replace("/add_feed", "", 1).strip()
         validated_url = self._validate_url(url)

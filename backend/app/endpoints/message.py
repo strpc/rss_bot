@@ -41,7 +41,7 @@ async def new_message(
             )
             return Response(status_code=200)
 
-        logger.debug("Обработка команды /{}", update.message.command)
+        logger.debug("Handle command /{}", update.message.command)
         await command_service.handle(update)
     except Exception as error:
         logger.exception(error)
