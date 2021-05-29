@@ -3,6 +3,7 @@ from types import TracebackType
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Type, Union
 
 import aiosqlite
+from loguru import logger
 
 
 DictAny = Dict[str, Any]
@@ -60,6 +61,7 @@ class Database:
         as_dict: bool = False,
     ) -> Optional[Union[DictAny, Tuple[Any]]]:
         self._db.row_factory = self._dict_factory if as_dict else None  # type: ignore
+        logger.debug("query\n{}\nvalues\n{}", query, values)
         try:
             cursor = await self._db.execute(query, values)
             row = await cursor.fetchone()
@@ -69,7 +71,10 @@ class Database:
             self._db.row_factory = None
 
     async def execute(
-        self, query: str, values: Optional[Iterable[Any]] = None, autocommit: bool = True
+        self,
+        query: str,
+        values: Optional[Iterable[Any]] = None,
+        autocommit: bool = True,
     ) -> None:
         await self._db.execute(query, values)
         if autocommit:
