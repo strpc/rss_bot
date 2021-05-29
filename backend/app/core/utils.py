@@ -10,9 +10,10 @@ except ImportError:
 
 import base64
 import functools
-from datetime import datetime
-from typing import Any, Callable, Iterable, Optional, Union
+from typing import Any, Callable, Union
 from urllib.parse import urlparse
+
+from loguru import logger
 
 
 def shielding_markdown_text(text: str) -> str:
@@ -40,21 +41,13 @@ def get_hash(*args: Union[str, int]) -> str:
 
 
 def validate_url(url: str) -> bool:
-    parsed = urlparse(url)
-    return all([parsed.scheme, parsed.netloc])
-
-
-# todo: ну вот хз нужно ли то, что ниже
-
-
-def from_timestamp(unixtime: Optional[int] = None) -> Optional[datetime]:
-    if unixtime is None:
-        return None
-    return datetime.fromtimestamp(unixtime)
-
-
-def make_str_urls(urls: Iterable[str]) -> str:
-    return "\n".join(urls)
+    logger.debug("Провалидируем url {} ...", url)
+    parsed_url = urlparse(url)
+    if all([parsed_url.scheme, parsed_url.netloc, parsed_url.path]):
+        logger.debug("URL валиден. {} - {}", url, parsed_url)
+        return True
+    logger.warning("URL невалиден. {} - {}", url, parsed_url)
+    return False
 
 
 async def run_in_threadpool(func: Callable, *args: Any, **kwargs: Any) -> Any:
