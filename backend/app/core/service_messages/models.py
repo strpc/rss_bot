@@ -8,3 +8,4 @@ class ServiceMessage(str, Enum):
     incorrect_rss = "incorrect_rss"
     not_have_active = "not_have_active"
     url_not_founded = "url_not_founded"
+    already_added_feed = "already_added_feed"
