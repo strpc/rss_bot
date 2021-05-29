@@ -76,3 +76,6 @@ clean:
 
 django:
 	cd admin && DEBUG=True python3 app/manage.py runserver
+
+run_backend:
+	PYTHONPATH=$(shell pwd)/backend uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
