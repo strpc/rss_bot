@@ -33,7 +33,7 @@ async def new_message(
     current_user: User = Depends(get_current_user),
 ) -> Response:
     try:
-        if update.message.command is None:
+        if update.message.command is None or command_service is None:
             logger.warning("Неподдерживаемое событие. body={}", update.dict(exclude_none=True))
             await service_messages.send(
                 current_user.chat_id,
