@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from app.schemas.message import Message
 
 
-class Command(ABC):
+class CommandServiceABC(ABC):
     @abstractmethod
-    async def handle(self, update: Message, repository) -> None:  # type: ignore  # FIXME PLEASE
+    async def handle(self, update: Message) -> None:
         pass
