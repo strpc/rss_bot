@@ -13,8 +13,9 @@ ListTuple = List[TupleAny]
 
 
 class Database:
-    def __init__(self, url: str):
+    def __init__(self, url: str, paramstyle: str):
         self._db = aiosqlite.connect(url)
+        self.paramstyle = paramstyle
 
     async def __aenter__(self) -> "Database":
         return await self.connect()
