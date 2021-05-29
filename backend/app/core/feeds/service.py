@@ -31,3 +31,6 @@ class FeedsService:
 
     async def get_active_feeds(self, chat_id: int) -> Optional[Tuple[str, ...]]:
         return await self._repository.get_active_feeds(chat_id)
+
+    async def disable_feed(self, url: str, chat_id: int) -> None:
+        return await self._repository.disable_feed(url=url, chat_id=chat_id)
