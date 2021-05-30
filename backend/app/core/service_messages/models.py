@@ -9,3 +9,4 @@ class ServiceMessage(str, Enum):
     not_have_active = "not_have_active"
     url_not_founded = "url_not_founded"
     already_added_feed = "already_added_feed"
+    limit_achieved = "limit_achieved"
