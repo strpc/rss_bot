@@ -8,13 +8,16 @@ from app.core.service_messages.service import ServiceMessagesService
 from app.core.services_deps import get_command_service, get_current_user
 from app.core.users.models import User
 from app.custom_router import LoggingRoute
+from app.reporters_errors import get_telegram_reporter
 from app.schemas.message import Message
 
 
 router = APIRouter(route_class=LoggingRoute)
+telegram_reporter = get_telegram_reporter()
 
 
 @router.post("/")
+@telegram_reporter(as_attached=True)
 async def new_message(
     update: Message = Body(...),
     command_service: CommandServiceABC = Depends(get_command_service),
@@ -34,5 +37,4 @@ async def new_message(
         await command_service.handle(update)
     except Exception as error:
         logger.exception(error)
-    finally:
-        return Response(status_code=200)
+    return Response(status_code=200)
