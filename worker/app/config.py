@@ -39,10 +39,20 @@ class EasyNotifyerConfig(TelegramConfig):
 class AppConfig(BaseSettings):
     debug: bool = False
     log_level: LogLevelEnum = LogLevelEnum.INFO
+    limit_load_feed: int
+
+
+class DBSettings(BaseSettings):
+    path: str = "db.sqlite3"
+    paramstyle: str = "?"  # SELECT * FROM users WHERE users.id = ?
+
+    class Config:
+        env_prefix = "database_"
 
 
 class MainConfig(BaseSettings):
     app: AppConfig = AppConfig()
+    db: DBSettings = DBSettings()
     celery: CeleryConfig = CeleryConfig()
     easy_notifyer: EasyNotifyerConfig = EasyNotifyerConfig()
     telegram: TelegramConfig = TelegramConfig()
