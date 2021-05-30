@@ -16,21 +16,6 @@ from urllib.parse import urlparse
 from loguru import logger
 
 
-def shielding_markdown_text(text: str) -> str:
-    new_text = (
-        text.replace("_", "\\_")
-        .replace("*", "\\*")
-        .replace("[", "\\[")
-        .replace("`", "\\`")
-        .replace(".", "\\.")
-    )
-    return new_text
-
-
-def bold_markdown(text: str) -> str:
-    return f"*{text}*"
-
-
 def get_hash(*args: Union[str, int]) -> str:
     hash_ = ""
     for i in args:
