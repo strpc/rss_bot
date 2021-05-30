@@ -1,3 +1,6 @@
+from typing import Type
+
+from aiocache import Cache
 from fastapi import Depends, Request
 
 from app.config import MainConfig
@@ -23,3 +26,7 @@ def get_telegram_client(
 
 def get_database(request: Request) -> Database:
     return request.app.state.db
+
+
+def get_cache_type() -> Type[Cache]:
+    return Cache
