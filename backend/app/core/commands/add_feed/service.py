@@ -18,10 +18,12 @@ class CommandAddFeedService(CommandServiceABC):
         feeds_service: FeedsService,
         telegram: Telegram,
         service_messages: ServiceMessagesService,
+        limit_feed: int,
     ):
         self._telegram = telegram
         self._feeds_service = feeds_service
         self._service_messages = service_messages
+        self._limit_feed = limit_feed
 
     @staticmethod
     def _strip_scheme(url: str) -> str:
@@ -35,6 +37,12 @@ class CommandAddFeedService(CommandServiceABC):
 
     async def _is_feed(self, url: str) -> bool:
         return await self._feeds_service.validate_feed(url)
+
+    async def _achieved_limit_feeds(self, chat_id: int) -> bool:
+        active_feeds = await self._feeds_service.get_active_feeds(chat_id)
+        if active_feeds is not None:
+            return len(active_feeds) >= self._limit_feed
+        return False
 
     async def handle(self, update: Message) -> None:
         chat_id = update.message.chat.id
@@ -54,6 +62,11 @@ class CommandAddFeedService(CommandServiceABC):
         if await self._exists_active_feed_user(chat_id, url_without_schema):
             logger.warning("Попытка добавить один и тот же фид дважды. url={}", url)
             await self._service_messages.send(chat_id, ServiceMessage.already_added_feed)
+            return
+
+        if await self._achieved_limit_feeds(chat_id):
+            logger.warning("Достигнут предел кол-во фидов.")
+            await self._service_messages.send(chat_id, ServiceMessage.limit_achieved)
             return
 
         logger.debug("Новый feed. {}", url)
