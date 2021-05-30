@@ -45,3 +45,7 @@ class MainConfig(BaseSettings):
     db: DBSettings = DBSettings()
     easy_notifyer: EasyNotifyerConfig = EasyNotifyerConfig()
     telegram: TelegramConfig = TelegramConfig()
+
+
+def get_config() -> MainConfig:
+    return MainConfig()

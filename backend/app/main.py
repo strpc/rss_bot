@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from loguru import logger
 
 from app import __version__
-from app.config import MainConfig
+from app.config import get_config
 from app.core.clients.database import Database
 from app.endpoints import message
 from app.logger import configure_logging
@@ -19,7 +19,7 @@ def init_app() -> FastAPI:
         docs_url=None,
         redoc_url=None,
     )
-    config = init_config()
+    config = get_config()
     configure_logging(config.app.log_level)
 
     application.state.config = config
@@ -42,10 +42,6 @@ def init_app() -> FastAPI:
     else:
         logger.info("Debug is enabled.")
     return application
-
-
-def init_config() -> MainConfig:
-    return MainConfig()
 
 
 async def validation_exception_handler(request: Request, exc: Optional[BaseException]) -> Response:
