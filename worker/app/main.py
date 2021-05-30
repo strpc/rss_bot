@@ -6,15 +6,20 @@ from app.config import get_config
 
 config = get_config()
 
-app = Celery("rss_bot", broker=config.celery.broker, timezone="UTC")
-app.control.purge()  # !DEV
-app.autodiscover_tasks(
+app_celery = Celery("rss_bot", broker=config.celery.broker, timezone="UTC")
+
+
+if config.app.debug:
+    app_celery.control.purge()  # !DEV
+
+
+app_celery.autodiscover_tasks(
     [
         "app.tasks",
     ],
 )
-app.conf.task_default_queue = "rss_bot.download_articles_send_msg"
-app.conf.beat_schedule = {
+app_celery.conf.task_default_queue = "rss_bot.download_articles_send_msg"
+app_celery.conf.beat_schedule = {
     "download_articles_send_msg": {
         "task": "tasks.run_chain",
         "schedule": crontab(
