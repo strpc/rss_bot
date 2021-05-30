@@ -16,6 +16,6 @@ def configure_logging(log_level: LogLevelEnum) -> None:
         "uuid={extra[uuid]} | - <level>{message}</level>"
     )
     if not log_level.DEBUG:
-        logger.add("docker/logs/celery_log.log", rotation="10 MB", level=log_level, format=fmt)
+        logger.add("docker/logs/backend.log", rotation="10 MB", level=log_level, format=fmt)
     logger.add(sys.stdout, level=log_level, format=fmt)
     logger.configure(extra={"chat_id": 0, "username": '""', "uuid": '""'})
