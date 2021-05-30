@@ -81,10 +81,15 @@ class Database:
         autocommit: bool = True,
     ) -> None:
         logger.debug("query\n{}\nvalues\n{}", query, values)
+        try:
+            await self._db.execute(query, values)
 
-        await self._db.execute(query, values)
-        if autocommit:
-            await self._db.commit()
+        except sqlite3.IntegrityError as error:
+            logger.exception("error={}, query={}, values={}", error, query, values)
+
+        finally:
+            if autocommit:
+                await self._db.commit()
 
     async def executemany(
         self,
@@ -94,7 +99,12 @@ class Database:
         autocommit: bool = True,
     ) -> None:
         logger.debug("query\n{}\nvalues\n{}", query, values)
+        try:
+            await self._db.executemany(query, values)
 
-        await self._db.executemany(query, values)
-        if autocommit:
-            await self._db.commit()
+        except sqlite3.IntegrityError as error:
+            logger.exception("error={}, query={}, values={}", error, query, values)
+
+        finally:
+            if autocommit:
+                await self._db.commit()
