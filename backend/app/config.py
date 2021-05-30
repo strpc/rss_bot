@@ -30,6 +30,7 @@ class EasyNotifyerConfig(TelegramConfig):
 class AppSettings(BaseSettings):
     debug: bool = False
     log_level: LogLevelEnum = LogLevelEnum.INFO
+    limit_feed: int
 
 
 class DBSettings(BaseSettings):
