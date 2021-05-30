@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Type
 
 from aiocache import Cache
 
@@ -7,9 +7,9 @@ from app.core.service_messages.models import ServiceMessage
 
 
 class ServiceMessagesRepository:
-    def __init__(self, database: Database):
+    def __init__(self, database: Database, cache: Type[Cache]):
         self._db = database
-        self._cache = Cache(Cache.MEMORY)
+        self._cache = cache(cache.MEMORY)
         self._cache_ttl = 5
 
     async def _get_message_from_cache(self, title: ServiceMessage) -> Optional[str]:
