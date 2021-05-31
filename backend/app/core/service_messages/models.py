@@ -10,3 +10,4 @@ class ServiceMessage(str, Enum):
     url_not_founded = "url_not_founded"
     already_added_feed = "already_added_feed"
     limit_achieved = "limit_achieved"
+    authorize_message = "authorize_message"
