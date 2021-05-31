@@ -11,3 +11,4 @@ class ServiceMessage(str, Enum):
     already_added_feed = "already_added_feed"
     limit_achieved = "limit_achieved"
     authorize_message = "authorize_message"
+    error = "error"
