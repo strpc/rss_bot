@@ -23,6 +23,7 @@ class HttpClientABC(ABC):
         url: str,
         *,
         params: Optional[_types.QueryParamTypes] = None,
+        headers: Optional[_types.HeaderTypes] = None,
         body: Optional[Any] = None,
         data: Optional[_types.RequestData] = None,
     ) -> Response:
@@ -30,7 +31,7 @@ class HttpClientABC(ABC):
 
 
 class HttpClient(HttpClientABC):
-    """Обертка над запросами в API"""
+    """Обертка над запросами в API."""
 
     async def get(
         self,
@@ -40,7 +41,7 @@ class HttpClient(HttpClientABC):
         headers: Optional[_types.HeaderTypes] = None,
         cookies: Optional[_types.CookieTypes] = None,
     ) -> Response:
-        """Обертка над get-запросом"""
+        """Обертка над get-запросом."""
         async with httpx.AsyncClient() as client:
             return await client.get(url, params=params, headers=headers, cookies=cookies)
 
@@ -49,9 +50,10 @@ class HttpClient(HttpClientABC):
         url: str,
         *,
         params: Optional[_types.QueryParamTypes] = None,
+        headers: Optional[_types.HeaderTypes] = None,
         body: Optional[Any] = None,
         data: Optional[_types.RequestData] = None,
     ) -> Response:
-        """Обертка над post-запросом"""
+        """Обертка над post-запросом."""
         async with httpx.AsyncClient() as client:
-            return await client.post(url, json=body, params=params, data=data)
+            return await client.post(url, headers=headers, json=body, params=params, data=data)
