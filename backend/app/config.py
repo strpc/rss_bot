@@ -19,6 +19,14 @@ class TelegramConfig(BaseSettings):
         env_prefix = "telegram_"
 
 
+class PocketConfig(BaseSettings):
+    consumer_key: str
+    redirect_url: str
+
+    class Config:
+        env_prefix = "pocket_"
+
+
 class EasyNotifyerConfig(TelegramConfig):
     chat_id: Union[str, int, List[int], List[str]]
     service_name: str
@@ -46,6 +54,7 @@ class MainConfig(BaseSettings):
     db: DBSettings = DBSettings()
     easy_notifyer: EasyNotifyerConfig = EasyNotifyerConfig()
     telegram: TelegramConfig = TelegramConfig()
+    pocket: PocketConfig = PocketConfig()
 
 
 def get_config() -> MainConfig:
