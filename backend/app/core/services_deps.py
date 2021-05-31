@@ -5,6 +5,8 @@ from loguru import logger
 
 from app.core.commands.add_feed.deps import get_command_add_feed_service
 from app.core.commands.add_feed.service import CommandAddFeedService
+from app.core.commands.authorize.deps import get_command_authorize_service
+from app.core.commands.authorize.service import AuthorizeService
 from app.core.commands.delete_feed.deps import get_command_delete_feed_service
 from app.core.commands.delete_feed.service import CommandDeleteFeedService
 from app.core.commands.list_feed.deps import get_command_list_feed_service
@@ -18,7 +20,10 @@ from app.schemas.message import Message
 
 
 CommandsServicesType = Union[
-    CommandStartService, CommandAddFeedService, CommandListFeedService, CommandDeleteFeedService
+    CommandStartService,
+    CommandAddFeedService,
+    CommandListFeedService,
+    CommandDeleteFeedService,
 ]
 
 
@@ -39,11 +44,13 @@ def get_command_service(
     command_add_feed_service: CommandStartService = Depends(get_command_add_feed_service),
     command_list_feed_service: CommandStartService = Depends(get_command_list_feed_service),
     command_delete_feed_service: CommandStartService = Depends(get_command_delete_feed_service),
+    command_authorize_service: AuthorizeService = Depends(get_command_authorize_service),
 ) -> Optional[CommandsServicesType]:
     commands_map = {
         "start": command_start_service,
         "add_feed": command_add_feed_service,
         "list_feed": command_list_feed_service,
         "delete_feed": command_delete_feed_service,
+        "authorize": command_authorize_service,
     }
     return commands_map.get(update.message.command)  # type: ignore  # FIXME
