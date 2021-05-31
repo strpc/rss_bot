@@ -40,17 +40,17 @@ async def get_current_user(
 
 def get_command_service(
     update: Message = Body(...),
-    command_start_service: CommandStartService = Depends(get_command_start_service),
-    command_add_feed_service: CommandStartService = Depends(get_command_add_feed_service),
-    command_list_feed_service: CommandStartService = Depends(get_command_list_feed_service),
-    command_delete_feed_service: CommandStartService = Depends(get_command_delete_feed_service),
-    command_authorize_service: AuthorizeService = Depends(get_command_authorize_service),
+    start_service: CommandStartService = Depends(get_command_start_service),
+    add_feed_service: CommandStartService = Depends(get_command_add_feed_service),
+    list_feed_service: CommandStartService = Depends(get_command_list_feed_service),
+    delete_feed_service: CommandStartService = Depends(get_command_delete_feed_service),
+    authorize_service: AuthorizeService = Depends(get_command_authorize_service),
 ) -> Optional[CommandsServicesType]:
     commands_map = {
-        "start": command_start_service,
-        "add_feed": command_add_feed_service,
-        "list_feed": command_list_feed_service,
-        "delete_feed": command_delete_feed_service,
-        "authorize": command_authorize_service,
+        "start": start_service,
+        "add_feed": add_feed_service,
+        "list_feed": list_feed_service,
+        "delete_feed": delete_feed_service,
+        "authorize": authorize_service,
     }
     return commands_map.get(update.message.command)  # type: ignore  # FIXME
