@@ -7,6 +7,8 @@ from app.core.commands.add_feed.deps import get_command_add_feed_service
 from app.core.commands.add_feed.service import CommandAddFeedService
 from app.core.commands.authorize.deps import get_command_authorize_service
 from app.core.commands.authorize.service import AuthorizeService
+from app.core.commands.authorize_pocket.deps import get_authorize_pocket_service
+from app.core.commands.authorize_pocket.service import AuthorizePocketService
 from app.core.commands.delete_feed.deps import get_command_delete_feed_service
 from app.core.commands.delete_feed.service import CommandDeleteFeedService
 from app.core.commands.list_feed.deps import get_command_list_feed_service
@@ -45,6 +47,7 @@ def get_command_service(
     list_feed_service: CommandStartService = Depends(get_command_list_feed_service),
     delete_feed_service: CommandStartService = Depends(get_command_delete_feed_service),
     authorize_service: AuthorizeService = Depends(get_command_authorize_service),
+    authorize_pocket_service: AuthorizePocketService = Depends(get_authorize_pocket_service),
 ) -> Optional[CommandsServicesType]:
     commands_map = {
         "start": start_service,
@@ -52,5 +55,6 @@ def get_command_service(
         "list_feed": list_feed_service,
         "delete_feed": delete_feed_service,
         "authorize": authorize_service,
+        "authorize_pocket": authorize_pocket_service,
     }
     return commands_map.get(update.message.command)  # type: ignore  # FIXME
