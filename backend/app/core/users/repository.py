@@ -22,7 +22,7 @@ class UsersRepository:
         FROM
         bot_users
         WHERE
-        chat_id = {self._paramstyle}
+        chat_id = {self._db.paramstyle}
         LIMIT 1
         """
         row = await self._db.fetchone(query, (chat_id,), as_dict=True)
