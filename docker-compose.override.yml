@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+
+  backend:
+    environment:
+      - DEBUG=True
+      - LOG_LEVEL=DEBUG
+    ports:
+    - 8000:8000
+    volumes:
+    - ./backend:/app
+    command: "dev"
+
+  admin:
+    environment:
+      - DEBUG=True
+    ports:
+    - 8001:8001
+    volumes:
+    - ./admin:/app
+    command: "dev"
+
+  nginx:
+    image: alpine:3.13.5
+#    ports: ""
+    volumes: []
+    entrypoint: ["echo", "Service nginx disabled"]

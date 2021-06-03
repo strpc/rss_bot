@@ -31,10 +31,6 @@ INSTALLED_APPS = [
     "bot",
 ]
 
-if DEBUG is True:
-    INSTALLED_APPS.append("sslserver")
-
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -72,8 +68,8 @@ WSGI_APPLICATION = "project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.getenv("DB_PATH", "db.sqlite3"),
-    }
+        "NAME": os.getenv("DATABASE_URL"),
+    },
 }
 
 
@@ -123,25 +119,6 @@ if DEBUG is False:
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
-# RSS_BOT_TOKEN = os.getenv("RSS_BOT_TOKEN")
-# RSS_BOT_BROKER = os.getenv("RSS_BOT_BROKER")
-# if all([RSS_BOT_TOKEN, RSS_BOT_BROKER]) is False:
-#     raise ValueError(f"Config values is not found. {RSS_BOT_TOKEN=}, {RSS_BOT_BROKER=}")
-#
-# BASE_URL_TELEGRAM_API = os.getenv("BASE_URL_TELEGRAM_API", "https://api.telegram.org/")
-# INTERVAL_BEAT_MINUTE = os.getenv("INTERVAL_BEAT_MINUTE", "5")
-# INTERVAL_BEAT_HOUR = os.getenv("INTERVAL_BEAT_HOUR", "*")
-#
-# ATTEMPT_REQUEST = int(os.getenv("ATTEMPT_REQUEST", 5))  # count of retry
-# DELAY_REQUEST = int(os.getenv("DELAY_REQUEST", 3))  # in sec
-#
-# PARSE_MODE_MARKDOWN = "Markdown"
-#
-# COUNT_TITLE_SYMBOL = int(os.getenv("COUNT_TITLE_SYMBOL", 500))
-# COUNT_TEXT_SYMBOL = int(os.getenv("COUNT_TEXT_SYMBOL", 250))
-# COUNT_ARTICLE_UPDATE = int(os.getenv("COUNT_ARTICLE_UPDATE", 5))
-# COUNT_FEED_FOR_ADD = int(os.getenv("COUNT_FEED_FOR_ADD"))
 
 LOGS_ROOT = BASE_DIR / "log"
 LOGGING = {

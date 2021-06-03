@@ -1,8 +1,51 @@
-version: "3.6"
+version: "3.8"
 services:
-  rabbimq:
-    image: rabbitmq
-    container_name: rabbitmq_rss_bot
-    restart: always
+
+  backend:
+    image: rss_bot_backend:${VERSION:-latest}
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile
+    hostname: backend
+    environment:
+      - DEBUG=False
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_PARAMSTYLE=${DATABASE_PARAMSTYLE}
+      - LIMIT_FEED=${LIMIT_FEED}
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - EASY_NOTIFYER_TOKEN=${EASY_NOTIFYER_TOKEN}
+      - EASY_NOTIFYER_CHAT_ID=${EASY_NOTIFYER_CHAT_ID}
+      - EASY_NOTIFYER_SERVICE_NAME=${EASY_NOTIFYER_SERVICE_NAME}
+      - POCKET_CONSUMER_KEY=${POCKET_CONSUMER_KEY}
+      - POCKET_REDIRECT_URL=${POCKET_REDIRECT_URL}
+    volumes:
+    - ./db/:/app/app/db/
+
+  admin:
+    image: rss_bot_admin:${VERSION:-latest}
+    build:
+      context: ./admin
+      dockerfile: ./docker/Dockerfile
+    hostname: admin
+    environment:
+      - DEBUG=False
+      - ALLOWED_HOSTS=admin
+      - LOGLEVEL=${LOGLEVEL}
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - ./db:/app/app/db
+      - static_volume:/app/app/static/
+
+  nginx:
+    image: nginx:1.21.0
     ports:
-      - 5672:5672
+      - 8080:80
+    volumes:
+      - static_volume
+      - ./nginx:/etc/nginx/conf.d
+      - static_volume:/app/app/static/
+
+volumes:
+  static_volume:
