@@ -43,7 +43,7 @@ class AppConfig(BaseSettings):
 
 
 class DBSettings(BaseSettings):
-    path: str = "db.sqlite3"
+    url: str = "db.sqlite3"
     paramstyle: str = "?"  # SELECT * FROM users WHERE users.id = ?
 
     class Config:

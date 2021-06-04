@@ -21,7 +21,7 @@ configure_logging(config.app.log_level)
 @app_celery.task()
 def load_articles(*args: Any, **kwargs: Any) -> None:
     loop = asyncio.get_event_loop()
-    db = Database(url=config.db.path, paramstyle=config.db.paramstyle)
+    db = Database(url=config.db.url, paramstyle=config.db.paramstyle)
     loop.run_until_complete(db.connect())
     feeds_repository = FeedsRepository(db, paramstyle=config.db.paramstyle)
     feeds_service = FeedsService(
@@ -39,6 +39,11 @@ def load_articles(*args: Any, **kwargs: Any) -> None:
     finally:
         loop.run_until_complete(db.disconnect())
         loop.close()
+
+
+# def send_messages(*args: Any, **kwargs: Any) -> None:
+#     loop = asyncio.get_event_loop()
+#     db = Database(url=config.db.url, paramstyle=config.db.paramstyle)
 
 
 if __name__ == "__main__":
