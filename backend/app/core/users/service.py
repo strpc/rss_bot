@@ -1,9 +1,10 @@
-from typing import Optional
+from typing import Optional, Union
 
 from loguru import logger
 
 from app.core.users.models import User
 from app.core.users.repository import UsersRepository
+from app.schemas.callback import Callback
 from app.schemas.message import Message
 
 
@@ -19,8 +20,13 @@ class UsersService:
         logger.info("Создаем нового юзера...")
         await self._repository.create_user(new_user)
 
-    async def get_or_create(self, update: Message) -> User:
-        user = await self.get_user(update.message.chat.id)
+    async def get_or_create(self, update: Union[Message, Callback]) -> User:
+        if isinstance(update, Message):
+            chat_id = update.message.chat.id
+        else:
+            chat_id = update.callback_query.user.id
+
+        user = await self.get_user(chat_id)
         if user is not None:
             logger.info("Юзер найден.")
             return user

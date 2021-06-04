@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import APIRouter, Body, Depends, Response
 from loguru import logger
 
@@ -9,6 +11,7 @@ from app.core.services_deps import get_command_service, get_current_user
 from app.core.users.models import User
 from app.custom_router import LoggingRoute
 from app.reporters_errors import get_telegram_reporter
+from app.schemas.callback import Callback
 from app.schemas.message import Message
 
 
@@ -19,7 +22,7 @@ telegram_reporter = get_telegram_reporter()
 @router.post("/")
 @telegram_reporter(as_attached=True)
 async def new_message(
-    update: Message = Body(...),
+    update: Union[Message, Callback] = Body(...),
     command_service: CommandServiceABC = Depends(get_command_service),
     service_messages: ServiceMessagesService = Depends(get_service_messages_service),
     current_user: User = Depends(get_current_user),

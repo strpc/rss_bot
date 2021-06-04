@@ -18,6 +18,7 @@ from app.core.commands.start.service import CommandStartService
 from app.core.users.deps import get_users_service
 from app.core.users.models import User
 from app.core.users.service import UsersService
+from app.schemas.callback import Callback
 from app.schemas.message import Message
 
 
@@ -31,7 +32,7 @@ CommandsServicesType = Union[
 
 async def get_current_user(
     users_service: UsersService = Depends(get_users_service),
-    update: Message = Body(...),
+    update: Union[Message, Callback] = Body(...),
 ) -> User:
     user = await users_service.get_or_create(update)
     if not user.active:
@@ -41,7 +42,7 @@ async def get_current_user(
 
 
 def get_command_service(
-    update: Message = Body(...),
+    update: Union[Message, Callback] = Body(...),
     start_service: CommandStartService = Depends(get_command_start_service),
     add_feed_service: CommandStartService = Depends(get_command_add_feed_service),
     list_feed_service: CommandStartService = Depends(get_command_list_feed_service),
@@ -49,6 +50,8 @@ def get_command_service(
     authorize_service: AuthorizeService = Depends(get_command_authorize_service),
     authorize_pocket_service: AuthorizePocketService = Depends(get_authorize_pocket_service),
 ) -> Optional[CommandsServicesType]:
+    if isinstance(update, Callback):
+        return None
     commands_map = {
         "start": start_service,
         "add_feed": add_feed_service,
