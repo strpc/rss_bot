@@ -1,7 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
 from json import JSONDecodeError
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from loguru import logger
 
@@ -92,3 +92,6 @@ class Telegram(TelegramABC):
 
         url = self._format_url(method)
         return await self._send_post_request(url, body, attempt=attempt, delay=delay)
+
+    async def send_raw_message(self, body: Dict[str, Any]) -> None:
+        pass
