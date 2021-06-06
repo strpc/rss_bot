@@ -12,3 +12,12 @@ class User(BaseModel):
     username: Optional[str]
     active: bool
     register_at: datetime = Field(alias="register")
+
+
+class PocketIntegraion(BaseModel):
+    pocket_request_token: str
+    pocket_access_token: Optional[str]
+
+
+class UserIntegration(PocketIntegraion):
+    chat_id: int
