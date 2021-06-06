@@ -29,3 +29,11 @@ class Entry(BaseModel):
         if isinstance(value, str):
             return urlparse(value)._replace(query="", params="").geturl()
         return value
+
+
+class UserEntry(BaseModel):
+    id: int
+    title: Optional[str]
+    url: Optional[str]
+    text: Optional[str]
+    chat_id: int

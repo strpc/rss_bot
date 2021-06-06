@@ -4,7 +4,7 @@ import feedparser
 from loguru import logger
 from pydantic import parse_obj_as
 
-from app.feeds.models import Entry, Feed
+from app.feeds.models import Entry, Feed, UserEntry
 from app.feeds.repository import FeedsRepository
 from app.utils import run_in_threadpool
 
@@ -46,3 +46,6 @@ class FeedsService:
 
     async def insert_entries(self, values: List[Tuple[Any, ...]]) -> None:
         return await self._repository.insert_entries(values)
+
+    async def get_unsended_entries(self) -> Optional[Tuple[UserEntry, ...]]:
+        return await self._repository.get_unsended_entries()
