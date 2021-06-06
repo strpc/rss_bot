@@ -6,9 +6,23 @@ class PocketAuthRepository:
         self._db = database
         self._paramstyle = self._db.paramstyle
 
-    async def save_request_token(self, chat_id: int, request_token: str) -> None:
+    async def _get_user_id(self, chat_id: int) -> int:
         query = f"""
-        INSERT INTO x3 table (chat_id, request_token)
-        VALUES ({self._paramstyle}, {self._paramstyle})
+        SELECT id
+        FROM bot_users
+        WHERE chat_id = {self._paramstyle}
         """
-        await self._db.execute(query, (chat_id, request_token))
+        row = await self._db.fetchone(query, (chat_id,))
+        if row is not None:
+            return row[0]  # type: ignore
+
+    async def save_request_token(self, chat_id: int, request_token: str) -> None:
+        user_id = await self._get_user_id(chat_id)
+        if user_id is None:
+            return
+
+        query = f"""
+        INSERT INTO bot_pocket_integration (user_id, request_token, active, added)
+        VALUES ({self._paramstyle}, {self._paramstyle}, true, datetime('now'))
+        """
+        await self._db.execute(query, (user_id, request_token))

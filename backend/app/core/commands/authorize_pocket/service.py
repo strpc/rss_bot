@@ -28,6 +28,6 @@ class AuthorizePocketService(CommandServiceABC):
             await self._service_messages.send(chat_id, ServiceMessage.error)
             return
 
-        # await self._repository.save_request_token(chat_id, request_token)
+        await self._repository.save_request_token(chat_id, request_token)
         text = await self._pocket_client.get_auth_url(request_token)
         await self._telegram.send_message(chat_id, text, disable_web_page_preview=True)
