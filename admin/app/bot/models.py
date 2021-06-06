@@ -1,10 +1,11 @@
+# mypy: ignore-errors
 from datetime import datetime
 
 from django.db import models
 
 
 class User(models.Model):
-    """Модель юзера"""
+    """Модель юзера."""
 
     chat_id = models.BigIntegerField("Chat ID", unique=True, null=False, blank=False)
     first_name = models.CharField("Имя", max_length=150, null=True, blank=True)
@@ -28,16 +29,23 @@ class User(models.Model):
 
 
 class RSS(models.Model):
-    """Фиды пользователей"""
+    """Фиды пользователей."""
 
     chat_id: User = models.ForeignKey(
-        User, to_field="chat_id", verbose_name="Пользователь", on_delete=models.CASCADE
+        User,
+        to_field="chat_id",
+        verbose_name="Пользователь",
+        on_delete=models.CASCADE,
     )
     url = models.CharField("URL RSS", max_length=2000, null=False, blank=False)
     added: datetime = models.DateTimeField("Добавлено", auto_now_add=True)
     active = models.BooleanField("Активная", default=True, blank=False, null=False)
     chatid_url_hash = models.CharField(
-        "Base64 hash", max_length=2500, null=False, blank=False, unique=True
+        "Base64 hash",
+        max_length=2500,
+        null=False,
+        blank=False,
+        unique=True,
     )
 
     def __str__(self):
@@ -55,10 +63,13 @@ class RSS(models.Model):
 
 
 class Article(models.Model):
-    """Статьи"""
+    """Статьи."""
 
     chat_id: User = models.ForeignKey(
-        User, to_field="chat_id", verbose_name="Пользователь", on_delete=models.CASCADE
+        User,
+        to_field="chat_id",
+        verbose_name="Пользователь",
+        on_delete=models.CASCADE,
     )
     url_article = models.TextField("Ссылка на статью", blank=False, null=False)
     title = models.CharField("Заголовок статьи", max_length=1000, blank=True, null=True)
@@ -66,10 +77,17 @@ class Article(models.Model):
     sended = models.BooleanField("Отправлено", default=False, blank=False, null=False)
     added: datetime = models.DateTimeField("Добавлено", auto_now_add=True)
     rss_url: RSS = models.ForeignKey(
-        RSS, to_field="chatid_url_hash", verbose_name="RSS", on_delete=models.CASCADE
+        RSS,
+        to_field="chatid_url_hash",
+        verbose_name="RSS",
+        on_delete=models.CASCADE,
     )
     chatid_url_article_hash = models.CharField(
-        "Base64 hash", max_length=2500, null=False, blank=False, unique=True
+        "Base64 hash",
+        max_length=2500,
+        null=False,
+        blank=False,
+        unique=True,
     )
 
     def get_rss_url(self):
@@ -94,7 +112,7 @@ class Article(models.Model):
 
 
 class ServiceMessage(models.Model):
-    """Сервисные сообщения"""
+    """Сервисные сообщения."""
 
     title = models.CharField("Заголовок сообщения", max_length=250, blank=False, null=False)
     text = models.CharField("Текст сообщения", max_length=5000, blank=False, null=False)
@@ -106,3 +124,16 @@ class ServiceMessage(models.Model):
         db_table = "bot_service_message"
         verbose_name = "Сервисное сообщение"
         verbose_name_plural = "Сервисные сообщения"
+
+
+class PocketIntegration(models.Model):
+    user: User = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE)
+    request_token = models.CharField("Request token", max_length=250, blank=True, null=True)
+    access_token = models.CharField("Access token", max_length=250, blank=True, null=True)
+    active = models.BooleanField("Активный", default=True)
+    added: datetime = models.DateTimeField("Добавлено", auto_now_add=True)
+
+    class Meta:
+        db_table = "bot_pocket_integration"
+        verbose_name = "Интеграция с Pocket"
+        verbose_name_plural = "Интеграции с Pocket"

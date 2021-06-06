@@ -1,14 +1,18 @@
+# mypy: ignore-errors
 from django import forms
 from django.contrib import admin
 
-from .models import RSS, Article, ServiceMessage, User
+from .models import RSS, Article, PocketIntegration, ServiceMessage, User
 
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class BaseAdminModel(admin.ModelAdmin):
     save_on_top = True
     save_as = True
     empty_value_display = "Недоступно"
+
+
+@admin.register(User)
+class UserAdmin(BaseAdminModel):
     fields = (
         "chat_id",
         "first_name",
@@ -49,10 +53,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 @admin.register(RSS)
-class AdminRss(admin.ModelAdmin):
-    save_on_top = True
-    save_as = True
-    empty_value_display = "Недоступно"
+class AdminRss(BaseAdminModel):
     fields = (
         "view_username",
         "url",
@@ -81,10 +82,7 @@ class AdminRss(admin.ModelAdmin):
 
 
 @admin.register(Article)
-class AdminArticle(admin.ModelAdmin):
-    save_on_top = True
-    save_as = True
-    empty_value_display = "Недоступно"
+class AdminArticle(BaseAdminModel):
     ordering = ("added", "chat_id__pk")
     fields = (
         "view_username",
@@ -135,14 +133,21 @@ class ServiceMessageForm(forms.ModelForm):
 
 
 @admin.register(ServiceMessage)
-class AdminServiceMessage(admin.ModelAdmin):
-    save_on_top = True
-    save_as = True
+class AdminServiceMessage(BaseAdminModel):
     fields = ("title", "text")
     ordering = ("title", "text")
     list_display = ("title", "text")
     list_display_links = ("title", "text")
     form = ServiceMessageForm
+
+
+@admin.register(PocketIntegration)
+class AdminPocketIntegration(BaseAdminModel):
+    fields = ("user", "request_token", "access_token", "active", "added")
+    list_display = ("user", "active", "added")
+    list_display_links = ("user", "active", "added")
+    ordering = ("active", "added", "user")
+    readonly_fields = ("user", "request_token", "access_token", "added")
 
 
 admin.site.site_title = "RSS bot"
