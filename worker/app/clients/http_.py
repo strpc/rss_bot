@@ -23,6 +23,7 @@ class HttpClientABC(ABC):
         url: str,
         *,
         params: Optional[_types.QueryParamTypes] = None,
+        headers: Optional[_types.HeaderTypes] = None,
         body: Optional[Any] = None,
         data: Optional[_types.RequestData] = None,
     ) -> Response:
@@ -49,9 +50,10 @@ class HttpClient(HttpClientABC):
         url: str,
         *,
         params: Optional[_types.QueryParamTypes] = None,
+        headers: Optional[_types.HeaderTypes] = None,
         body: Optional[Any] = None,
         data: Optional[_types.RequestData] = None,
     ) -> Response:
         """Обертка над post-запросом."""
         async with httpx.AsyncClient() as client:
-            return await client.post(url, json=body, params=params, data=data)
+            return await client.post(url, json=body, headers=headers, params=params, data=data)
