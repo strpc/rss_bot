@@ -73,6 +73,7 @@ def send_messages(*args: Any, **kwargs: Any) -> None:
     loop = asyncio.get_event_loop()
     db = Database(url=config.db.url, paramstyle=config.db.paramstyle)
     loop.run_until_complete(db.connect())
+
     feeds_repository = FeedsRepository(db, paramstyle=config.db.paramstyle)
     feeds_service = FeedsService(
         repository=feeds_repository,
@@ -80,7 +81,9 @@ def send_messages(*args: Any, **kwargs: Any) -> None:
     )
     users_repository = UsersRepository(db=db)
     users_service = UsersService(repository=users_repository)
+
     telegram = Telegram(token=config.telegram.token, client=HttpClient())
+
     sender = SenderMessages(
         db=db,
         feeds_service=feeds_service,
@@ -97,4 +100,4 @@ def send_messages(*args: Any, **kwargs: Any) -> None:
 
 
 if __name__ == "__main__":
-    load_articles()
+    send_messages()

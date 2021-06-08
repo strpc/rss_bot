@@ -15,9 +15,8 @@ class User(BaseModel):
 
 
 class PocketIntegraion(BaseModel):
-    pocket_request_token: str
     pocket_access_token: Optional[str]
 
 
 class UserIntegration(PocketIntegraion):
-    chat_id: int
+    ...
