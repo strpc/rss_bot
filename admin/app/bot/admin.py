@@ -143,11 +143,37 @@ class AdminServiceMessage(BaseAdminModel):
 
 @admin.register(PocketIntegration)
 class AdminPocketIntegration(BaseAdminModel):
-    fields = ("user", "request_token", "access_token", "active", "added")
-    list_display = ("user", "active", "added")
-    list_display_links = ("user", "active", "added")
-    ordering = ("active", "added", "user")
-    readonly_fields = ("user", "request_token", "access_token", "added")
+    fields = (
+        "user",
+        "request_token",
+        "access_token",
+        "active",
+        "added",
+        "error_code",
+        "error_message",
+        "status_code",
+    )
+    list_display = (
+        "user",
+        "active",
+        "added",
+        "updated",
+        "error_code",
+        "error_message",
+        "status_code",
+    )
+    list_display_links = ("user", "active", "added", "updated")
+    ordering = ("active", "added", "updated", "user")
+    readonly_fields = (
+        "user",
+        "request_token",
+        "access_token",
+        "added",
+        "updated",
+        "error_code",
+        "error_message",
+        "status_code",
+    )
 
 
 admin.site.site_title = "RSS bot"

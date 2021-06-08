@@ -138,6 +138,15 @@ class PocketIntegration(models.Model):
     username = models.CharField("username", max_length=250, blank=True, null=True)
     active = models.BooleanField("Активный", default=True)
     added: datetime = models.DateTimeField("Добавлено", auto_now_add=True)
+    updated: datetime = models.DateTimeField("Обновлено", auto_now_add=True, null=True, blank=True)
+    error_code = models.IntegerField("Ошибка Pocket", null=True, blank=True)
+    error_message = models.CharField(
+        "Сообщение ошибки Pocket",
+        max_length=250,
+        null=True,
+        blank=True,
+    )
+    status_code = models.IntegerField("Статус код", null=True, blank=True)
 
     class Meta:
         db_table = "bot_pocket_integration"
