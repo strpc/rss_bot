@@ -50,12 +50,20 @@ class DBSettings(BaseSettings):
         env_prefix = "database_"
 
 
+class PocketConfig(BaseSettings):
+    consumer_key: str
+
+    class Config:
+        env_prefix = "pocket_"
+
+
 class MainConfig(BaseSettings):
     app: AppConfig = AppConfig()
     db: DBSettings = DBSettings()
     celery: CeleryConfig = CeleryConfig()
     easy_notifyer: EasyNotifyerConfig = EasyNotifyerConfig()
     telegram: TelegramConfig = TelegramConfig()
+    pocket: PocketConfig = PocketConfig()
 
 
 def get_config() -> MainConfig:
