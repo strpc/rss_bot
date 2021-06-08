@@ -34,13 +34,25 @@ async def run_in_threadpool(func: Callable, *args: Any, **kwargs: Any) -> Any:
     return await loop.run_in_executor(None, func, *args)
 
 
-def shielding_markdown_text(text: str) -> str:
+def safetyed_markdown_text(text: str) -> str:
     new_text = (
-        text.replace("_", "\\_")
-        .replace("*", "\\*")
+        text.replace("\\", "\\\\")
+        .replace("{", "\\{")
+        .replace("}", "\\}")
         .replace("[", "\\[")
+        .replace("]", "\\]")
+        .replace("(", "\\(")
+        .replace(")", "\\)")
+        .replace(">", "\\>")
+        .replace("<", "\\<")
         .replace("`", "\\`")
         .replace(".", "\\.")
+        .replace("#", "\\#")
+        .replace("_", "\\_")
+        .replace("-", "\\-")
+        .replace("*", "\\*")
+        .replace("+", "\\+")
+        .replace("!", "\\!")
     )
     return new_text
 

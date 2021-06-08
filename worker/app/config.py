@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Union
+from typing import List, Optional, Union
 
 from pydantic import AnyUrl, BaseSettings
 
@@ -39,7 +39,9 @@ class EasyNotifyerConfig(TelegramConfig):
 class AppConfig(BaseSettings):
     debug: bool = False
     log_level: LogLevelEnum = LogLevelEnum.INFO
-    limit_load_feed: int
+
+    class Config:
+        env_prefix = "app_"
 
 
 class DBSettings(BaseSettings):
@@ -57,13 +59,23 @@ class PocketConfig(BaseSettings):
         env_prefix = "pocket_"
 
 
+class LimitConfig(BaseSettings):
+    load_feed: int
+    title: int
+    text: int
+
+    class Config:
+        env_prefix = "limit_"
+
+
 class MainConfig(BaseSettings):
     app: AppConfig = AppConfig()
     db: DBSettings = DBSettings()
     celery: CeleryConfig = CeleryConfig()
-    easy_notifyer: EasyNotifyerConfig = EasyNotifyerConfig()
+    easy_notifyer: Optional[EasyNotifyerConfig] = EasyNotifyerConfig()
     telegram: TelegramConfig = TelegramConfig()
     pocket: PocketConfig = PocketConfig()
+    limits: LimitConfig = LimitConfig()
 
 
 def get_config() -> MainConfig:

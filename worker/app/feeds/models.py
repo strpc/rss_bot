@@ -17,11 +17,10 @@ class Entry(BaseModel):
 
     @validator("text")
     def remove_tags(cls, value: Optional[str]) -> Optional[str]:
-        print(type(value))
         if isinstance(value, str):
             cleanr = re.compile(r"<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
             cleantext = re.sub(cleanr, "", value)
-            return cleantext.replace("\n", " ")
+            return cleantext.replace("\n", " ").strip()
         return value
 
     @validator("url")

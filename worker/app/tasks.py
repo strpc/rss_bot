@@ -36,7 +36,7 @@ def load_articles(*args: Any, **kwargs: Any) -> None:
     loader = LoadEntries(db=db, feeds_service=feeds_service, users_service=users_service)
 
     try:
-        loop.run_until_complete(loader.load(limit_feeds=config.app.limit_load_feed))
+        loop.run_until_complete(loader.load(limit_feeds=config.limits.load_feed))
     except Exception as error:
         logger.exception(error)
     finally:
@@ -90,7 +90,12 @@ def send_messages(*args: Any, **kwargs: Any) -> None:
         telegram=telegram,
     )
     try:
-        loop.run_until_complete(sender.send())
+        loop.run_until_complete(
+            sender.send(
+                limit_title=config.limits.title,
+                limit_text=config.limits.text,
+            ),
+        )  # TODO: добавить отключение юзеров, если бот стопнут
     except Exception as error:
         logger.exception(error)
     finally:
