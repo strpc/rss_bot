@@ -24,5 +24,10 @@ class PocketAuthRepository:
         query = f"""
         INSERT INTO bot_pocket_integration (user_id, request_token, active, added)
         VALUES ({self._paramstyle}, {self._paramstyle}, true, datetime('now'))
+        ON CONFLICT(user_id) DO UPDATE SET
+        request_token={self._paramstyle},
+        active=true,
+        added=datetime('now'),
+        access_token=null
         """
-        await self._db.execute(query, (user_id, request_token))
+        await self._db.execute(query, (user_id, request_token, request_token))
