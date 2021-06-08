@@ -53,6 +53,7 @@ class FeedsRepository:
         text as text,
         chat_id_id as chat_id
         FROM bot_article
+        WHERE sended is FALSE
         """
         rows = await self._db.fetchall(query, as_dict=True)
         if rows is not None:
