@@ -30,16 +30,16 @@ class Parser:
 
 
 class FeedsService:
-    def __init__(self, *, repository: FeedsRepository, limit_load_feed: int):
+    def __init__(self, *, repository: FeedsRepository):
         self._repository = repository
-        self._limit_load_feed = limit_load_feed
 
     async def get_active_feeds(self, chat_id: int) -> Optional[Tuple[Feed, ...]]:
         return await self._repository.get_active_feeds(chat_id=chat_id)
 
-    async def load_entries(self, url: str) -> Optional[Tuple[Entry, ...]]:
+    @staticmethod
+    async def load_entries(url: str, limit_feeds: int) -> Optional[Tuple[Entry, ...]]:
         parser = Parser(url)
-        return await parser.parse(self._limit_load_feed)
+        return await parser.parse(limit_feeds)
 
     async def exists_entry(self, chat_id_url_hash: str) -> bool:
         return await self._repository.exists_entry(chat_id_url_hash=chat_id_url_hash)

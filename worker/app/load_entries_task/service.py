@@ -28,9 +28,14 @@ class LoadEntries:
         url_chat_id_hash = get_hash(url, chat_id)  # type: ignore
         return await self._feeds_service.exists_entry(url_chat_id_hash)
 
-    async def _load_new_entries(self, user: User, feed: Feed) -> AsyncIterable[Entry]:
+    async def _load_new_entries(
+        self,
+        user: User,
+        feed: Feed,
+        limit_feeds: int,
+    ) -> AsyncIterable[Entry]:
         logger.debug("Загружаем записи фида {}...", feed.url)
-        entries = await self._feeds_service.load_entries(feed.url)
+        entries = await self._feeds_service.load_entries(feed.url, limit_feeds)
 
         if entries is None:
             logger.warning("У фида отсутствуют статьи. {}", feed)
@@ -43,7 +48,7 @@ class LoadEntries:
                 continue
             yield entry
 
-    async def load(self) -> None:
+    async def load(self, limit_feeds: int) -> None:
         logger.debug("Получаем список активных юзеров...")
         active_users = await self._users_service.get_active_users()
 
@@ -60,11 +65,11 @@ class LoadEntries:
                 logger.debug("У юзера {} нет активных фидов.", user)
                 continue
 
-            logger.debug("У юзера {} активных фидов.", len(user_feeds))
+            logger.info("У юзера {} - {} активных фидов.", user.chat_id, len(user_feeds))
             for feed in user_feeds:
 
                 execute_values = []
-                async for new_entry in self._load_new_entries(user, feed):
+                async for new_entry in self._load_new_entries(user, feed, limit_feeds):
                     execute_values.append(
                         (
                             new_entry.url,

@@ -7,9 +7,9 @@ from app.feeds.models import Feed, UserEntry
 
 
 class FeedsRepository:
-    def __init__(self, db: Database, paramstyle: str):
+    def __init__(self, db: Database):
         self._db = db
-        self._paramstyle = paramstyle
+        self._paramstyle = db.paramstyle
 
     async def get_active_feeds(self, chat_id: int) -> Optional[Tuple[Feed, ...]]:
         query = f"""

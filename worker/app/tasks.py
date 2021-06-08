@@ -29,17 +29,14 @@ def load_articles(*args: Any, **kwargs: Any) -> None:
     loop = asyncio.get_event_loop()
     db = Database(url=config.db.url, paramstyle=config.db.paramstyle)
     loop.run_until_complete(db.connect())
-    feeds_repository = FeedsRepository(db, paramstyle=config.db.paramstyle)
-    feeds_service = FeedsService(
-        repository=feeds_repository,
-        limit_load_feed=config.app.limit_load_feed,
-    )
+    feeds_repository = FeedsRepository(db)
+    feeds_service = FeedsService(repository=feeds_repository)
     users_repository = UsersRepository(db=db)
     users_service = UsersService(repository=users_repository)
     loader = LoadEntries(db=db, feeds_service=feeds_service, users_service=users_service)
 
     try:
-        loop.run_until_complete(loader.load())
+        loop.run_until_complete(loader.load(limit_feeds=config.app.limit_load_feed))
     except Exception as error:
         logger.exception(error)
     finally:
@@ -74,11 +71,9 @@ def send_messages(*args: Any, **kwargs: Any) -> None:
     db = Database(url=config.db.url, paramstyle=config.db.paramstyle)
     loop.run_until_complete(db.connect())
 
-    feeds_repository = FeedsRepository(db, paramstyle=config.db.paramstyle)
-    feeds_service = FeedsService(
-        repository=feeds_repository,
-        limit_load_feed=config.app.limit_load_feed,
-    )
+    feeds_repository = FeedsRepository(db)
+    feeds_service = FeedsService(repository=feeds_repository)
+
     users_repository = UsersRepository(db=db)
     users_service = UsersService(repository=users_repository)
 
