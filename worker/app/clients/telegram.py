@@ -68,6 +68,7 @@ class Telegram(TelegramABC):
             response.status_code,
             json_body,
         )
+        logger.debug("body: {}", body)
         return response
 
     async def send_message(
