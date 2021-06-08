@@ -93,5 +93,13 @@ class Telegram(TelegramABC):
         url = self._format_url(method)
         return await self._send_post_request(url, body, attempt=attempt, delay=delay)
 
-    async def send_raw_message(self, body: Dict[str, Any]) -> None:
-        pass
+    async def send_raw_message(
+        self,
+        body: Dict[str, Any],
+        *,
+        attempt: int = 5,
+        delay: int = 0,  # TODO: DEBUG MODE!
+    ) -> Response:
+        method = "sendMessage"
+        url = self._format_url(method)
+        return await self._send_post_request(url, body, attempt=attempt, delay=delay)
