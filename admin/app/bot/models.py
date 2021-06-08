@@ -127,9 +127,15 @@ class ServiceMessage(models.Model):
 
 
 class PocketIntegration(models.Model):
-    user: User = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE)
+    user: User = models.ForeignKey(
+        User,
+        verbose_name="Пользователь",
+        on_delete=models.CASCADE,
+        unique=True,
+    )
     request_token = models.CharField("Request token", max_length=250, blank=True, null=True)
     access_token = models.CharField("Access token", max_length=250, blank=True, null=True)
+    username = models.CharField("username", max_length=250, blank=True, null=True)
     active = models.BooleanField("Активный", default=True)
     added: datetime = models.DateTimeField("Добавлено", auto_now_add=True)
 
