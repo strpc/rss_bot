@@ -82,6 +82,7 @@ class SenderMessages:
         if new_entries is None:
             return
 
+        sended_entries_id = []
         for entry in new_entries:
             user_integration = await self._users_service.get_user_integration(entry.chat_id)
             message_body = await self._create_message(
@@ -90,4 +91,7 @@ class SenderMessages:
                 limit_title=limit_title,
                 limit_text=limit_text,
             )
+            # todo: сделать проверку, что если не отправляется в маркдауне, то отправить без него
             await self._telegram.send_raw_message(message_body)
+            sended_entries_id.append(entry.id)
+        await self._feeds_service.mark_sended_entries(sended_entries_id)

@@ -58,3 +58,13 @@ class FeedsRepository:
         rows = await self._db.fetchall(query, as_dict=True)
         if rows is not None:
             return parse_obj_as(Tuple[UserEntry, ...], rows)
+
+    async def mark_sended_entries(self, entries_id: List[int]) -> None:
+        query = f"""
+        UPDATE bot_article
+        SET
+        sended = TRUE
+        WHERE id IN ({",".join(self._paramstyle for _ in entries_id)})
+        """
+        print(query)
+        await self._db.execute(query, entries_id)
