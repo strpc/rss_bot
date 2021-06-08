@@ -12,6 +12,7 @@ from app.core.users.models import User
 from app.custom_router import LoggingRoute
 from app.reporters_errors import get_telegram_reporter
 from app.schemas.callback import Callback
+from app.schemas.enums import TypeUpdate
 from app.schemas.message import Message
 
 
@@ -23,21 +24,28 @@ telegram_reporter = get_telegram_reporter()
 @telegram_reporter(as_attached=True)
 async def new_message(
     update: Union[Message, Callback] = Body(...),
-    command_service: CommandServiceABC = Depends(get_command_service),
+    handle_service: CommandServiceABC = Depends(get_command_service),
     service_messages: ServiceMessagesService = Depends(get_service_messages_service),
     current_user: User = Depends(get_current_user),
 ) -> Response:
     try:
-        if update.message.command is None or command_service is None:
-            logger.warning("Неподдерживаемое событие. body={}", update.dict(exclude_none=True))
+        if (
+            update.type_update is TypeUpdate.message
+            and update.message.command is None
+            or handle_service is None
+        ):
+            logger.warning("Неподдерживаемое событие. body={}...", update.dict(exclude_none=True))
             await service_messages.send(
                 current_user.chat_id,
                 ServiceMessage.unsupported_update,
             )
             return Response(status_code=200)
 
-        logger.debug("Handle command /{}", update.message.command)
-        await command_service.handle(update)
+        if update.type_update is TypeUpdate.message:
+            logger.debug("Handle command /{}...", update.message.command)
+        else:
+            logger.debug("Handle {}", update.type_update)
+        await handle_service.handle(update)
     except Exception as error:
         logger.exception(error)
     return Response(status_code=200)

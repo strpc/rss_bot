@@ -28,7 +28,6 @@ class TypeEntity(str, Enum):
 class TypeUpdate(str, Enum):
     message = "message"
     callback = "callback"
-    # edited_message = "edited_message"
 
 
 class TypeChat(str, Enum):

@@ -49,3 +49,4 @@ class CallbackQuery(BaseModel):
 class Callback(BaseModel):
     update_id: int
     callback_query: CallbackQuery
+    type_update: TypeUpdate = TypeUpdate.callback

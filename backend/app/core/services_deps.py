@@ -3,6 +3,8 @@ from typing import Optional, Union
 from fastapi import Body, Depends
 from loguru import logger
 
+from app.core.callbacks.deps import get_callback_service
+from app.core.callbacks.service import CallbackService
 from app.core.commands.add_feed.deps import get_command_add_feed_service
 from app.core.commands.add_feed.service import CommandAddFeedService
 from app.core.commands.authorize.deps import get_command_authorize_service
@@ -19,6 +21,7 @@ from app.core.users.deps import get_users_service
 from app.core.users.models import User
 from app.core.users.service import UsersService
 from app.schemas.callback import Callback
+from app.schemas.enums import TypeUpdate
 from app.schemas.message import Message
 
 
@@ -27,6 +30,7 @@ CommandsServicesType = Union[
     CommandAddFeedService,
     CommandListFeedService,
     CommandDeleteFeedService,
+    CallbackService,
 ]
 
 
@@ -49,9 +53,10 @@ def get_command_service(
     delete_feed_service: CommandStartService = Depends(get_command_delete_feed_service),
     authorize_service: AuthorizeService = Depends(get_command_authorize_service),
     authorize_pocket_service: AuthorizePocketService = Depends(get_authorize_pocket_service),
+    callback_service: CallbackService = Depends(get_callback_service),
 ) -> Optional[CommandsServicesType]:
-    if isinstance(update, Callback):
-        return None
+    if update.type_update is TypeUpdate.callback:
+        return callback_service
     commands_map = {
         "start": start_service,
         "add_feed": add_feed_service,
