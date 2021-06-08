@@ -14,7 +14,7 @@ from app.load_entries_task.service import LoadEntries
 from app.logger import configure_logging
 from app.main import app_celery
 from app.pocket.service import PocketService
-from app.pocket_updater_task.service import PocketUpdater
+from app.pocket_updater_task import service as pocket
 from app.send_entries_task.service import SenderMessages
 from app.users.repository import UsersRepository
 from app.users.service import UsersService
@@ -56,9 +56,13 @@ def pocket_updater(*args: Any, **kwargs: Any) -> None:
     users_repository = UsersRepository(db=db)
     users_service = UsersService(repository=users_repository)
 
-    updater = PocketUpdater(pocket_service=pocket_service, users_service=users_service)
     try:
-        loop.run_until_complete(updater.update())
+        loop.run_until_complete(
+            pocket.update_access_tokens(
+                pocket_service=pocket_service,
+                users_service=users_service,
+            ),
+        )
     except Exception as error:
         logger.exception(error)
     finally:

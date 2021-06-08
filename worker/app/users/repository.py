@@ -58,8 +58,30 @@ class UsersRepository:
         UPDATE bot_pocket_integration
         SET
         access_token = {self._paramstyle},
-        username = {self._paramstyle}
+        username = {self._paramstyle},
+        updated = datetime('now')
         WHERE
         request_token = {self._paramstyle}
         """
         await self._db.execute(query, (access_token, username, request_token))
+
+    async def disable_pocket_integration(
+        self,
+        *,
+        request_token: str,
+        error_code: int,
+        error_message: str,
+        status_code: int,
+    ) -> None:
+        query = f"""
+        UPDATE bot_pocket_integration
+        SET
+        error_code = {self._paramstyle},
+        error_message = {self._paramstyle},
+        status_code = {self._paramstyle},
+        updated = datetime('now'),
+        active = FALSE
+        WHERE
+        request_token = {self._paramstyle}
+        """
+        await self._db.execute(query, (error_code, error_message, status_code, request_token))

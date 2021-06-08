@@ -29,3 +29,18 @@ class UsersService:
             access_token=token,  # type: ignore
             username=username,  # type: ignore
         )
+
+    async def disable_pocket_integration(
+        self,
+        *,
+        request_token: str,
+        error_code: int,
+        error_message: str,
+        status_code: int,
+    ) -> None:
+        await self._repository.disable_pocket_integration(
+            request_token=request_token,
+            error_code=error_code,
+            error_message=error_message,
+            status_code=status_code,
+        )
