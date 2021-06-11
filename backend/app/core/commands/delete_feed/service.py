@@ -4,6 +4,7 @@ from loguru import logger
 
 from app.core.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
+from app.core.feeds.models import Feed
 from app.core.feeds.service import FeedsService
 from app.core.service_messages.models import ServiceMessage
 from app.core.service_messages.service import ServiceMessagesService
@@ -25,10 +26,10 @@ class CommandDeleteFeedService(CommandServiceABC):
         self._service_messages = service_messages
 
     @staticmethod
-    def _format_deleted_list_msg(active_feeds: Tuple[str, ...]) -> str:
+    def _format_deleted_list_msg(active_feeds: Tuple[Feed, ...]) -> str:
         text = "For unsubscribe send:\n"
         for feed in active_feeds:
-            text += f"`/delete_feed {feed}`\n"
+            text += f"`/delete_feed {feed.url}`\n"
         return text
 
     async def handle(self, update: Message) -> None:
@@ -56,8 +57,8 @@ class CommandDeleteFeedService(CommandServiceABC):
                 await self._service_messages.send(chat_id, ServiceMessage.incorrect_rss)
                 return
 
-            active_feeds = await self._feeds_service.get_active_feeds(chat_id)
-            if active_feeds is None or url_feed not in active_feeds:
+            exists_feed = await self._feeds_service.exists_active_feed_user(chat_id, url_feed)
+            if not exists_feed:
                 logger.warning("Попытка удалить фид, который не добавлен. {}", url_feed)
                 await self._service_messages.send(chat_id, ServiceMessage.url_not_founded)
                 return

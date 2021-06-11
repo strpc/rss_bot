@@ -56,4 +56,4 @@ class HttpClient(HttpClientABC):
     ) -> Response:
         """Обертка над post-запросом."""
         async with httpx.AsyncClient() as client:
-            return await client.post(url, headers=headers, json=body, params=params, data=data)
+            return await client.post(url, json=body, headers=headers, params=params, data=data)

@@ -3,26 +3,26 @@ from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
-from app.clients.database import Database
-from app.clients.telegram import Telegram
-from app.feeds.models import UserEntry
-from app.feeds.service import FeedsService
-from app.send_entries_task.models import Button, PocketButton
-from app.users.models import PocketIntegraion
-from app.users.service import UsersService
-from app.utils import bold_markdown, safetyed_markdown_text
+from app.core.clients.database import Database
+from app.core.clients.telegram import Telegram
+from app.core.feeds.models import UserEntry
+from app.core.feeds.service import FeedsService
+from app.core.users.models import PocketIntegraion
+from app.core.users.service import UsersService
+from app.core.utils import bold_markdown, safetyed_markdown_text
+from app.core.worker.send_entries_task.models import Button, PocketButton
 
 
 class SenderMessages:
     def __init__(
         self,
         *,
-        db: Database,
+        database: Database,
         feeds_service: FeedsService,
         users_service: UsersService,
         telegram: Telegram,
     ):
-        self._db = db
+        self._db = database
         self._feeds_service = feeds_service
         self._users_service = users_service
         self._telegram = telegram

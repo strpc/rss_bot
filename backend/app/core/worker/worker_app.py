@@ -2,9 +2,11 @@ from celery import Celery
 from celery.schedules import crontab
 
 from app.config import get_config
+from app.core.worker.logger import configure_logging
 
 
 config = get_config()
+configure_logging(config.app.log_level)
 
 app_celery = Celery("rss_bot", broker=config.celery.broker, timezone="UTC")
 

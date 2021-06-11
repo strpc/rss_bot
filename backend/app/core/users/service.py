@@ -1,8 +1,8 @@
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 from loguru import logger
 
-from app.core.users.models import User
+from app.core.users.models import User, UserIntegration
 from app.core.users.repository import UsersRepository
 from app.schemas.callback import Callback
 from app.schemas.message import Message
@@ -46,3 +46,40 @@ class UsersService:
         logger.info("Активация юзера...")
         await self._repository.activate_user(chat_id)
         logger.info("Юзер активирован.")
+
+    async def get_active_users(self) -> Optional[Tuple[User, ...]]:
+        return await self._repository.get_active_users()
+
+    async def get_new_request_token(self) -> Optional[Tuple[str, ...]]:
+        return await self._repository.get_new_request_token()
+
+    async def get_user_integration(self, chat_id: int) -> Optional[UserIntegration]:
+        return await self._repository.get_user_integration(chat_id)
+
+    async def update_access_token(
+        self,
+        request_token: str,
+        access_token: Dict[str, Any],
+    ) -> None:
+        token = access_token.get("access_token")
+        username = access_token.get("username")
+        await self._repository.update_pocket_meta(
+            request_token=request_token,
+            access_token=token,  # type: ignore
+            username=username,  # type: ignore
+        )
+
+    async def disable_pocket_integration(
+        self,
+        *,
+        request_token: str,
+        error_code: int,
+        error_message: str,
+        status_code: int,
+    ) -> None:
+        await self._repository.disable_pocket_integration(
+            request_token=request_token,
+            error_code=error_code,
+            error_message=error_message,
+            status_code=status_code,
+        )

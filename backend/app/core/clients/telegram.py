@@ -1,7 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
 from json import JSONDecodeError
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from loguru import logger
 
@@ -68,6 +68,7 @@ class Telegram(TelegramABC):
             response.status_code,
             json_body,
         )
+        logger.debug("body: {}", body)
         return response
 
     async def send_message(
@@ -90,5 +91,16 @@ class Telegram(TelegramABC):
         if disable_web_page_preview:
             body["disable_web_page_preview"] = True
 
+        url = self._format_url(method)
+        return await self._send_post_request(url, body, attempt=attempt, delay=delay)
+
+    async def send_raw_message(
+        self,
+        body: Dict[str, Any],
+        *,
+        attempt: int = 5,
+        delay: int = 0,  # TODO: DEBUG MODE!
+    ) -> Response:
+        method = "sendMessage"
         url = self._format_url(method)
         return await self._send_post_request(url, body, attempt=attempt, delay=delay)

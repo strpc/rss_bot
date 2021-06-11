@@ -5,6 +5,33 @@ from loguru import logger
 from app.core.clients.http_ import HttpClientABC
 
 
+class PocketError(Exception):
+    def __init__(
+        self,
+        *,
+        pocket_error_code: int,
+        http_status_code: int,
+    ):
+        errors_map = {
+            138: "Missing consumer key.",
+            152: "Invalid consumer key.",
+            181: "Invalid redirect uri.",
+            182: "Missing code.",
+            185: "Code not found.",
+            158: "User rejected code.",
+            159: "Already used code.",
+            199: "Pocket server issue.",
+            000: "Pocket error code not found.",
+        }
+        self.pocket_error_code = pocket_error_code
+        self.pocket_error_message = errors_map.get(self.pocket_error_code, errors_map[000])
+        self.http_status_code = http_status_code
+        super(PocketError, self).__init__(self.pocket_error_message)
+
+    def __str__(self) -> str:
+        return self.pocket_error_message
+
+
 class PocketClient:
     def __init__(self, http_client: HttpClientABC, consumer_key: str, redirect_url: str):
         self._client = http_client
@@ -47,8 +74,19 @@ class PocketClient:
         }
         response = await self._client.post(url, headers=self._get_headers(), body=body)
         if response.status_code != 200:
-            logger.error("Ошибка при получении access-токена. headers={}", response.headers)
-            return None
+            logger.error(
+                "Ошибка при получении access-токена. status_code={} headers={}",
+                response.status_code,
+                response.headers,
+            )
+            try:
+                error_code = int(response.headers.get("X-Error-Code", "000"))
+            except ValueError:
+                error_code = 000
+            raise PocketError(
+                pocket_error_code=error_code,
+                http_status_code=response.status_code,
+            )
         return response.json()
 
     async def add_item(self, *, access_token: str, url: str, tags: Optional[str] = None) -> None:

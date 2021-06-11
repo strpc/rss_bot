@@ -1,14 +1,6 @@
 import asyncio
-
-
-try:
-    import contextvars
-
-    contextvars_exists = True
-except ImportError:
-    contextvars_exists = False
-
 import base64
+import contextvars
 import functools
 from typing import Any, Callable, Union
 from urllib.parse import urlparse
@@ -46,11 +38,37 @@ async def run_in_threadpool(func: Callable, *args: Any, **kwargs: Any) -> Any:
         same as func
     """
     loop = asyncio.get_event_loop()
-    if contextvars_exists:
-        child = functools.partial(func, *args, **kwargs)
-        context = contextvars.copy_context()
-        func = context.run
-        args = (child,)
-    elif kwargs:
+    child = functools.partial(func, *args, **kwargs)
+    context = contextvars.copy_context()
+    func = context.run
+    args = (child,)
+    if kwargs:
         func = functools.partial(func, **kwargs)
     return await loop.run_in_executor(None, func, *args)
+
+
+def safetyed_markdown_text(text: str) -> str:
+    new_text = (
+        text.replace("\\", "\\\\")
+        .replace("{", "\\{")
+        .replace("}", "\\}")
+        .replace("[", "\\[")
+        .replace("]", "\\]")
+        .replace("(", "\\(")
+        .replace(")", "\\)")
+        .replace(">", "\\>")
+        .replace("<", "\\<")
+        .replace("`", "\\`")
+        .replace(".", "\\.")
+        .replace("#", "\\#")
+        .replace("_", "\\_")
+        .replace("-", "\\-")
+        .replace("*", "\\*")
+        .replace("+", "\\+")
+        .replace("!", "\\!")
+    )
+    return new_text
+
+
+def bold_markdown(text: str) -> str:
+    return f"*{text}*"

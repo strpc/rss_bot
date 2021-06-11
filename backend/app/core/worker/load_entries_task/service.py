@@ -2,23 +2,23 @@ from typing import AsyncIterable, Optional
 
 from loguru import logger
 
-from app.clients.database import Database
-from app.feeds.models import Entry, Feed
-from app.feeds.service import FeedsService
-from app.users.models import User
-from app.users.service import UsersService
-from app.utils import get_hash
+from app.core.clients.database import Database
+from app.core.feeds.models import Entry, Feed
+from app.core.feeds.service import FeedsService
+from app.core.users.models import User
+from app.core.users.service import UsersService
+from app.core.utils import get_hash
 
 
 class LoadEntries:
     def __init__(
         self,
         *,
-        db: Database,
+        database: Database,
         feeds_service: FeedsService,
         users_service: UsersService,
     ):
-        self._db = db
+        self._db = database
         self._feeds_service = feeds_service
         self._users_service = users_service
 
