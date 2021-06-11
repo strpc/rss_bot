@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from app.schemas.enums import TypeUpdate
+from app.schemas.enums import ServiceIntegration, TypeUpdate
 
 
 class User(BaseModel):
@@ -50,3 +50,8 @@ class Callback(BaseModel):
     update_id: int
     callback_query: CallbackQuery
     type_update: TypeUpdate = TypeUpdate.callback
+
+
+class CallbackIntegrationServicePayload(BaseModel):
+    service: ServiceIntegration
+    entry_id: int

@@ -35,3 +35,7 @@ class TypeChat(str, Enum):
     group = "group"
     supergroup = "supergroup"
     channel = "channel"
+
+
+class ServiceIntegration(str, Enum):
+    pocket = "pocket"
