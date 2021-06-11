@@ -5,20 +5,26 @@ services:
     image: rss_bot_backend:${VERSION:-latest}
     build:
       context: ./backend
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/backend.dockerfile
     hostname: backend
     environment:
       - DEBUG=False
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - DATABASE_URL=${DATABASE_URL}
       - DATABASE_PARAMSTYLE=${DATABASE_PARAMSTYLE}
-      - LIMIT_FEED=${LIMIT_FEED}
+      - CELERY_BROKER=${CELERY_BROKER}
+      - CELERY_HOUR_BEAT_INTERVAL=${CELERY_HOUR_BEAT_INTERVAL}
+      - CELERY_MINUTE_BEAT_INTERVAL=${CELERY_MINUTE_BEAT_INTERVAL}
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - EASY_NOTIFYER_TOKEN=${EASY_NOTIFYER_TOKEN}
       - EASY_NOTIFYER_CHAT_ID=${EASY_NOTIFYER_CHAT_ID}
       - EASY_NOTIFYER_SERVICE_NAME=${EASY_NOTIFYER_SERVICE_NAME}
       - POCKET_CONSUMER_KEY=${POCKET_CONSUMER_KEY}
       - POCKET_REDIRECT_URL=${POCKET_REDIRECT_URL}
+      - LIMIT_LOAD_FEED=${LIMIT_LOAD_FEED}
+      - LIMIT_TITLE=${LIMIT_TITLE}
+      - LIMIT_TEXT=${LIMIT_TEXT}
+      - LIMIT_COUNT_FEED=${LIMIT_COUNT_FEED}
     volumes:
     - ./db/:/app/app/db/
 

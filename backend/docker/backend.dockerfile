@@ -1,8 +1,8 @@
 FROM python:3.8-alpine as builder
 
-COPY requirements.txt .
+COPY requirements-backend.txt .
 
-RUN pip install --prefix=/install -r ./requirements.txt
+RUN pip install --prefix=/install -r ./requirements-backend.txt
 
 
 # ========== final image
@@ -19,7 +19,7 @@ WORKDIR /app
 ENV PYTHONPATH=/app/app
 
 VOLUME ["/app/db/"]
-RUN ["chmod", "+x", "./docker/entrypoint.sh"]
+RUN ["chmod", "+x", "./docker/entrypoint-backend.sh"]
 
-ENTRYPOINT ["sh", "./docker/entrypoint.sh"]
-CMD ["prod"]
+ENTRYPOINT ["sh", "./docker/entrypoint-backend.sh"]
+CMD ["backend-prod"]

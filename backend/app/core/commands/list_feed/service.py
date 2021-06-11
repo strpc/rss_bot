@@ -4,6 +4,7 @@ from loguru import logger
 
 from app.core.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
+from app.core.feeds.models import Feed
 from app.core.feeds.service import FeedsService
 from app.core.service_messages.models import ServiceMessage
 from app.core.service_messages.service import ServiceMessagesService
@@ -23,8 +24,8 @@ class CommandListFeedService(CommandServiceABC):
         self._service_messages = service_messages
 
     @staticmethod
-    def _format_subscribed_msg(list_feeds: Tuple[str, ...]) -> str:
-        return "You are subscribed to:\n{}".format("\n".join(list_feeds))
+    def _format_subscribed_msg(list_feeds: Tuple[Feed, ...]) -> str:
+        return "You are subscribed to:\n{}".format("\n".join([feed.url for feed in list_feeds]))
 
     async def handle(self, update: Message) -> None:
         chat_id = update.message.chat.id

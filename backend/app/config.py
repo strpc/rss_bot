@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Union
+from typing import List, Optional, Union
 
 from pydantic import BaseSettings
 
@@ -12,19 +12,20 @@ class LogLevelEnum(str, Enum):
     DEBUG = "DEBUG"
 
 
+class CeleryConfig(BaseSettings):
+    broker: str
+    hour_beat_interval: str = "*"
+    minute_beat_interval: str = "*"
+
+    class Config:
+        env_prefix = "celery_"
+
+
 class TelegramConfig(BaseSettings):
     token: str
 
     class Config:
         env_prefix = "telegram_"
-
-
-class PocketConfig(BaseSettings):
-    consumer_key: str
-    redirect_url: str
-
-    class Config:
-        env_prefix = "pocket_"
 
 
 class EasyNotifyerConfig(TelegramConfig):
@@ -35,10 +36,27 @@ class EasyNotifyerConfig(TelegramConfig):
         env_prefix = "easy_notifyer_"
 
 
+class PocketConfig(BaseSettings):
+    consumer_key: str
+    redirect_url: str
+
+    class Config:
+        env_prefix = "pocket_"
+
+
+class LimitConfig(BaseSettings):
+    load_feed: int
+    title: int
+    text: int
+    count_feed: int
+
+    class Config:
+        env_prefix = "limit_"
+
+
 class AppSettings(BaseSettings):
     debug: bool = False
     log_level: LogLevelEnum = LogLevelEnum.INFO
-    limit_feed: int
 
 
 class DBSettings(BaseSettings):
@@ -51,8 +69,10 @@ class DBSettings(BaseSettings):
 
 class MainConfig(BaseSettings):
     app: AppSettings = AppSettings()
+    celery: CeleryConfig = CeleryConfig()
     db: DBSettings = DBSettings()
-    easy_notifyer: EasyNotifyerConfig = EasyNotifyerConfig()
+    easy_notifyer: Optional[EasyNotifyerConfig] = EasyNotifyerConfig()
+    limits: LimitConfig = LimitConfig()
     telegram: TelegramConfig = TelegramConfig()
     pocket: PocketConfig = PocketConfig()
 

@@ -20,5 +20,5 @@ def get_command_add_feed_service(
         feeds_service=feeds_service,
         telegram=telegram,
         service_messages=service_messages,
-        limit_feed=config.app.limit_feed,
+        limit_feed=config.limits.count_feed,
     )

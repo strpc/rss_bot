@@ -46,21 +46,21 @@ class CommandAddFeedService(CommandServiceABC):
 
     async def handle(self, update: Message) -> None:
         chat_id = update.message.chat.id
-        url = update.message.text.replace("/add_feed", "", 1).strip().split()[0]
+        url = update.message.text.replace("/add_feed", "", 1).strip().split()
 
-        if not validate_url(url):
+        if not url or not validate_url(url[0]):
             logger.warning("Некорректный url. {}", url)
             await self._service_messages.send(chat_id, ServiceMessage.incorrect_rss)
             return
 
-        url_without_schema = self._strip_scheme(url)
-        if not await self._is_feed(url):
-            logger.warning("URL не является фидом. url={}", url)
+        url_without_schema = self._strip_scheme(url[0])
+        if not await self._is_feed(url[0]):
+            logger.warning("URL не является фидом. url={}", url[0])
             await self._service_messages.send(chat_id, ServiceMessage.incorrect_rss)
             return
 
         if await self._exists_active_feed_user(chat_id, url_without_schema):
-            logger.warning("Попытка добавить один и тот же фид дважды. url={}", url)
+            logger.warning("Попытка добавить один и тот же фид дважды. url={}", url[0])
             await self._service_messages.send(chat_id, ServiceMessage.already_added_feed)
             return
 
@@ -70,7 +70,7 @@ class CommandAddFeedService(CommandServiceABC):
             return
 
         logger.debug("Новый feed. {}", url)
-        await self._feeds_service.add_feed(url, chat_id)
+        await self._feeds_service.add_feed(url[0], chat_id)
         text = f"{url} was added."
         await self._telegram.send_message(chat_id, text, disable_web_page_preview=True)
         return

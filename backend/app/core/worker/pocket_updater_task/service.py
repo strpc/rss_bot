@@ -1,13 +1,12 @@
 from loguru import logger
 
-from app.clients.pocket import PocketIntegrationError
-from app.pocket.service import PocketService
-from app.users.service import UsersService
+from app.core.clients.pocket import PocketClient, PocketError
+from app.core.users.service import UsersService
 
 
 async def update_access_tokens(
     *,
-    pocket_service: PocketService,
+    pocket_client: PocketClient,
     users_service: UsersService,
 ) -> None:
     request_tokens = await users_service.get_new_request_token()
@@ -21,8 +20,8 @@ async def update_access_tokens(
         logger.debug("Обрабатываем {}...", request_token)
 
         try:
-            access_token = await pocket_service.get_access_token(request_token)
-        except PocketIntegrationError as error:
+            access_token = await pocket_client.get_access_token(request_token)
+        except PocketError as error:
             await users_service.disable_pocket_integration(
                 request_token=request_token,
                 error_code=error.pocket_error_code,
