@@ -1,6 +1,8 @@
 import json
 from typing import Any, Dict, List, Optional
 
+from loguru import logger
+
 from app.clients.database import Database
 from app.clients.telegram import Telegram
 from app.feeds.models import UserEntry
@@ -80,6 +82,7 @@ class SenderMessages:
     async def send(self, limit_title: int, limit_text: int) -> None:
         new_entries = await self._feeds_service.get_unsended_entries()
         if new_entries is None:
+            logger.info("Нет новых записей для отправки. exit...")
             return
 
         sended_entries_id = []
@@ -92,6 +95,7 @@ class SenderMessages:
                 limit_text=limit_text,
             )
             # todo: сделать проверку, что если не отправляется в маркдауне, то отправить без него
+            # todo: сделать отключение пользователя если он вдруг отморозился
             await self._telegram.send_raw_message(message_body)
             sended_entries_id.append(entry.id)
         await self._feeds_service.mark_sended_entries(sended_entries_id)
