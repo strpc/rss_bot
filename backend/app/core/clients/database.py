@@ -46,7 +46,7 @@ class Database:
         values: Optional[Iterable[Any]] = None,
         *,
         as_dict: bool = False,
-    ) -> Optional[Union[DictAny, TupleAny]]:
+    ) -> Optional[List[Union[DictAny, TupleAny]]]:
         logger.debug("query\n{}\nvalues\n{}", query, values)
 
         self._db.row_factory = self._dict_factory if as_dict else None  # type: ignore
