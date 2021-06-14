@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 
+from httpx import Response
 from loguru import logger
 
 from app.core.clients.http_ import HttpClientABC
@@ -66,6 +67,17 @@ class PocketClient:
         )
         return url
 
+    @staticmethod
+    def _handle_error(response: Response) -> None:
+        try:
+            error_code = int(response.headers.get("X-Error-Code", "000"))
+        except ValueError:
+            error_code = 000
+        raise PocketError(
+            pocket_error_code=error_code,
+            http_status_code=response.status_code,
+        )
+
     async def get_access_token(self, request_token: str) -> Optional[Dict[Any, Any]]:
         url = "https://getpocket.com/v3/oauth/authorize"
         body = {
@@ -79,14 +91,7 @@ class PocketClient:
                 response.status_code,
                 response.headers,
             )
-            try:
-                error_code = int(response.headers.get("X-Error-Code", "000"))
-            except ValueError:
-                error_code = 000
-            raise PocketError(
-                pocket_error_code=error_code,
-                http_status_code=response.status_code,
-            )
+            self._handle_error(response)
         return response.json()
 
     async def add_item(self, *, access_token: str, url: str, tags: Optional[str] = None) -> None:
@@ -101,4 +106,10 @@ class PocketClient:
 
         response = await self._client.post(api_url, headers=self._get_headers(), body=body)
         if response.status_code != 200:
-            logger.warning("{} статус-код при отправки новой записи в Pocket", response.status_code)
+            logger.error(
+                "{} статус-код при отправке новой записи в Pocket. access_token={}. url={}",
+                response.status_code,
+                access_token,
+                url,
+            )
+            self._handle_error(response)
