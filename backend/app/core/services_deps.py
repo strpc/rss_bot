@@ -64,5 +64,6 @@ def get_command_service(
         "delete_feed": delete_feed_service,
         "authorize": authorize_service,
         "authorize_pocket": authorize_pocket_service,
+        "unauthorize_pocket": authorize_pocket_service,
     }
     return commands_map.get(update.message.command)  # type: ignore  # FIXME
