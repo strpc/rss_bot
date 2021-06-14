@@ -1,30 +1,34 @@
 version: "3.8"
-services:
 
+x-env-app:
+  &env-app
+  environment:
+    - DEBUG
+    - LOG_LEVEL
+    - DATABASE_URL
+    - DATABASE_PARAMSTYLE
+    - CELERY_BROKER
+    - CELERY_HOUR_BEAT_INTERVAL
+    - CELERY_MINUTE_BEAT_INTERVAL
+    - TELEGRAM_TOKEN
+    - EASY_NOTIFYER_TOKEN
+    - EASY_NOTIFYER_CHAT_ID
+    - EASY_NOTIFYER_SERVICE_NAME
+    - POCKET_CONSUMER_KEY
+    - POCKET_REDIRECT_URL
+    - LIMIT_LOAD_FEED
+    - LIMIT_TITLE
+    - LIMIT_TEXT
+    - LIMIT_COUNT_FEED
+
+services:
   backend:
     image: rss_bot_backend:${VERSION:-latest}
     build:
       context: ./backend
       dockerfile: ./docker/backend.dockerfile
     hostname: backend
-    environment:
-      - DEBUG=False
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - DATABASE_URL=${DATABASE_URL}
-      - DATABASE_PARAMSTYLE=${DATABASE_PARAMSTYLE}
-      - CELERY_BROKER=${CELERY_BROKER}
-      - CELERY_HOUR_BEAT_INTERVAL=${CELERY_HOUR_BEAT_INTERVAL}
-      - CELERY_MINUTE_BEAT_INTERVAL=${CELERY_MINUTE_BEAT_INTERVAL}
-      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - EASY_NOTIFYER_TOKEN=${EASY_NOTIFYER_TOKEN}
-      - EASY_NOTIFYER_CHAT_ID=${EASY_NOTIFYER_CHAT_ID}
-      - EASY_NOTIFYER_SERVICE_NAME=${EASY_NOTIFYER_SERVICE_NAME}
-      - POCKET_CONSUMER_KEY=${POCKET_CONSUMER_KEY}
-      - POCKET_REDIRECT_URL=${POCKET_REDIRECT_URL}
-      - LIMIT_LOAD_FEED=${LIMIT_LOAD_FEED}
-      - LIMIT_TITLE=${LIMIT_TITLE}
-      - LIMIT_TEXT=${LIMIT_TEXT}
-      - LIMIT_COUNT_FEED=${LIMIT_COUNT_FEED}
+    <<: *env-app
     volumes:
     - ./db/:/app/app/db/
 
@@ -53,5 +57,37 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - static_volume:/app/app/static/
 
+  worker:
+    image: rss_bot_worker:${VERSION:-latest}
+    build:
+      context: ./backend
+      dockerfile: ./docker/worker.dockerfile
+    hostname: worker
+    <<: *env-app
+    volumes:
+      - ./db:/app/app/db
+    command: [ "worker" ]
+
+  beat:
+    worker:
+      image: rss_bot_worker:${VERSION:-latest}
+      build:
+        context: ./backend
+        dockerfile: ./docker/worker.dockerfile
+      hostname: beat
+      <<: *env-app
+      volumes:
+        - ./db:/app/app/db
+      command: [ "beat" ]
+
+  rabbitmq:
+    image: rabbitmq:3.8.16
+    restart: unless-stopped
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER={$RABBITMQ_USER:-user}
+      - RABBITMQ_DEFAULT_PASS={$RABBITMQ_PASSWORD:-hackme}
+
 volumes:
   static_volume:
+    # todo: добавить логи

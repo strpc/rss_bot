@@ -22,6 +22,20 @@ services:
 
   nginx:
     image: alpine:3.13.5
-#    ports: ""
     volumes: []
-    entrypoint: ["echo", "Service nginx disabled"]
+    entrypoint: ["echo", "Service disabled"]
+
+  worker:
+    image: alpine:3.13.5
+    volumes: []
+    entrypoint: ["echo", "Service disabled"]
+
+  beat:
+    image: alpine:3.13.5
+    volumes: []
+    entrypoint: ["echo", "Service disabled"]
+
+  rabbitmq:
+    image: alpine:3.13.5
+    volumes: []
+    entrypoint: ["echo", "Service disabled"]
