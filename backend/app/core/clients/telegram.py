@@ -1,12 +1,13 @@
 import asyncio
 from abc import ABC, abstractmethod
 from json import JSONDecodeError
-from typing import Any, Dict, Optional
+from typing import Dict, List, Optional
 
 from loguru import logger
 
 from app.core.clients.http_ import HttpClientABC, Response
 from app.schemas.enums import ParseMode
+from app.schemas.message import Button
 
 
 class TelegramABC(ABC):
@@ -76,6 +77,7 @@ class Telegram(TelegramABC):
         chat_id: int,
         text: str,
         *,
+        inline_keyboard: Optional[List[Button]] = None,
         parse_mode: Optional[ParseMode] = None,
         disable_web_page_preview: bool = False,
         attempt: int = 5,
@@ -91,16 +93,29 @@ class Telegram(TelegramABC):
         if disable_web_page_preview:
             body["disable_web_page_preview"] = True
 
+        if inline_keyboard is not None:
+            body["reply_markup"] = {
+                "inline_keyboard": [[button.dict() for button in inline_keyboard]],
+            }
+
         url = self._format_url(method)
         return await self._send_post_request(url, body, attempt=attempt, delay=delay)
 
-    async def send_raw_message(
+    async def update_buttons(
         self,
-        body: Dict[str, Any],
         *,
+        chat_id: int,
+        message_id: int,
+        inline_keyboard: List[Button],
         attempt: int = 5,
         delay: int = 0,  # TODO: DEBUG MODE!
     ) -> Response:
-        method = "sendMessage"
+        method = "editMessageReplyMarkup"
+
+        body = {
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "reply_markup": {"inline_keyboard": [[button.dict() for button in inline_keyboard]]},
+        }
         url = self._format_url(method)
         return await self._send_post_request(url, body, attempt=attempt, delay=delay)

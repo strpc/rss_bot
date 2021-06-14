@@ -57,3 +57,8 @@ class Message(BaseModel):
     message: MessageBody
     update_id: int
     type_update: TypeUpdate = TypeUpdate.message
+
+
+class Button(BaseModel):
+    text: str
+    callback_data: Optional[str]
