@@ -22,6 +22,12 @@ config = get_config()
 
 
 @app_celery.task()
+def run_chain() -> None:
+    chain = load_articles.s() | pocket_updater.s() | send_messages.s()
+    chain()
+
+
+@app_celery.task()
 def load_articles(*args: Any, **kwargs: Any) -> None:
     loop = asyncio.get_event_loop()
     database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
