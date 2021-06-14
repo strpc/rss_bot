@@ -13,9 +13,9 @@ ENV PYTHONUNBUFFERED 1
 
 COPY --from=builder /install /usr/local
 
+WORKDIR /app
 COPY . /app
 
-WORKDIR /app
 ENV PYTHONPATH=/app/app
 
 VOLUME ["/app/db/"]
