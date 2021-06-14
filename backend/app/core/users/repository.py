@@ -1,5 +1,4 @@
-import itertools
-from typing import Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from pydantic import parse_obj_as
 
@@ -69,18 +68,17 @@ class UsersRepository:
         if rows is not None:
             return parse_obj_as(Tuple[User, ...], rows)
 
-    async def get_new_request_token(self) -> Optional[Tuple[str, ...]]:
+    async def get_new_request_token(self) -> Optional[List[Dict[str, str]]]:
         query = """
         SELECT
-            request_token as pocket_request_token
+            request_token as pocket_request_token,
+            user_id as user_id
         FROM bot_pocket_integration
         WHERE
         active is TRUE
         AND access_token is NULL
         """
-        rows = await self._db.fetchall(query)
-        if rows is not None:
-            return tuple(itertools.chain.from_iterable(rows))
+        return await self._db.fetchall(query, as_dict=True)  # type: ignore
 
     async def get_user_integration(self, chat_id: int) -> Optional[UserIntegration]:
         query = f"""
@@ -95,9 +93,19 @@ class UsersRepository:
         if row is not None:
             return parse_obj_as(UserIntegration, row)
 
+    async def get_entry_url(self, entry_id: int) -> Optional[str]:
+        query = f"""
+        SELECT url_article
+        FROM bot_article
+        WHERE id = {self._paramstyle}
+        """
+        row = await self._db.fetchone(query, (entry_id,))
+        if row:
+            return row[0]  # type: ignore
+
     async def update_pocket_meta(
         self,
-        request_token: str,
+        user_id: int,
         access_token: str,
         username: str,
     ) -> None:
@@ -108,17 +116,28 @@ class UsersRepository:
         username = {self._paramstyle},
         updated = datetime('now')
         WHERE
-        request_token = {self._paramstyle}
+        user_id = {self._paramstyle}
         """
-        await self._db.execute(query, (access_token, username, request_token))
+        await self._db.execute(query, (access_token, username, user_id))
+
+    async def get_access_token(self, chat_id: int) -> Optional[str]:
+        query = f"""
+        SELECT access_token
+        FROM bot_pocket_integration
+        JOIN bot_users ON bot_pocket_integration.user_id = bot_users.id
+        AND bot_users.chat_id == {self._paramstyle}
+        """
+        row = await self._db.fetchone(query, (chat_id,))
+        if row is not None:
+            return row[0]  # type: ignore
 
     async def disable_pocket_integration(
         self,
         *,
-        request_token: str,
-        error_code: int,
-        error_message: str,
-        status_code: int,
+        user_id: int,
+        error_code: Optional[int],
+        error_message: Optional[str],
+        status_code: Optional[int],
     ) -> None:
         query = f"""
         UPDATE bot_pocket_integration
@@ -129,6 +148,6 @@ class UsersRepository:
         updated = datetime('now'),
         active = FALSE
         WHERE
-        request_token = {self._paramstyle}
+        user_id = {self._paramstyle}
         """
-        await self._db.execute(query, (error_code, error_message, status_code, request_token))
+        await self._db.execute(query, (error_code, error_message, status_code, user_id))
