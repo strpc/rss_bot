@@ -27,16 +27,19 @@ services:
     build:
       context: ./backend
       dockerfile: ./docker/backend.dockerfile
+    restart: always
     hostname: backend
     <<: *env-app
     volumes:
     - ./db/:/app/app/db/
+    - ./logs/:/app/docker/logs/
 
   admin:
     image: rss_bot_admin:${VERSION:-latest}
     build:
       context: ./admin
       dockerfile: ./docker/Dockerfile
+    restart: always
     hostname: admin
     environment:
       - DEBUG=False
@@ -46,14 +49,16 @@ services:
       - DATABASE_URL=${DATABASE_URL}
     volumes:
       - ./db:/app/app/db
+      - ./logs/:/app/docker/logs/
       - static_volume:/app/app/static/
 
   nginx:
     image: nginx:1.21.0
+    restart: always
     ports:
-      - 8080:80
+      - 8000:80
     volumes:
-      - static_volume
+      - static_volume  # todo: добавить ассесс лог
       - ./nginx:/etc/nginx/conf.d
       - static_volume:/app/app/static/
 
@@ -62,31 +67,34 @@ services:
     build:
       context: ./backend
       dockerfile: ./docker/worker.dockerfile
+    restart: always
     hostname: worker
     <<: *env-app
     volumes:
       - ./db:/app/app/db
+      - ./logs/:/app/docker/logs/
     command: [ "worker" ]
 
   beat:
-    worker:
-      image: rss_bot_worker:${VERSION:-latest}
-      build:
-        context: ./backend
-        dockerfile: ./docker/worker.dockerfile
-      hostname: beat
-      <<: *env-app
-      volumes:
-        - ./db:/app/app/db
-      command: [ "beat" ]
+    image: rss_bot_worker:${VERSION:-latest}
+    build:
+      context: ./backend
+      dockerfile: ./docker/worker.dockerfile
+    hostname: beat
+    restart: always
+    <<: *env-app
+    volumes:
+      - ./db:/app/app/db
+      - ./logs/:/app/docker/logs/
+    command: [ "beat" ]
 
   rabbitmq:
     image: rabbitmq:3.8.16
-    restart: unless-stopped
-    container_name: rabbitmq
+    restart: always
+    hostname: rabbitmq
     environment:
-      - RABBITMQ_DEFAULT_USER={$RABBITMQ_USER:-user}
-      - RABBITMQ_DEFAULT_PASS={$RABBITMQ_PASSWORD:-hackme}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-user}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-hackme}
 
 volumes:
   static_volume:
