@@ -23,96 +23,83 @@ config = get_config()
 
 @app_celery.task()
 def run_chain() -> None:
-    chain = load_articles.s() | pocket_updater.s() | send_messages.s()
+    chain = load_entries.s() | pocket_updater.s() | send_messages.s()
     chain()
 
 
 @app_celery.task()
-def load_articles(*args: Any, **kwargs: Any) -> None:
-    loop = asyncio.get_event_loop()
-    database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
-    loop.run_until_complete(database.connect())
-    feeds_repository = FeedsRepository(database)
-    feeds_service = FeedsService(repository=feeds_repository)
-    users_repository = UsersRepository(database=database)
-    users_service = UsersService(repository=users_repository)
-    loader = LoadEntries(
-        database=database,
-        feeds_service=feeds_service,
-        users_service=users_service,
-    )
+def load_entries(*args: Any, **kwargs: Any) -> None:
+    logger.info("Загрузим новые записи...")
 
-    try:
-        loop.run_until_complete(loader.load(limit_feeds=config.limits.load_feed))
-    except Exception as error:
-        logger.exception(error)
-    finally:
-        loop.run_until_complete(database.disconnect())
-        loop.close()
+    async def async_task() -> None:
+        database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
+        await database.connect()
+        feeds_repository = FeedsRepository(database)
+        feeds_service = FeedsService(repository=feeds_repository)
+        users_repository = UsersRepository(database=database)
+        users_service = UsersService(repository=users_repository)
+        loader = LoadEntries(
+            database=database,
+            feeds_service=feeds_service,
+            users_service=users_service,
+        )
+        await loader.load(limit_feeds=config.limits.load_feed)
+        await database.disconnect()
+
+    asyncio.run(async_task())
 
 
 @app_celery.task()
 def pocket_updater(*args: Any, **kwargs: Any) -> None:
-    loop = asyncio.get_event_loop()
-    database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
-    loop.run_until_complete(database.connect())
+    logger.info("Обновим данные авторизации pocket...")
 
-    pocket_client = PocketClient(
-        http_client=HttpClient(),
-        consumer_key=config.pocket.consumer_key,
-        redirect_url=config.pocket.redirect_url,
-    )
+    async def async_task() -> None:
+        database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
+        await database.connect()
 
-    users_repository = UsersRepository(database=database)
-    users_service = UsersService(repository=users_repository)
-
-    try:
-        loop.run_until_complete(
-            pocket.update_access_tokens(
-                pocket_client=pocket_client,
-                users_service=users_service,
-            ),
+        pocket_client = PocketClient(
+            http_client=HttpClient(),
+            consumer_key=config.pocket.consumer_key,
+            redirect_url=config.pocket.redirect_url,
         )
-    except Exception as error:
-        logger.exception(error)
-    finally:
-        loop.run_until_complete(database.disconnect())
-        loop.close()
+
+        users_repository = UsersRepository(database=database)
+        users_service = UsersService(repository=users_repository)
+        await pocket.update_access_tokens(
+            pocket_client=pocket_client,
+            users_service=users_service,
+        )
+        await database.disconnect()
+
+    asyncio.run(async_task())
 
 
 @app_celery.task()
 def send_messages(*args: Any, **kwargs: Any) -> None:
-    loop = asyncio.get_event_loop()
-    database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
-    loop.run_until_complete(database.connect())
+    logger.info("Отправим новые записи пользователям...")
 
-    feeds_repository = FeedsRepository(database)
-    feeds_service = FeedsService(repository=feeds_repository)
+    async def async_task() -> None:
+        database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
+        await database.connect()
 
-    users_repository = UsersRepository(database=database)
-    users_service = UsersService(repository=users_repository)
+        feeds_repository = FeedsRepository(database)
+        feeds_service = FeedsService(repository=feeds_repository)
 
-    telegram = Telegram(token=config.telegram.token, client=HttpClient())
+        users_repository = UsersRepository(database=database)
+        users_service = UsersService(repository=users_repository)
 
-    sender = SenderMessages(
-        database=database,
-        feeds_service=feeds_service,
-        users_service=users_service,
-        telegram=telegram,
-    )
-    try:
-        loop.run_until_complete(
-            sender.send(
-                limit_title=config.limits.title,
-                limit_text=config.limits.text,
-            ),
-        )  # TODO: добавить отключение юзеров, если бот стопнут
-    except Exception as error:
-        logger.exception(error)
-    finally:
-        loop.run_until_complete(database.disconnect())
-        loop.close()
+        telegram = Telegram(token=config.telegram.token, client=HttpClient())
 
+        sender = SenderMessages(
+            database=database,
+            feeds_service=feeds_service,
+            users_service=users_service,
+            telegram=telegram,
+        )
+        await sender.send(
+            limit_title=config.limits.title,
+            limit_text=config.limits.text,
+        )
+        await database.disconnect()
 
-if __name__ == "__main__":
-    send_messages()
+    asyncio.run(async_task())
