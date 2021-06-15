@@ -81,4 +81,4 @@ class SenderMessages:
                 parse_mode=ParseMode.MarkdownV2,
             )
             sended_entries_id.append(entry.id)
-        # await self._feeds_service.mark_sended_entries(sended_entries_id)
+        await self._feeds_service.mark_sended_entries(sended_entries_id)
