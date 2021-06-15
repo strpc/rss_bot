@@ -14,8 +14,8 @@ class LogLevelEnum(str, Enum):
 
 class CeleryConfig(BaseSettings):
     broker: str
-    hour_beat_interval: str = "*"
-    minute_beat_interval: str = "*"
+    hour_beat_interval: str
+    minute_beat_interval: str
 
     class Config:
         env_prefix = "celery_"
@@ -60,7 +60,7 @@ class AppSettings(BaseSettings):
 
 
 class DBSettings(BaseSettings):
-    url: str = "db.sqlite3"
+    url: str
     paramstyle: str = "?"  # SELECT * FROM users WHERE users.id = ?
 
     class Config:
