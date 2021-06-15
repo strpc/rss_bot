@@ -22,7 +22,7 @@ app_celery.autodiscover_tasks(
 )
 app_celery.conf.task_default_queue = "rss_bot"
 app_celery.conf.beat_schedule = {
-    "download_articles_send_msg": {
+    "chain": {
         "task": "app.core.worker.tasks.run_chain",
         "schedule": crontab(
             hour=config.celery.hour_beat_interval,
