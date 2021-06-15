@@ -1,5 +1,4 @@
 import asyncio
-from abc import ABC, abstractmethod
 from json import JSONDecodeError
 from typing import Dict, List, Optional
 
@@ -10,22 +9,11 @@ from app.schemas.enums import ParseMode
 from app.schemas.message import Button
 
 
-class TelegramABC(ABC):
-    @abstractmethod
-    async def send_message(
-        self,
-        chat_id: int,
-        text: str,
-        *,
-        parse_mode: Optional[ParseMode] = None,
-        disable_web_page_preview: bool = False,
-        attempt: int = 5,
-        delay: int = 5,
-    ) -> Response:
-        ...
+class TelegramUserBlocked(Exception):
+    pass
 
 
-class Telegram(TelegramABC):
+class Telegram:
     def __init__(
         self,
         *,
@@ -58,18 +46,24 @@ class Telegram(TelegramABC):
             await self._send_post_request(url, body, attempt=attempt, delay=delay)
 
         try:
-            json_body = response.json()
+            response_body = response.json()
         except JSONDecodeError as error:
             logger.warning(error)
-            json_body = None
+            response_body = None
 
         logger.error(
-            "Request error. url: {}. status_code: {}, response: {}",
+            "Request error. body: {}.\nurl:\n{}.\nstatus_code: {},\nresponse: {}",
+            body,
             url,
             response.status_code,
-            json_body,
+            response_body,
         )
-        logger.debug("body: {}", body)
+        if (
+            response_body
+            and response_body.get("description")
+            and response_body["description"] == "Forbidden: bot was blocked by the user"
+        ):
+            raise TelegramUserBlocked
         return response
 
     async def send_message(
