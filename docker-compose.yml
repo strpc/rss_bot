@@ -97,4 +97,7 @@ services:
 
 volumes:
   static_volume:
-    # todo: добавить логи
+
+networks:
+  default:
+    name: rss_bot
