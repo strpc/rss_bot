@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 PORT=${RSS_BOT_PORT:-8000}

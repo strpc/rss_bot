@@ -18,10 +18,11 @@ COPY . /app
 
 ENV PYTHONPATH=/app/app
 
-VOLUME [ "/app/app/docker/logs/" ]
-RUN chmod +x ./docker/entrypoint-worker.sh \
-    && adduser -DH app
+VOLUME ["/app/app/db/", "/app/app/docker/logs/"]
 
-USER app
+RUN ["chmod", "+x", "./docker/worker-entrypoint.sh", "./docker/wait-for"]
 
-ENTRYPOINT ["./docker/entrypoint-worker.sh", "worker"]
+#RUN ["adduser", "-DH", "app"]
+#USER app
+
+ENTRYPOINT ["./docker/worker-entrypoint.sh"]

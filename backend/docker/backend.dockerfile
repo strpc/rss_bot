@@ -18,8 +18,9 @@ COPY . /app
 
 ENV PYTHONPATH=/app/app
 
-VOLUME ["/app/db/"]
-RUN ["chmod", "+x", "./docker/entrypoint-backend.sh"]
+VOLUME ["/app/app/db/", "/app/app/docker/logs/"]
 
-ENTRYPOINT ["sh", "./docker/entrypoint-backend.sh"]
-CMD ["backend-prod"]
+RUN ["chmod", "+x", "./docker/backend-entrypoint.sh"]
+
+ENTRYPOINT ["./docker/backend-entrypoint.sh"]
+CMD ["prod"]
