@@ -89,11 +89,11 @@ class FeedsRepository:
         if rows is not None:
             return parse_obj_as(Tuple[UserEntry, ...], rows)
 
-    async def mark_sended_entries(self, entries_id: List[int]) -> None:
+    async def mark_sended_entries(self, entry_id: int) -> None:
         query = f"""
         UPDATE bot_article
         SET
         sended = TRUE
-        WHERE id IN ({",".join(self._paramstyle for _ in entries_id)})
+        WHERE id = {self._paramstyle}
         """
-        await self._db.execute(query, entries_id)
+        await self._db.execute(query, (entry_id,))

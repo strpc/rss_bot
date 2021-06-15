@@ -20,6 +20,10 @@ class UsersService:
         logger.info("Создаем нового юзера...")
         await self._repository.create_user(new_user)
 
+    async def disable_user(self, chat_id: int) -> None:
+        logger.info("Отключение юзера chat_id={} ...", chat_id)
+        return await self._repository.disable_user(chat_id=chat_id)
+
     async def get_or_create(self, update: Union[Message, Callback]) -> User:
         if isinstance(update, Message):
             chat_id = update.message.chat.id

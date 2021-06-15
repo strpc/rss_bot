@@ -44,6 +44,14 @@ class UsersRepository:
             (new_user.chat_id, new_user.first_name, new_user.last_name, new_user.username),
         )
 
+    async def disable_user(self, chat_id: int) -> None:
+        query = f"""
+        UPDATE bot_users
+        SET active = False
+        WHERE chat_id = {self._paramstyle}
+        """
+        await self._db.execute(query, (chat_id,))
+
     async def activate_user(self, chat_id: int) -> None:
         query = f"""
         UPDATE bot_users

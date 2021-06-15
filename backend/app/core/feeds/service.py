@@ -71,5 +71,5 @@ class FeedsService:
     async def get_unsended_entries(self) -> Optional[Tuple[UserEntry, ...]]:
         return await self._repository.get_unsended_entries()
 
-    async def mark_sended_entries(self, entries_id: List[int]) -> None:
-        return await self._repository.mark_sended_entries(entries_id)
+    async def mark_sended_entry(self, entry_id: int) -> None:
+        return await self._repository.mark_sended_entries(entry_id)

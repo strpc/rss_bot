@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 from loguru import logger
 
 from app.core.clients.database import Database
-from app.core.clients.telegram import Telegram
+from app.core.clients.telegram import Telegram, TelegramUserBlocked
 from app.core.feeds.models import UserEntry
 from app.core.feeds.service import FeedsService
 from app.core.users.models import UserIntegration
@@ -61,7 +61,6 @@ class SenderMessages:
 
         users_integrations: Dict[int, Optional[UserIntegration]] = {}
         logger.info("Отправляем {} записей...", len(new_entries))
-        sended_entries_id = []
         for entry in new_entries:
             if entry.chat_id in users_integrations:
                 user_integration = users_integrations[entry.chat_id]
@@ -77,13 +76,14 @@ class SenderMessages:
                     entry=entry,
                     user_integration=user_integration,
                 )
-            # todo: сделать проверку, что если не отправляется в маркдауне, то отправить без него
-            # todo: сделать отключение пользователя если он вдруг отморозился
-            await self._telegram.send_message(
-                chat_id=entry.chat_id,
-                text=text,
-                inline_keyboard=buttons,
-                parse_mode=ParseMode.MarkdownV2,
-            )
-            sended_entries_id.append(entry.id)
-        await self._feeds_service.mark_sended_entries(sended_entries_id)
+            try:
+                await self._telegram.send_message(
+                    chat_id=entry.chat_id,
+                    text=text,
+                    inline_keyboard=buttons,
+                    parse_mode=ParseMode.MarkdownV2,
+                )
+            except TelegramUserBlocked:
+                logger.warning("Пользователь {} отключил бота.")
+                await self._users_service.disable_user(entry.chat_id)
+            await self._feeds_service.mark_sended_entry(entry.id)
