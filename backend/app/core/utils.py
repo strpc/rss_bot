@@ -63,6 +63,7 @@ def safetyed_markdown_text(text: str) -> str:
         .replace("#", "\\#")
         .replace("_", "\\_")
         .replace("-", "\\-")
+        .replace("=", "\\=")
         .replace("*", "\\*")
         .replace("+", "\\+")
         .replace("!", "\\!")
