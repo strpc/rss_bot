@@ -9,12 +9,12 @@ LOG_LEVEL_UVICORN=${LOG_LEVEL_UVICORN:-info}
 
 # Apply database migrations
 echo "Apply database migrations"
-#python3 ./app/manage.py migrate --no-input
+python3 ./app/manage.py migrate --no-input
+
 
 # Start server
-
+echo "Starting server..."
 dev() {
-  echo "Starting server..."
   echo "DEV mode"
   python3 ./app/manage.py runserver 0.0.0.0:${PORT}
 }
