@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List, Optional
 
 from loguru import logger
 
@@ -59,10 +59,15 @@ class SenderMessages:
             logger.info("Нет новых записей для отправки. exit...")
             return
 
+        users_integrations: Dict[int, Optional[UserIntegration]] = {}
         logger.info("Отправляем {} записей...", len(new_entries))
         sended_entries_id = []
         for entry in new_entries:
-            user_integration = await self._users_service.get_user_integration(entry.chat_id)
+            if entry.chat_id in users_integrations:
+                user_integration = users_integrations[entry.chat_id]
+            else:
+                user_integration = await self._users_service.get_user_integration(entry.chat_id)
+                users_integrations[entry.chat_id] = user_integration
 
             text = self._format_text(entry, limit_title, limit_text)
             buttons = None
