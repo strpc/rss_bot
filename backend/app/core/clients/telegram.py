@@ -9,7 +9,15 @@ from app.schemas.enums import ParseMode
 from app.schemas.message import Button
 
 
-class TelegramUserBlocked(Exception):
+class TelegramException(Exception):
+    pass
+
+
+class TelegramUserBlocked(TelegramException):
+    pass
+
+
+class TelegramBadBodyRequest(TelegramException):
     pass
 
 
@@ -64,6 +72,12 @@ class Telegram:
             and response_body["description"] == "Forbidden: bot was blocked by the user"
         ):
             raise TelegramUserBlocked
+        if (
+            response_body
+            and response_body.get("description")
+            and "Bad Request" in response_body["description"]
+        ):
+            raise TelegramBadBodyRequest
         return response
 
     async def send_message(

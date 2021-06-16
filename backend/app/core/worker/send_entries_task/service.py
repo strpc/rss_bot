@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 from loguru import logger
 
 from app.core.clients.database import Database
-from app.core.clients.telegram import Telegram, TelegramUserBlocked
+from app.core.clients.telegram import Telegram, TelegramBadBodyRequest, TelegramUserBlocked
 from app.core.feeds.models import UserEntry
 from app.core.feeds.service import FeedsService
 from app.core.users.models import UserIntegration
@@ -86,4 +86,9 @@ class SenderMessages:
             except TelegramUserBlocked:
                 logger.warning("Пользователь {} отключил бота.")
                 await self._users_service.disable_user(entry.chat_id)
-            await self._feeds_service.mark_sended_entry(entry.id)
+
+            except TelegramBadBodyRequest:
+                logger.error("Ошибка при отправке записи id={}", entry.id)
+
+            else:
+                await self._feeds_service.mark_sended_entry(entry.id)
