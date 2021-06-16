@@ -48,7 +48,7 @@ async def run_in_threadpool(func: Callable, *args: Any, **kwargs: Any) -> Any:
 
 
 def safetyed_markdown_text(text: str) -> str:
-    new_text = (
+    return (
         text.replace("\\", "\\\\")
         .replace("{", "\\{")
         .replace("}", "\\}")
@@ -69,7 +69,6 @@ def safetyed_markdown_text(text: str) -> str:
         .replace("!", "\\!")
         .replace("|", "\\|")
     )
-    return new_text
 
 
 def bold_markdown(text: str) -> str:
