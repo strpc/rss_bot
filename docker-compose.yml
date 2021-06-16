@@ -55,7 +55,7 @@ services:
     image: nginx:1.21.0
     restart: always
     ports:
-      - 8000:80
+      - ${NGINX_PORT:-8000}:80
     volumes:
       - static_volume  # todo: добавить ассесс лог
       - ./nginx:/etc/nginx/conf.d
