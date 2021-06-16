@@ -83,7 +83,7 @@ class AdminRss(BaseAdminModel):
 
 @admin.register(Article)
 class AdminArticle(BaseAdminModel):
-    ordering = ("added", "chat_id__pk")
+    ordering = ("-added", "chat_id__pk")
     fields = (
         "view_username",
         "title",
