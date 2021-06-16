@@ -97,7 +97,7 @@ class AdminArticle(BaseAdminModel):
         "title",
         "get_rss_url",
         "added",
-        "sended",
+        # "sended",
         "text",
     )
     list_display = ("view_username", "title", "get_rss_url", "added", "sended")
