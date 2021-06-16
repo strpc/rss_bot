@@ -31,3 +31,26 @@ class AuthorizePocketService(CommandServiceABC):
         await self._repository.save_request_token(chat_id, request_token)
         text = await self._pocket_client.get_auth_url(request_token)
         await self._telegram.send_message(chat_id, text, disable_web_page_preview=True)
+
+
+class UnAuthorizePocketService(CommandServiceABC):
+    def __init__(
+        self,
+        *,
+        telegram: Telegram,
+        repository: PocketAuthRepository,
+        service_messages: ServiceMessagesService,
+    ):
+        self._telegram = telegram
+        self._service_messages = service_messages
+        self._repository = repository
+
+    async def handle(self, update: Message) -> None:
+        chat_id = update.message.chat.id
+        access_token = await self._repository.get_access_token(chat_id)
+        if access_token is None:
+            await self._service_messages.send(chat_id, ServiceMessage.error)
+            return
+
+        await self._repository.disable_pocket_integration(chat_id)
+        await self._service_messages.send(chat_id, ServiceMessage.unauthorize_message)
