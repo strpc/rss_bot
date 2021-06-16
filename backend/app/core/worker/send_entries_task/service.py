@@ -8,7 +8,7 @@ from app.core.feeds.models import UserEntry
 from app.core.feeds.service import FeedsService
 from app.core.users.models import UserIntegration
 from app.core.users.service import UsersService
-from app.core.utils import bold_markdown, safetyed_markdown_text
+from app.core.utils import bold_markdown, escape_md
 from app.core.worker.send_entries_task.schemas import PocketButton
 from app.schemas.enums import ParseMode
 from app.schemas.message import Button
@@ -32,11 +32,11 @@ class SenderMessages:
     def _format_text(entry: UserEntry, limit_title: int, limit_text: int) -> str:
         title = entry.title or ""
         text = entry.text or ""
-        url = safetyed_markdown_text(entry.url) or ""  # type: ignore
+        url = escape_md(entry.url) or ""  # type: ignore
         cropped_title = title if len(title) < limit_title else f"{title[:limit_title]}..."
         cropped_text = text if len(text) < limit_text else f"{text[:limit_text]}..."
-        bold_title = bold_markdown(safetyed_markdown_text(cropped_title))  # type: ignore
-        shielded_text = safetyed_markdown_text(cropped_text)  # type: ignore
+        bold_title = bold_markdown(escape_md(cropped_title))  # type: ignore
+        shielded_text = escape_md(cropped_text)  # type: ignore
         return f"{bold_title}\n\n{shielded_text}\n\n{url}"
 
     @staticmethod
