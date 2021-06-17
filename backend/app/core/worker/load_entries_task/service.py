@@ -42,10 +42,11 @@ class LoadEntries:
             return
 
         for entry in entries:
-            logger.debug("Проверим существует лм уже запись в базе...")
+            logger.debug("Проверим существует лм уже запись {} в базе...", entry)
             if await self._exists_entry(user.chat_id, entry.url):
                 logger.debug("Запись уже есть в базе. Пропускаем...")
                 continue
+            logger.debug("Запись {} новая. Запишем ее в базу.")
             yield entry
 
     async def load(self, limit_feeds: int) -> None:

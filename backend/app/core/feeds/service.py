@@ -24,7 +24,7 @@ class Parser:
 
         if entries is None:
             return None
-
+        logger.debug("Все загруженные записи: {}", entries[:limit])
         return parse_obj_as(Tuple[Entry, ...], entries[:limit])
 
     async def parse(self, limit: int) -> Optional[Tuple[Entry, ...]]:
