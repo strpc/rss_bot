@@ -21,5 +21,5 @@ ENV PYTHONPATH=/app/app
 VOLUME ["/app/db/"]
 RUN ["chmod", "+x", "./docker/entrypoint.sh"]
 
-ENTRYPOINT ["sh", "./docker/entrypoint.sh"]
+ENTRYPOINT ["./docker/entrypoint.sh"]
 CMD ["prod"]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 # !!!python ./app/manage.py loaddata --ignorenonexistent service_messages
