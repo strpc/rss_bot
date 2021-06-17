@@ -29,6 +29,8 @@ services:
       dockerfile: ./docker/backend.dockerfile
     restart: always
     hostname: backend
+    depends_on:
+      - nginx
     <<: *env-app
     volumes:
     - ./db/:/app/app/db/
@@ -40,6 +42,8 @@ services:
       context: ./admin
       dockerfile: ./docker/Dockerfile
     restart: always
+    depends_on:
+      - nginx
     hostname: admin
     environment:
       - DEBUG=False
@@ -67,6 +71,8 @@ services:
       context: ./backend
       dockerfile: ./docker/worker.dockerfile
     restart: always
+    depends_on:
+      - rabbitmq
     hostname: worker
     <<: *env-app
     volumes:
@@ -81,6 +87,8 @@ services:
       dockerfile: ./docker/worker.dockerfile
     hostname: beat
     restart: always
+    depends_on:
+      - rabbitmq
     <<: *env-app
     volumes:
       - ./db:/app/app/db
