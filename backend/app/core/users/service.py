@@ -16,9 +16,9 @@ class UsersService:
         logger.info("Поиск юзера в БД...")
         return await self._repository.get_user(chat_id)
 
-    async def create_user(self, new_user: User) -> None:
+    async def create_user(self, new_user: User) -> int:
         logger.info("Создаем нового юзера...")
-        await self._repository.create_user(new_user)
+        return await self._repository.create_user(new_user)
 
     async def disable_user(self, chat_id: int) -> None:
         logger.info("Отключение юзера chat_id={} ...", chat_id)
@@ -35,15 +35,16 @@ class UsersService:
             logger.info("Юзер найден.")
             return user
 
-        logger.info("Юзер не найден.")
+        logger.info("Юзер не найден. Создаем нового юзера...")
         new_user = User(
             chat_id=update.message.chat.id,
             first_name=update.message.chat.first_name,
             last_name=update.message.chat.last_name,
             username=update.message.chat.username,
         )
-        await self.create_user(new_user)
+        user_id = await self.create_user(new_user)
         logger.info("Юзер создан.")
+        new_user.id = user_id
         return new_user
 
     async def activate_user(self, chat_id: int) -> None:

@@ -91,6 +91,20 @@ class Database:
             if autocommit:
                 await self._db.commit()
 
+    async def insert_one(
+        self,
+        query: str,
+        values: Optional[Iterable[Any]] = None,
+    ) -> int:
+        logger.debug("query\n{}\nvalues\n{}", query, values)
+        try:
+            cursor = await self._db.execute(query, values)
+            await self._db.commit()
+            return cursor.lastrowid
+
+        except sqlite3.IntegrityError as error:
+            logger.exception("error={}, query={}, values={}", error, query, values)
+
     async def executemany(
         self,
         query: str,

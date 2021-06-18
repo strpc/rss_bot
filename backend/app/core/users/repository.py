@@ -31,7 +31,7 @@ class UsersRepository:
         if row is not None:
             return User.parse_obj(row)
 
-    async def create_user(self, new_user: User) -> None:
+    async def create_user(self, new_user: User) -> int:
         query = f"""
         INSERT INTO bot_users (chat_id, first_name, last_name, username, active, register)
         VALUES
@@ -39,7 +39,7 @@ class UsersRepository:
         true, datetime('now'))
         ON CONFLICT (chat_id) DO UPDATE SET active = true
         """
-        await self._db.execute(
+        return await self._db.insert_one(
             query,
             (new_user.chat_id, new_user.first_name, new_user.last_name, new_user.username),
         )
