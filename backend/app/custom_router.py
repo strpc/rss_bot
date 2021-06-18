@@ -30,6 +30,11 @@ class LoggingRoute(APIRoute):
         chat_id = None
         username = None
         message = body.get("message")
+        if message is None:
+            callback_query = body.get("callback_query")
+            if callback_query is not None:
+                message = callback_query.get("message")
+
         if message is not None:
             chat = message.get("chat")
             if chat is not None:
