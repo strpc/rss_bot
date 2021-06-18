@@ -22,20 +22,24 @@ services:
 
   nginx:
     image: alpine:3.13.5
+    restart: "no"
     volumes: []
     entrypoint: ["echo", "Service disabled"]
 
   worker:
     image: alpine:3.13.5
+    restart: "no"
     volumes: []
     entrypoint: ["echo", "Service disabled"]
 
   beat:
     image: alpine:3.13.5
+    restart: "no"
     volumes: []
     entrypoint: ["echo", "Service disabled"]
 
   rabbitmq:
     image: alpine:3.13.5
+    restart: "no"
     volumes: []
     entrypoint: ["echo", "Service disabled"]
