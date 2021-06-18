@@ -46,6 +46,21 @@ class PocketClient:
             "X-Accept": "application/json",
         }
 
+    async def _send_post_request(self, url: str, headers: Dict[str, Any], body: Any) -> Response:
+        logger.info("Отправляем post запрос body={}\nheaders={}", body, headers)
+        return await self._client.post(url, headers=headers, body=body)
+
+    @staticmethod
+    def _handle_error(response: Response) -> None:
+        try:
+            error_code = int(response.headers.get("X-Error-Code", "000"))
+        except ValueError:
+            error_code = 000
+        raise PocketError(
+            pocket_error_code=error_code,
+            http_status_code=response.status_code,
+        )
+
     async def get_request_token(self) -> Optional[str]:
         url = "https://getpocket.com/v3/oauth/request"
         body = {
@@ -66,17 +81,6 @@ class PocketClient:
             f"{request_token}&redirect_uri={self._redirect_url}"
         )
         return url
-
-    @staticmethod
-    def _handle_error(response: Response) -> None:
-        try:
-            error_code = int(response.headers.get("X-Error-Code", "000"))
-        except ValueError:
-            error_code = 000
-        raise PocketError(
-            pocket_error_code=error_code,
-            http_status_code=response.status_code,
-        )
 
     async def get_access_token(self, request_token: str) -> Optional[Dict[Any, Any]]:
         url = "https://getpocket.com/v3/oauth/authorize"
