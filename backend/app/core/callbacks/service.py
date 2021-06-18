@@ -50,6 +50,7 @@ class CallbackService(CommandServiceABC):
         url = await self._get_entry_url(payload.entry_id)  # type: ignore
         if url is None:
             await self._service_messages.send(chat_id, ServiceMessage.error)
+            return
 
         try:
             await service.send(
