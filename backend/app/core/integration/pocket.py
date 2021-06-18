@@ -3,12 +3,14 @@ from typing import Optional
 from loguru import logger
 
 from app.core.clients.pocket import PocketClient, PocketError
+from app.core.integration.exceptions import SendingError
 from app.core.integration.integration_abc import ExternalServiceABC
 from app.core.users.service import UsersService
 
 
 class PocketIntegration(ExternalServiceABC):
     success_message = "Saved"
+    error_message = "ERROR"
 
     def __init__(self, pocket_client: PocketClient, users_service: UsersService):
         self._pocket_client = pocket_client
@@ -21,7 +23,6 @@ class PocketIntegration(ExternalServiceABC):
         error_message: Optional[str] = None,
         status_code: Optional[int] = None,
     ) -> None:
-        self.success_message = "ERROR"
         user = await self._users_service.get_user(chat_id)
         await self._users_service.disable_pocket_integration(
             user_id=user.id,  # type: ignore
@@ -52,13 +53,18 @@ class PocketIntegration(ExternalServiceABC):
         if access_token is None:
             logger.warning("Не нашли access_token. chat_id={}", chat_id)
             await self._disable_integration(chat_id)
-            return
-
-        await self._add_item(
-            chat_id=chat_id,
-            access_token=access_token,
-            url=url,
-        )
+            raise SendingError
+        try:
+            await self._add_item(
+                chat_id=chat_id,
+                access_token=access_token,
+                url=url,
+            )
+        except Exception as error:
+            raise SendingError from error
 
     def get_update_message(self) -> str:  # type: ignore
         return self.success_message
+
+    def get_error_message(self) -> str:
+        return self.error_message

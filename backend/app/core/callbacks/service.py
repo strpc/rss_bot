@@ -4,6 +4,7 @@ from loguru import logger
 
 from app.core.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
+from app.core.integration.exceptions import SendingError
 from app.core.integration.integration_abc import ExternalServiceABC
 from app.core.integration.service import ExternalServices
 from app.core.service_messages.models import ServiceMessage
@@ -50,16 +51,19 @@ class CallbackService(CommandServiceABC):
         if url is None:
             await self._service_messages.send(chat_id, ServiceMessage.error)
 
-        await service.send(
-            chat_id=chat_id,
-            url=url,  # type: ignore
-        )
-        msg = service.get_update_message()
+        try:
+            await service.send(
+                chat_id=chat_id,
+                url=url,  # type: ignore
+            )
+            new_button_text = service.get_update_message()
+        except SendingError:
+            new_button_text = service.get_error_message()
 
         new_buttons = []
         for button in update.callback_query.message.reply_markup.inline_keyboard[0]:
             if button.callback_data.service == payload.service:  # type: ignore
-                button.text = msg
+                button.text = new_button_text
                 button.callback_data.sended = True
                 button.callback_data = button.callback_data.json()
 

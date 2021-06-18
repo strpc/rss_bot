@@ -6,7 +6,10 @@ class ExternalServiceABC(ABC):
     async def send(self, *, chat_id: int, url: str) -> None:
         ...
 
-    @staticmethod
     @abstractmethod
-    def get_update_message() -> str:
+    def get_update_message(self) -> str:
+        ...
+
+    @abstractmethod
+    def get_error_message(self) -> str:
         ...
