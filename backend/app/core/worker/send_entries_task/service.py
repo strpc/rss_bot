@@ -54,6 +54,7 @@ class SenderMessages:
         return integration_services
 
     async def send(self, limit_title: int, limit_text: int) -> None:
+        logger.info("Ищем новые записи для отправки пользователям...")
         new_entries = await self._feeds_service.get_unsended_entries()
         if new_entries is None:
             logger.info("Нет новых записей для отправки. exit...")

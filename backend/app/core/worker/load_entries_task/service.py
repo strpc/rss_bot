@@ -87,4 +87,4 @@ class LoadEntries:
                     await self._feeds_service.insert_entries(execute_values)  # type: ignore
                     logger.info("В базу записано {} новых записей.", len(execute_values))
                 else:
-                    logger.info("Нет новых записей для сохранения в базу.")
+                    logger.debug("Нет новых записей для сохранения в базу.")
