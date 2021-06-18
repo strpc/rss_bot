@@ -67,7 +67,7 @@ class PocketClient:
             "consumer_key": self._consumer_key,
             "redirect_uri": self._redirect_url,
         }
-        response = await self._client.post(url, headers=self._get_headers(), body=body)
+        response = await self._send_post_request(url, headers=self._get_headers(), body=body)
 
         if response.status_code != 200:
             logger.error("Ошибка при получении request-токена. headers={}", response.headers)
@@ -88,7 +88,7 @@ class PocketClient:
             "consumer_key": self._consumer_key,
             "code": request_token,
         }
-        response = await self._client.post(url, headers=self._get_headers(), body=body)
+        response = await self._send_post_request(url, headers=self._get_headers(), body=body)
         if response.status_code != 200:
             logger.error(
                 "Ошибка при получении access-токена. status_code={} headers={}",
@@ -108,7 +108,7 @@ class PocketClient:
         if tags is not None:
             body["tags"] = tags
 
-        response = await self._client.post(api_url, headers=self._get_headers(), body=body)
+        response = await self._send_post_request(api_url, headers=self._get_headers(), body=body)
         if response.status_code != 200:
             logger.error(
                 "{} статус-код при отправке новой записи в Pocket. access_token={}. url={}",
