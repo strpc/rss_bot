@@ -50,7 +50,7 @@ class SenderMessages:
             pocket_button.add_callback_data(entry.id)
             integration_services.append(pocket_button)
 
-        logger.info("У пользователя {} активированных сервисов.", len(integration_services))
+        logger.debug("У пользователя {} активированных сервисов.", len(integration_services))
         return integration_services
 
     async def send(self, limit_title: int, limit_text: int) -> None:
@@ -58,9 +58,8 @@ class SenderMessages:
         if new_entries is None:
             logger.info("Нет новых записей для отправки. exit...")
             return
-
         users_integrations: Dict[int, Optional[UserIntegration]] = {}
-        logger.info("Отправляем {} записей...", len(new_entries))
+        logger.info("{} новых записей...", len(new_entries))
         for entry in new_entries:
             if entry.chat_id in users_integrations:
                 user_integration = users_integrations[entry.chat_id]
@@ -71,7 +70,6 @@ class SenderMessages:
             text = self._format_text(entry, limit_title, limit_text)
             buttons = None
             if user_integration is not None:
-
                 buttons = self._create_buttons(
                     entry=entry,
                     user_integration=user_integration,

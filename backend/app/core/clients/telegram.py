@@ -40,6 +40,7 @@ class Telegram:
         url: str,
         body: Dict,
     ) -> Response:
+        logger.info("Отправляем post запрос body={}", body)
         response = await self._client.post(url=url, body=body)
         if response.status_code == 200:
             return response

@@ -42,6 +42,8 @@ class CallbackService(CommandServiceABC):
         chat_id = update.callback_query.message.chat.id
         message_id = update.callback_query.message.message_id
         payload = update.callback_query.data
+        logger.info("payload={}", payload)
+
         service = self._get_service(payload.service)  # type: ignore
 
         url = await self._get_entry_url(payload.entry_id)  # type: ignore
