@@ -1,4 +1,3 @@
-import asyncio
 from json import JSONDecodeError
 from typing import Dict, List, Optional
 
@@ -40,18 +39,10 @@ class Telegram:
         self,
         url: str,
         body: Dict,
-        *,
-        attempt: int,
-        delay: int,
     ) -> Response:
         response = await self._client.post(url=url, body=body)
         if response.status_code == 200:
             return response
-
-        if attempt > 0:
-            await asyncio.sleep(delay)
-            attempt -= 1
-            await self._send_post_request(url, body, attempt=attempt, delay=delay)
 
         try:
             response_body = response.json()
@@ -88,8 +79,6 @@ class Telegram:
         inline_keyboard: Optional[List[Button]] = None,
         parse_mode: Optional[ParseMode] = None,
         disable_web_page_preview: bool = False,
-        attempt: int = 5,
-        delay: int = 0,  # TODO: DEBUG MODE!
     ) -> Response:
         """Отправка сообщений пользователю."""
         method = "sendMessage"
@@ -107,7 +96,7 @@ class Telegram:
             }
 
         url = self._format_url(method)
-        return await self._send_post_request(url, body, attempt=attempt, delay=delay)
+        return await self._send_post_request(url, body)
 
     async def update_buttons(
         self,
@@ -115,8 +104,6 @@ class Telegram:
         chat_id: int,
         message_id: int,
         inline_keyboard: List[Button],
-        attempt: int = 5,
-        delay: int = 0,  # TODO: DEBUG MODE!
     ) -> Response:
         method = "editMessageReplyMarkup"
 
@@ -126,4 +113,4 @@ class Telegram:
             "reply_markup": {"inline_keyboard": [[button.dict() for button in inline_keyboard]]},
         }
         url = self._format_url(method)
-        return await self._send_post_request(url, body, attempt=attempt, delay=delay)
+        return await self._send_post_request(url, body)
