@@ -16,18 +16,24 @@ LABEL maintainer="https://github.com/strpc"
 
 ENV PYTHONUNBUFFERED 1
 
-COPY --from=builder /etc/localtime /etc/localtime
-COPY --from=builder /etc/timezone /etc/timezone
-COPY --from=builder /install /usr/local
+RUN adduser --uid 1000 --home /app --disabled-password --gecos "" backend && \
+    chown -hR backend: /app
 
 WORKDIR /app
-COPY . /app
+
+COPY --from=builder /etc/timezone /etc/timezone
+COPY --from=builder /etc/localtime /etc/localtime
+COPY --from=builder /install /usr/local
+
+COPY --chown=backend:backend . /app
 
 ENV PYTHONPATH=/app/app
 
 VOLUME ["/app/app/db/", "/app/app/docker/logs/"]
 
-RUN ["chmod", "+x", "./docker/backend-entrypoint.sh"]
+RUN chmod +x ./docker/backend-entrypoint.sh
+
+USER backend
 
 ENTRYPOINT ["./docker/backend-entrypoint.sh"]
 CMD ["prod"]
