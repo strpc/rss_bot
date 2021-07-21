@@ -1,0 +1,63 @@
+name: deploy to production
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  deploy:
+    name: deploy to production
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: rlespinasse/github-slug-action@3.5.1
+
+      - name: Deploy to production via SSH action
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            export VERSION=${{ env.GITHUB_REF_SLUG }}
+            export DEBUG=${{ secrets.DEBUG }}
+            export LOGLEVEL=${{ secrets.LOGLEVEL }}
+            export SELENIUM_DOCKER_IMAGE=${{ secrets.SELENIUM_DOCKER_IMAGE }}
+            export SELENIUM_HOST=${{ secrets.SELENIUM_HOST }}
+            export SELENIUM_PORT=${{ secrets.SELENIUM_PORT }}
+            export SELENIUM_URL=${{ secrets.SELENIUM_URL }}
+            export RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+            export RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+            export RABBITMQ_HOSTNAME=${{ secrets.RABBITMQ_HOSTNAME }}
+            export HH_LOGIN=${{ secrets.HH_LOGIN }}
+            export HH_PASSWORD=${{ secrets.HH_PASSWORD }}
+            export BROKER=${{ secrets.BROKER }}
+            export TIMEZONE=${{ secrets.TIMEZONE }}
+            export HOUR_RUN=${{ secrets.HOUR_RUN }}
+            export MINUTE_RUN=${{ secrets.MINUTE_RUN }}
+            export DAY_OF_WEEK=${{ secrets.DAY_OF_WEEK }}
+            export COUNTDOWN=${{ secrets.COUNTDOWN }}
+            export MAX_RETRIES=${{ secrets.MAX_RETRIES }}
+            export CONCURRENCY=${{ secrets.CONCURRENCY }}
+            export MAX_SLEEP_DELAY=${{ secrets.MAX_SLEEP_DELAY }}
+            export WAIT_ELEMENT_DELAY=${{ secrets.WAIT_ELEMENT_DELAY }}
+            export EASY_NOTIFYER_SERVICE_NAME=${{ secrets.EASY_NOTIFYER_SERVICE_NAME }}
+            export EASY_NOTIFYER_TELEGRAM_TOKEN=${{ secrets.EASY_NOTIFYER_TELEGRAM_TOKEN }}
+            export EASY_NOTIFYER_TELEGRAM_CHAT_ID=${{ secrets.EASY_NOTIFYER_TELEGRAM_CHAT_ID }}
+
+            cd ${{ secrets.PROJECT_DIR }}
+            git pull
+            docker-compose build
+            docker-compose down --remove-orphans
+            docker-compose up -d
+
+      - name: send message to telegram
+        uses: appleboy/telegram-action@master
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          to: ${{ secrets.TELEGRAM_TO }}
+          format: html
+          message: |
+            Production: <a href="${{ github.SERVER_URL }}/${{ github.REPOSITORY }}">${{ env.GITHUB_REPOSITORY_NAME_PART }}</a> was updated to <a href="${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/tree/${{ env.GITHUB_REF_SLUG }}">${{ env.GITHUB_REF_SLUG }}</a>:<a href="${{ github.SERVER_URL }}/${{ github.REPOSITORY }}/commit/${{ github.SHA }}">${{ env.GITHUB_SHA_SHORT }}</a>.
