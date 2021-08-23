@@ -3,9 +3,9 @@ from typing import Dict, List, Optional
 
 from loguru import logger
 
+from app.api.schemas.enums import ParseMode
+from app.api.schemas.message import Button
 from app.core.clients.http_ import HttpClientABC, Response
-from app.schemas.enums import ParseMode
-from app.schemas.message import Button
 
 
 class TelegramException(Exception):

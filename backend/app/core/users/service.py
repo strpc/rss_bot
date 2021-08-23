@@ -2,10 +2,10 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from loguru import logger
 
+from app.api.schemas.callback import Callback
+from app.api.schemas.message import Message
 from app.core.users.models import User, UserIntegration
 from app.core.users.repository import UsersRepository
-from app.schemas.callback import Callback
-from app.schemas.message import Message
 
 
 class UsersService:

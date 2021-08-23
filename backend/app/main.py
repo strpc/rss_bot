@@ -6,9 +6,10 @@ from fastapi.exceptions import RequestValidationError
 from loguru import logger
 
 from app import __version__
-from app.config import get_config
+from app.api import deps
+from app.api.endpoints import message
+from app.containers import Container
 from app.core.clients.database import Database
-from app.endpoints import message
 from app.logger import configure_logging
 
 
@@ -19,11 +20,14 @@ def init_app() -> FastAPI:
         docs_url=None,
         redoc_url=None,
     )
-    config = get_config()
-    configure_logging(config.app.log_level)
+    container = Container()
+    container.wire(modules=[deps, message])
+    container.init_resources()
+    application.state.container = container
 
-    application.state.config = config
-    application.state.db = Database(config.db.url, config.db.paramstyle)
+    configure_logging(container.config().app.log_level)
+
+    application.state.db = Database(container.config().db.dsn)
 
     application.add_event_handler("startup", startup_event(application))
     application.add_event_handler("shutdown", shutdown_event(application))
@@ -32,13 +36,13 @@ def init_app() -> FastAPI:
 
     application.include_router(message.router, prefix="/rss_bot/backend")
 
-    if not config.app.debug:
+    if not container.config().app.debug:
         logger.info("Service is started.")
         tg = Telegram(
-            token=config.easy_notifyer.token,
-            chat_id=config.easy_notifyer.chat_id,
+            token=container.config().easy_notifyer.token,
+            chat_id=container.config().easy_notifyer.chat_id,
         )
-        tg.send_message(f"service {config.easy_notifyer.service_name}: started..")
+        tg.send_message(f"service {container.config().easy_notifyer.service_name}: started..")
     else:
         logger.info("Debug is enabled.")
     return application

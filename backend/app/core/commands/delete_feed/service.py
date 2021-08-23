@@ -2,15 +2,15 @@ from typing import Tuple
 
 from loguru import logger
 
+from app.api.schemas.enums import ParseMode
+from app.api.schemas.message import Message
 from app.core.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
 from app.core.feeds.models import Feed
 from app.core.feeds.service import FeedsService
-from app.core.service_messages.models import ServiceMessage
-from app.core.service_messages.service import ServiceMessagesService
+from app.core.service_messages.models import InternalMessages
+from app.core.service_messages.service import InternalMessagesService
 from app.core.utils import validate_url
-from app.schemas.enums import ParseMode
-from app.schemas.message import Message
 
 
 class CommandDeleteFeedService(CommandServiceABC):
@@ -19,18 +19,16 @@ class CommandDeleteFeedService(CommandServiceABC):
         *,
         feeds_service: FeedsService,
         telegram: Telegram,
-        service_messages: ServiceMessagesService,
+        internal_messages_service: InternalMessagesService,
     ):
         self._feeds_service = feeds_service
         self._telegram = telegram
-        self._service_messages = service_messages
+        self.internal_messages_service = internal_messages_service
 
     @staticmethod
     def _format_deleted_list_msg(active_feeds: Tuple[Feed, ...]) -> str:
-        text = "For unsubscribe send:\n"
-        for feed in active_feeds:
-            text += f"`/delete_feed {feed.url}`\n"
-        return text
+        title = "For unsubscribe send:"
+        return title + "\n".join(f"`/delete_feed {feed.url}`\n" for feed in active_feeds)
 
     async def handle(self, update: Message) -> None:
         chat_id = update.message.chat.id
@@ -42,7 +40,7 @@ class CommandDeleteFeedService(CommandServiceABC):
 
             if active_feeds is None:
                 logger.debug("У пользователя нет активных фидов.")
-                await self._service_messages.send(chat_id, ServiceMessage.not_have_active)
+                await self.internal_messages_service.send(chat_id, InternalMessages.not_have_active)
                 return
 
             text = self._format_deleted_list_msg(active_feeds)
@@ -54,13 +52,13 @@ class CommandDeleteFeedService(CommandServiceABC):
 
             if not validate_url(url_feed):
                 logger.warning("Некорректный url. {}", url_feed)
-                await self._service_messages.send(chat_id, ServiceMessage.incorrect_rss)
+                await self.internal_messages_service.send(chat_id, InternalMessages.incorrect_rss)
                 return
 
             exists_feed = await self._feeds_service.exists_active_feed_user(chat_id, url_feed)
             if not exists_feed:
                 logger.warning("Попытка удалить фид, который не добавлен. {}", url_feed)
-                await self._service_messages.send(chat_id, ServiceMessage.url_not_founded)
+                await self.internal_messages_service.send(chat_id, InternalMessages.url_not_founded)
                 return
 
             logger.debug("Удаление фида {} ...", url_feed)

@@ -11,11 +11,13 @@ TupleAny = Tuple[Any, ...]
 ListDict = List[DictAny]
 ListTuple = List[TupleAny]
 
+PARAMSTYPE = "?"
+
 
 class Database:
-    def __init__(self, url: str, paramstyle: str):
+    def __init__(self, url: str):
         self._db = aiosqlite.connect(url)
-        self.paramstyle = paramstyle
+        self.paramstyle = PARAMSTYPE
 
     async def __aenter__(self) -> "Database":
         return await self.connect()

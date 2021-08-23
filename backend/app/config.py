@@ -46,9 +46,9 @@ class PocketConfig(BaseSettings):
 
 class LimitConfig(BaseSettings):
     load_feed: int
-    title: int
-    text: int
-    count_feed: int
+    title_message: int
+    text_message: int
+    count_feed_user: int
 
     class Config:
         env_prefix = "limit_"
@@ -60,8 +60,7 @@ class AppSettings(BaseSettings):
 
 
 class DBSettings(BaseSettings):
-    url: str
-    paramstyle: str = "?"  # SELECT * FROM users WHERE users.id = ?
+    dsn: str
 
     class Config:
         env_prefix = "database_"

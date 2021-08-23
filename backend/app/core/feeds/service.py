@@ -1,5 +1,5 @@
 from http.client import InvalidURL
-from typing import Any, List, Optional, Tuple
+from typing import Optional, Tuple
 from urllib.error import URLError
 
 import feedparser
@@ -8,7 +8,7 @@ from pydantic import parse_obj_as
 
 from app.core.feeds.models import Entry, Feed, UserEntry
 from app.core.feeds.repository import FeedsRepository
-from app.core.utils import get_hash, run_in_threadpool
+from app.core.utils import run_in_threadpool
 
 
 class Parser:
@@ -47,9 +47,18 @@ class FeedsService:
             logger.warning("Фид невалиден {}", url)
             return False
 
-    async def add_feed(self, url: str, chat_id: int) -> None:
-        hash_url_chat_id = get_hash(url, chat_id)
-        await self._repository.add_feed(url, chat_id, hash_url_chat_id)
+    async def add_new_feed_user(self, chat_id: int, url: str) -> None:
+        await self.add_feed(url)
+        await self.add_user_feed(url, chat_id)
+
+    async def add_user_feed(self, url: str, chat_id: int) -> None:
+        return await self._repository.add_user_feed(url=url, chat_id=chat_id)
+
+    async def add_feed(self, url: str) -> None:
+        return await self._repository.add_feed(url)
+
+    async def exists_entry(self, url: str) -> bool:
+        return await self._repository.exists_entry(url)
 
     async def disable_feed(self, url: str, chat_id: int) -> None:
         return await self._repository.disable_feed(url=url, chat_id=chat_id)
@@ -62,11 +71,14 @@ class FeedsService:
         parser = Parser(url)
         return await parser.parse(limit_feeds)
 
-    async def exists_entry(self, chat_id_url_hash: str) -> bool:
-        return await self._repository.exists_entry(chat_id_url_hash=chat_id_url_hash)
+    async def exists_user_entry(self, chat_id: int, url: str) -> bool:
+        return await self._repository.exists_user_entry(chat_id=chat_id, url=url)
 
-    async def insert_entries(self, values: List[Tuple[Any, ...]]) -> None:
-        return await self._repository.insert_entries(values)
+    async def insert_entry(self, entry: Entry, url_feed: str) -> None:
+        return await self._repository.insert_entry(entry, url_feed)
+
+    async def insert_user_entry(self, url: str, chat_id: int) -> None:
+        return await self._repository.insert_user_entry(url, chat_id)
 
     async def get_unsended_entries(self) -> Optional[Tuple[UserEntry, ...]]:
         return await self._repository.get_unsended_entries()

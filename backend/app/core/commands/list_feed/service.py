@@ -2,13 +2,13 @@ from typing import Tuple
 
 from loguru import logger
 
+from app.api.schemas.message import Message
 from app.core.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
 from app.core.feeds.models import Feed
 from app.core.feeds.service import FeedsService
-from app.core.service_messages.models import ServiceMessage
-from app.core.service_messages.service import ServiceMessagesService
-from app.schemas.message import Message
+from app.core.service_messages.models import InternalMessages
+from app.core.service_messages.service import InternalMessagesService
 
 
 class CommandListFeedService(CommandServiceABC):
@@ -17,15 +17,16 @@ class CommandListFeedService(CommandServiceABC):
         *,
         feeds_service: FeedsService,
         telegram: Telegram,
-        service_messages: ServiceMessagesService,
+        internal_messages_service: InternalMessagesService,
     ):
         self._telegram = telegram
         self._feeds_service = feeds_service
-        self._service_messages = service_messages
+        self._internal_messages_service = internal_messages_service
 
     @staticmethod
     def _format_subscribed_msg(list_feeds: Tuple[Feed, ...]) -> str:
-        return "You are subscribed to:\n{}".format("\n".join([feed.url for feed in list_feeds]))
+        nl = "\n"
+        return f"You are subscribed to:{nl}{nl.join(feed.url for feed in list_feeds)}"
 
     async def handle(self, update: Message) -> None:
         chat_id = update.message.chat.id
@@ -33,7 +34,7 @@ class CommandListFeedService(CommandServiceABC):
 
         if active_feeds is None:
             logger.debug("У пользователя нет активных фидов.")
-            await self._service_messages.send(chat_id, ServiceMessage.not_have_active)
+            await self._internal_messages_service.send(chat_id, InternalMessages.not_have_active)
             return
 
         text = self._format_subscribed_msg(active_feeds)

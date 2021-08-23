@@ -1,0 +1,37 @@
+
+// /start
+POST http://localhost:8000/rss_bot/backend/
+Content-Type: application/json
+
+{
+  "message": {
+    "chat": {
+      "first_name": "John",
+      "id": 888888889,
+      "last_name": "Smith",
+      "type": "private",
+      "username": "new_user"
+    },
+    "date": 1621453591,
+    "entities": [
+      {
+        "length": 6,
+        "offset": 0,
+        "type": "bot_command"
+      }
+    ],
+    "from": {
+      "first_name": "Smith",
+      "id": 414077437,
+      "is_bot": false,
+      "language_code": "en",
+      "last_name": "John",
+      "username": "fuck you pay me"
+    },
+    "message_id": 9549,
+    "text": "/start"
+  },
+  "update_id": 7476872561231412
+}
+
+###

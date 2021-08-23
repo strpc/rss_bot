@@ -1,4 +1,4 @@
-from typing import AsyncIterable, Optional
+from typing import AsyncIterator, Optional
 
 from loguru import logger
 
@@ -7,7 +7,6 @@ from app.core.feeds.models import Entry, Feed
 from app.core.feeds.service import FeedsService
 from app.core.users.models import User
 from app.core.users.service import UsersService
-from app.core.utils import get_hash
 
 
 class LoadEntries:
@@ -22,18 +21,17 @@ class LoadEntries:
         self._feeds_service = feeds_service
         self._users_service = users_service
 
-    async def _exists_entry(self, chat_id: int, url: Optional[str]) -> bool:
+    async def _exists_user_entry(self, chat_id: int, url: Optional[str]) -> bool:
         if url is None:
             logger.warning("Фид без урла. chat_id={}")
-        url_chat_id_hash = get_hash(url, chat_id)  # type: ignore
-        return await self._feeds_service.exists_entry(url_chat_id_hash)
+        return await self._feeds_service.exists_user_entry(chat_id=chat_id, url=url)  # type: ignore
 
     async def _load_new_entries(
         self,
         user: User,
         feed: Feed,
         limit_feeds: int,
-    ) -> AsyncIterable[Entry]:
+    ) -> Optional[AsyncIterator[Entry]]:
         logger.debug("Загружаем записи фида {}...", feed.url)
         entries = await self._feeds_service.load_entries(feed.url, limit_feeds)
 
@@ -43,11 +41,16 @@ class LoadEntries:
 
         for entry in entries:
             logger.debug("Проверим существует лм уже запись {} в базе...", entry)
-            if await self._exists_entry(user.chat_id, entry.url):
+            if await self._exists_user_entry(user.chat_id, entry.url):
                 logger.debug("Запись уже есть в базе. Пропускаем...")
                 continue
             logger.debug("Запись {} новая. Запишем ее в базу.")
             yield entry
+
+    async def _insert_user_entry(self, chat_id: int, entry: Entry, url_feed: str) -> None:
+        if not await self._feeds_service.exists_entry(entry.url):
+            await self._feeds_service.insert_entry(entry, url_feed)
+        await self._feeds_service.insert_user_entry(entry.url, chat_id)
 
     async def load(self, limit_feeds: int) -> None:
         logger.debug("Получаем список активных юзеров...")
@@ -68,23 +71,9 @@ class LoadEntries:
 
             logger.info("У юзера {} - {} активных фидов.", user.chat_id, len(user_feeds))
             for feed in user_feeds:
-
-                execute_values = []
-                async for new_entry in self._load_new_entries(user, feed, limit_feeds):
-                    execute_values.append(
-                        (
-                            new_entry.url,
-                            new_entry.title,  # type: ignore
-                            new_entry.text,
-                            get_hash(new_entry.url, user.chat_id),  # type: ignore
-                            feed.chat_id_url_hash,
-                            user.chat_id,
-                        ),
-                    )
-
-                if execute_values:
-                    logger.debug("Записываем новые записи в бд...")
-                    await self._feeds_service.insert_entries(execute_values)  # type: ignore
-                    logger.info("В базу записано {} новых записей.", len(execute_values))
-                else:
-                    logger.debug("Нет новых записей для сохранения в базу.")
+                async for new_entry in self._load_new_entries(
+                    user,
+                    feed,
+                    limit_feeds,
+                ):  # type: ignore
+                    await self._insert_user_entry(user.chat_id, new_entry, feed.url)

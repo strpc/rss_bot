@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, validator
 
-from app.schemas.enums import ServiceIntegration, TypeUpdate
+from app.api.schemas.enums import ServiceIntegration, TypeUpdate
 
 
 class CallbackIntegrationServicePayload(BaseModel):

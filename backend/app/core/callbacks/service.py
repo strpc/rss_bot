@@ -2,17 +2,17 @@ from typing import Optional
 
 from loguru import logger
 
+from app.api.schemas.callback import Callback
+from app.api.schemas.enums import ServiceIntegration
+from app.api.schemas.message import Button
 from app.core.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
 from app.core.integration.exceptions import SendingError
 from app.core.integration.integration_abc import ExternalServiceABC
 from app.core.integration.service import ExternalServices
-from app.core.service_messages.models import ServiceMessage
-from app.core.service_messages.service import ServiceMessagesService
+from app.core.service_messages.models import InternalMessages
+from app.core.service_messages.service import InternalMessagesService
 from app.core.users.service import UsersService
-from app.schemas.callback import Callback
-from app.schemas.enums import ServiceIntegration
-from app.schemas.message import Button
 
 
 class CallbackService(CommandServiceABC):
@@ -21,12 +21,12 @@ class CallbackService(CommandServiceABC):
         *,
         users_service: UsersService,
         external_services: ExternalServices,
-        service_messages: ServiceMessagesService,
+        internal_messages_service: InternalMessagesService,
         telegram: Telegram,
     ):
         self._services = external_services
         self._users_service = users_service
-        self._service_messages = service_messages
+        self._internal_messages_service = internal_messages_service
         self._telegram = telegram
 
     def _get_service(self, name: ServiceIntegration) -> ExternalServiceABC:
@@ -49,7 +49,7 @@ class CallbackService(CommandServiceABC):
 
         url = await self._get_entry_url(payload.entry_id)  # type: ignore
         if url is None:
-            await self._service_messages.send(chat_id, ServiceMessage.error)
+            await self._internal_messages_service.send(chat_id, InternalMessages.error)
             return
 
         try:

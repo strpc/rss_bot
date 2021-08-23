@@ -1,7 +1,8 @@
-from enum import Enum
+from enum import Enum, unique
 
 
-class ServiceMessage(str, Enum):
+@unique
+class InternalMessages(str, Enum):
     hello_user = "hello_user"
     unsupported_update = "unsupported_update"
     show_help = "show_help"

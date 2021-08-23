@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from app.schemas.message import Message
+from app.api.schemas.message import Message
 
 
 class CommandServiceABC(ABC):
