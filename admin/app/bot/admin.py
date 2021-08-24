@@ -1,8 +1,9 @@
-# mypy: ignore-errors
+# # mypy: ignore-errors
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 
-from .models import RSS, Article, PocketIntegration, ServiceMessage, User
+from .models import Article, ArticleUser, PocketIntegration, RSSUsers, ServiceMessage, User
 
 
 class BaseAdminModel(admin.ModelAdmin):
@@ -19,108 +20,138 @@ class UserAdmin(BaseAdminModel):
         "last_name",
         "username",
         "register",
+        "user_rss",
         "active",
-        "view_rss_feeds",
+        "is_blocked",
     )
     readonly_fields = (
-        "chat_id",
-        "first_name",
-        "last_name",
-        "username",
-        "register",
-        "view_rss_feeds",
+        (
+            "register",
+            "user_rss",
+        )
+        if settings.DEBUG
+        else ("chat_id", "first_name", "last_name", "username", "register", "user_rss")
     )
     list_display = (
         "username",
         "register",
         "active",
+        "is_blocked",
     )
     list_display_links = (
         "username",
         "register",
         "active",
+        "is_blocked",
     )
-    list_filter = ("active",)
+    list_filter = ("active", "is_blocked")
 
-    def view_rss_feeds(self, obj):
-        rss_query = RSS.objects.filter(chat_id=obj.chat_id, active=True)
-        result = ""
-        for item in rss_query:
-            result += f"{item.url}\n"
-        return result
+    def user_rss(self, obj: User) -> str:
+        return obj.rss.url  # type: ignore
 
-    view_rss_feeds.short_description = "Active RSS"
+    user_rss.short_description = "RSS"  # type: ignore
 
 
-@admin.register(RSS)
-class AdminRss(BaseAdminModel):
+@admin.register(RSSUsers)
+class AdminRSSUsers(BaseAdminModel):
     fields = (
-        "view_username",
-        "url",
-        "added",
+        "user",
+        "rss",
         "active",
+        "added",
+        "updated",
     )
-    readonly_fields = ("url", "added", "view_username")
-    exclude = ("chatid_url_hash",)
+    readonly_fields = ("added", "updated")
     list_display = (
-        "view_username",
-        "url",
+        "user",
+        "rss",
+        "active",
         "added",
-        "active",
+        "updated",
     )
-    list_display_links = ("url", "added", "active", "view_username")
+    list_display_links = (
+        "user",
+        "rss",
+        "active",
+        "added",
+        "updated",
+    )
     list_filter = (
-        "chat_id__username",
+        "user__username",
+        "rss__url",
         "active",
-        "url",
     )
 
-    def view_username(self, obj):
-        return view_username(obj)
 
-    view_username.short_description = "Username"
+@admin.register(ArticleUser)
+class AdminArticleUser(BaseAdminModel):
+    ordering = ("-added", "user__pk")
+    fields = (
+        "user",
+        "article",
+        "added",
+        "sended_at",
+        "sended",
+    )
+    readonly_fields = (
+        "added",
+        "sended_at",
+    )
+    list_display = (
+        "user",
+        "get_title_article",
+        "added",
+        "sended_at",
+        "sended",
+    )
+    list_display_links = (
+        "user",
+        "get_title_article",
+        "added",
+        "sended_at",
+        "sended",
+    )
+    list_filter = (
+        "sended",
+        "user__username",
+        "article__rss__url",
+    )
+
+    def get_title_article(self, obj: ArticleUser) -> str:
+        return obj.article.title
+
+    get_title_article.short_description = "Заголовок статьи"  # type: ignore
 
 
 @admin.register(Article)
 class AdminArticle(BaseAdminModel):
-    ordering = ("-added", "chat_id__pk")
+    ordering = ("-added",)
     fields = (
-        "view_username",
         "title",
+        "text",
+        "url",
+        "rss",
+        "added",
+    )
+    readonly_fields = ("added",)
+    list_display = (
+        "title",
+        "url",
         "get_rss_url",
         "added",
-        "sended",
-        "text",
     )
-    readonly_fields = (
-        "view_username",
-        "title",
-        "get_rss_url",
-        "added",
-        # "sended",
-        "text",
-    )
-    list_display = ("view_username", "title", "get_rss_url", "added", "sended")
     list_display_links = (
-        "view_username",
         "title",
+        "url",
         "get_rss_url",
         "added",
     )
-    list_filter = (
-        "sended",
-        "chat_id__username",
-        "rss_url__url",
-    )
+    list_filter = ("rss__url",)
 
-    def view_username(self, obj):
-        return view_username(obj)
+    def get_rss_url(self, obj: Article) -> str:
+        return obj.rss.url
 
-    view_username.short_description = "Username"
-
-
-def view_username(obj):
-    return f"@{obj.chat_id.username}"
+    get_rss_url.short_description = "RSS url"  # type: ignore
 
 
 class ServiceMessageForm(forms.ModelForm):
