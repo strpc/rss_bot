@@ -1,15 +1,15 @@
 from typing import Callable, Optional
 
 from easy_notifyer import Telegram
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from loguru import logger
 
 from app import __version__
 from app.api import deps
 from app.api.endpoints import message
+from app.config import MainConfig
 from app.containers import Container
-from app.core.clients.database import Database
 from app.logger import configure_logging
 
 
@@ -21,13 +21,14 @@ def init_app() -> FastAPI:
         redoc_url=None,
     )
     container = Container()
-    container.wire(modules=[deps, message])
+    container.config.from_pydantic(MainConfig())
     container.init_resources()
+    container.wire(modules=[deps, message])
     application.state.container = container
 
-    configure_logging(container.config().app.log_level)
+    configure_logging(container.config.app.log_level())
 
-    application.state.db = Database(container.config().db.dsn)
+    application.state.db = container.database()
 
     application.add_event_handler("startup", startup_event(application))
     application.add_event_handler("shutdown", shutdown_event(application))
@@ -36,7 +37,7 @@ def init_app() -> FastAPI:
 
     application.include_router(message.router, prefix="/rss_bot/backend")
 
-    if not container.config().app.debug:
+    if not container.config.app.debug():
         logger.info("Service is started.")
         tg = Telegram(
             token=container.config().easy_notifyer.token,
@@ -50,7 +51,7 @@ def init_app() -> FastAPI:
 
 async def validation_exception_handler(request: Request, exc: Optional[BaseException]) -> Response:
     logger.error(str(exc))
-    return Response(status_code=200)
+    return Response(status_code=status.HTTP_200_OK)
 
 
 def startup_event(application: FastAPI) -> Callable:
