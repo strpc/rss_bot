@@ -27,7 +27,7 @@ class CommandDeleteFeedService(CommandServiceABC):
 
     @staticmethod
     def _format_deleted_list_msg(active_feeds: Tuple[Feed, ...]) -> str:
-        title = "For unsubscribe send:"
+        title = "For unsubscribe send:\n"
         return title + "\n".join(f"`/delete_feed {feed.url}`\n" for feed in active_feeds)
 
     async def handle(self, update: Message) -> None:
@@ -44,6 +44,7 @@ class CommandDeleteFeedService(CommandServiceABC):
                 return
 
             text = self._format_deleted_list_msg(active_feeds)
+            print(text)
             await self._telegram.send_message(chat_id, text, parse_mode=ParseMode.MarkdownV2)
 
         else:

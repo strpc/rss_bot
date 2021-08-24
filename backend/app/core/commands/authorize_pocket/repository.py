@@ -36,13 +36,13 @@ class PocketAuthRepository:
         """
         await self._db.execute(query, (user_id, request_token, request_token))
 
-    async def get_access_token(self, chat_id: int) -> Optional[str]:
+    async def get_request_token(self, chat_id: int) -> Optional[str]:
         user_id = await self._get_user_id(chat_id)
         if user_id is None:
             return
 
         query = f"""
-        SELECT access_token
+        SELECT request_token
         FROM bot_pocket_integration
         WHERE
             user_id = {self._paramstyle}

@@ -16,8 +16,8 @@ class FeedsRepository:
         query = f"""
         SELECT 1
         FROM bot_rss_user bru
-        LEFT JOIN bot_rss br on br.id = bru.rss_id AND br.url LIKE {self._paramstyle}
-        LEFT JOIN bot_users bu on bru.user_id = bu.id
+        JOIN bot_rss br on br.id = bru.rss_id AND br.url LIKE {self._paramstyle}
+        JOIN bot_users bu on bru.user_id = bu.id
         WHERE
           bu.chat_id = {self._paramstyle}
           AND bru.active is true
@@ -29,7 +29,7 @@ class FeedsRepository:
         query = f"""
         INSERT INTO bot_rss (url)
         VALUES ({self._paramstyle})
-        ON CONFLICT DO NOTHING
+        ON CONFLICT(url) DO NOTHING
         """
         await self._db.execute(query, (url,))
 
@@ -37,14 +37,14 @@ class FeedsRepository:
         query = f"""
         INSERT INTO bot_rss_user (rss_id, user_id, active, added, updated)
         VALUES (
-            SELECT id FROM bot_rss WHERE url LIKE '%{self._paramstyle}%',
-            SELECT id FROM bot_users WHERE chat_id = {self._paramstyle},
+            (SELECT id FROM bot_rss WHERE url = {self._paramstyle}),
+            (SELECT id FROM bot_users WHERE chat_id = {self._paramstyle}),
             true,
             datetime('now'),
             datetime('now')
         )
-        ON CONFLICT DO UPDATE
-        SET active = true,
+        ON CONFLICT(user_id, rss_id) DO UPDATE SET
+            active = true,
             updated = datetime('now')
         """
         await self._db.execute(query, (url, chat_id))

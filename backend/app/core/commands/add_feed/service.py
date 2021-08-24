@@ -69,7 +69,7 @@ class CommandAddFeedService(CommandServiceABC):
             await self._internal_messages_service.send(chat_id, InternalMessages.limit_achieved)
             return
 
-        logger.debug("Новый feed. {}", url)
+        logger.debug("Новый feed. {}", url[0])
         await self._feeds_service.add_new_feed_user(chat_id, url[0])
-        text = f"{url} was added."
+        text = f"{url[0]} was added."
         await self._telegram.send_message(chat_id, text, disable_web_page_preview=True)

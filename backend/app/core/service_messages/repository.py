@@ -10,7 +10,7 @@ class InternalMessagesRepository:
     def __init__(self, database: Database, cache: Type[Cache]):
         self._db = database
         self._cache = cache()
-        self._cache_ttl = 5
+        self._cache_ttl = 30
 
     async def _get_message_from_cache(self, title: InternalMessages) -> Optional[str]:
         cached_result = await self._cache.get(title)

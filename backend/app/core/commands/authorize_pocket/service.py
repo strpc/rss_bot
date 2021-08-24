@@ -34,8 +34,9 @@ class AuthorizePocketService(CommandServiceABC):
 
     async def unauthorize(self, update: Message) -> None:
         chat_id = update.message.chat.id
-        access_token = await self._repository.get_access_token(chat_id)
-        if access_token is None:
+        request_token = await self._repository.get_request_token(chat_id)
+        print(request_token)
+        if request_token is None:
             await self._internal_messages_service.send(chat_id, InternalMessages.error)
             return
 
@@ -44,7 +45,7 @@ class AuthorizePocketService(CommandServiceABC):
 
     async def handle(self, update: Message) -> None:
         commands_handlers_map = {
-            "authorize": self.authorize,
-            "unauthorize": self.unauthorize,
+            "authorize_pocket": self.authorize,
+            "unauthorize_pocket": self.unauthorize,
         }
         return await commands_handlers_map[update.message.command](update)  # type: ignore
