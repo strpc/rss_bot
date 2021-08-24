@@ -5,8 +5,7 @@ x-env-app:
   environment:
     - DEBUG
     - LOG_LEVEL
-    - DATABASE_URL
-    - DATABASE_PARAMSTYLE
+    - DATABASE_DSN
     - CELERY_BROKER
     - CELERY_HOUR_BEAT_INTERVAL
     - CELERY_MINUTE_BEAT_INTERVAL
@@ -17,9 +16,9 @@ x-env-app:
     - POCKET_CONSUMER_KEY
     - POCKET_REDIRECT_URL
     - LIMIT_LOAD_FEED
-    - LIMIT_TITLE
-    - LIMIT_TEXT
-    - LIMIT_COUNT_FEED
+    - LIMIT_TITLE_MESSAGE
+    - LIMIT_TEXT_MESSAGE
+    - LIMIT_COUNT_FEED_USER
 
 services:
   backend:
@@ -49,7 +48,7 @@ services:
       - DEBUG=False
       - ALLOWED_HOSTS=admin
       - SECRET_KEY=${SECRET_KEY}
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_DSN=${DATABASE_DSN}
     volumes:
       - ./db:/app/app/db
       - ./logs/:/app/docker/logs/

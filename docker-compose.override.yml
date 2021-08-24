@@ -6,7 +6,7 @@ services:
       - DEBUG=True
       - LOG_LEVEL=DEBUG
     ports:
-    - 8000:8000
+    - "8000:8000"
     volumes:
     - ./backend:/app
     command: "dev"
@@ -15,7 +15,7 @@ services:
     environment:
       - DEBUG=True
     ports:
-    - 8001:8001
+    - "8001:8001"
     volumes:
     - ./admin:/app
     command: "dev"
