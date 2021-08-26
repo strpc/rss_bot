@@ -6,7 +6,7 @@ import feedparser
 from loguru import logger
 from pydantic import parse_obj_as
 
-from app.core.feeds.models import Entry, Feed, UserEntry
+from app.core.feeds.models import Entry, Feed, UserEntry, UserFeed
 from app.core.feeds.repository import FeedsRepository
 from app.core.utils import run_in_threadpool
 
@@ -66,6 +66,9 @@ class FeedsService:
     async def get_active_feeds(self, chat_id: int) -> Optional[Tuple[Feed, ...]]:
         return await self._repository.get_active_feeds(chat_id=chat_id)
 
+    async def get_active_feeds_users(self) -> Optional[Tuple[UserFeed, ...]]:
+        return await self._repository.get_active_feeds_users()
+
     @staticmethod
     async def load_entries(url: str, limit_feeds: int) -> Optional[Tuple[Entry, ...]]:
         parser = Parser(url)
@@ -85,3 +88,6 @@ class FeedsService:
 
     async def mark_sended_entry(self, entry_id: int) -> None:
         return await self._repository.mark_sended_entries(entry_id)
+
+    async def get_entry_url(self, entry_id: int) -> Optional[str]:
+        return await self._repository.get_entry_url(entry_id)

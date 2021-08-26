@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 from pydantic import parse_obj_as
 
 from app.core.clients.database import Database
-from app.core.feeds.models import Entry, Feed, UserEntry
+from app.core.feeds.models import Entry, Feed, UserEntry, UserFeed
 
 
 class FeedsRepository:
@@ -73,6 +73,23 @@ class FeedsRepository:
         if rows is not None:
             return parse_obj_as(Tuple[Feed, ...], rows)
 
+    async def get_active_feeds_users(self) -> Optional[Tuple[UserFeed, ...]]:
+        query = """
+        SELECT
+            br.url as url,
+            bu.chat_id as chat_id
+        FROM bot_rss br
+        JOIN bot_rss_user bru on br.id = bru.rss_id
+        JOIN bot_users bu on bru.user_id = bu.id
+        WHERE
+            bu.is_blocked is false
+            AND bu.active is true
+            AND bru.active is true
+        """
+        rows = await self._db.fetchall(query, as_dict=True)
+        if rows is not None:
+            return parse_obj_as(Tuple[UserFeed, ...], rows)
+
     async def exists_user_entry(self, chat_id: int, url: str) -> bool:
         query = f"""
         SELECT 1
@@ -86,8 +103,8 @@ class FeedsRepository:
         row = await self._db.fetchone(
             query,
             (
-                chat_id,
                 url,
+                chat_id,
             ),
         )
         return bool(row)
@@ -120,14 +137,16 @@ class FeedsRepository:
     async def get_unsended_entries(self) -> Optional[Tuple[UserEntry, ...]]:
         query = """
         SELECT
-            id,
-            title as title,
-            url as url,
-            text as text,
+            bot_user_articles.id as id,
+            bot_articles.title as title,
+            bot_articles.url as url,
+            bot_articles.text as text,
             bot_users.chat_id as chat_id
         FROM bot_user_articles
         JOIN bot_users ON bot_user_articles.user_id = bot_users.id
+        JOIN bot_articles on bot_user_articles.article_id = bot_articles.id
         WHERE bot_user_articles.sended is false
+
         """
         rows = await self._db.fetchall(query, as_dict=True)
         if rows is not None:
@@ -135,7 +154,7 @@ class FeedsRepository:
 
     async def mark_sended_entries(self, entry_id: int) -> None:
         query = f"""
-        UPDATE bot_user_article
+        UPDATE bot_user_articles
         SET
             sended = true,
             sended_at = datetime('now')
@@ -152,3 +171,15 @@ class FeedsRepository:
         """
         row = await self._db.fetchone(query, (url,))
         return bool(row)
+
+    async def get_entry_url(self, entry_id: int) -> Optional[str]:
+        query = f"""
+        SELECT url
+        FROM bot_articles
+        JOIN bot_user_articles on bot_articles.id = bot_user_articles.article_id
+        WHERE
+            bot_user_articles.id =  {self._paramstyle}
+        """
+        row = await self._db.fetchone(query, (entry_id,))
+        if row:
+            return row[0]  # type: ignore

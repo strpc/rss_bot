@@ -7,25 +7,25 @@ from app.api.schemas.enums import ServiceIntegration
 from app.api.schemas.message import Button
 from app.core.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
+from app.core.feeds.service import FeedsService
 from app.core.integration.exceptions import SendingError
 from app.core.integration.integration_abc import ExternalServiceABC
 from app.core.integration.service import ExternalServices
 from app.core.service_messages.models import InternalMessages
 from app.core.service_messages.service import InternalMessagesService
-from app.core.users.service import UsersService
 
 
 class CallbackService(CommandServiceABC):
     def __init__(
         self,
         *,
-        users_service: UsersService,
+        feeds_service: FeedsService,
         external_services: ExternalServices,
         internal_messages_service: InternalMessagesService,
         telegram: Telegram,
     ):
         self._services = external_services
-        self._users_service = users_service
+        self._feeds_service = feeds_service
         self._internal_messages_service = internal_messages_service
         self._telegram = telegram
 
@@ -33,7 +33,7 @@ class CallbackService(CommandServiceABC):
         return self._services.get_service(name)
 
     async def _get_entry_url(self, entry_id: int) -> Optional[str]:
-        return await self._users_service.get_entry_url(entry_id)
+        return await self._feeds_service.get_entry_url(entry_id)
 
     async def handle(self, update: Callback) -> None:
         if update.callback_query.data.sended:  # type: ignore

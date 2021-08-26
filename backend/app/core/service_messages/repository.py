@@ -6,11 +6,14 @@ from app.core.clients.database import Database
 from app.core.service_messages.models import InternalMessages
 
 
+TTL_CACHE = 300
+
+
 class InternalMessagesRepository:
     def __init__(self, database: Database, cache: Type[Cache]):
         self._db = database
         self._cache = cache()
-        self._cache_ttl = 30
+        self._cache_ttl = TTL_CACHE
 
     async def _get_message_from_cache(self, title: InternalMessages) -> Optional[str]:
         cached_result = await self._cache.get(title)

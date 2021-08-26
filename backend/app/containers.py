@@ -18,6 +18,7 @@ from app.core.commands.start.service import CommandStartService
 from app.core.feeds.repository import FeedsRepository
 from app.core.feeds.service import FeedsService
 from app.core.integration.pocket import PocketIntegration
+from app.core.integration.repository import PocketRepository
 from app.core.integration.service import ExternalServices
 from app.core.service_messages.repository import InternalMessagesRepository
 from app.core.service_messages.service import InternalMessagesService
@@ -108,10 +109,16 @@ class Container(containers.DeclarativeContainer):
         internal_messages_service=internal_messages_service,
     )
 
+    pocket_integration_repository = providers.Factory(
+        PocketRepository,
+        database=database,
+    )
+
     pocket_integration = providers.Factory(
         PocketIntegration,
         pocket_client=pocket_client,
         users_service=users_service,
+        repository=pocket_integration_repository,
     )
 
     external_services = providers.Factory(
@@ -121,7 +128,7 @@ class Container(containers.DeclarativeContainer):
 
     callback_service = providers.Factory(
         CallbackService,
-        users_service=users_service,
+        feeds_service=feeds_service,
         external_services=external_services,
         internal_messages_service=internal_messages_service,
         telegram=telegram_client,

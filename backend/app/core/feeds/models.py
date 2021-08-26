@@ -29,6 +29,11 @@ class Entry(BaseModel):
         return value
 
 
+class UserFeed(BaseModel):
+    chat_id: int
+    url: str
+
+
 class UserEntry(BaseModel):
     id: int
     title: Optional[str]

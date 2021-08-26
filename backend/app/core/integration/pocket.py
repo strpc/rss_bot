@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
 from app.core.clients.pocket import PocketClient, PocketError
 from app.core.integration.exceptions import SendingError
 from app.core.integration.integration_abc import ExternalServiceABC
+from app.core.integration.repository import PocketRepository
 from app.core.users.service import UsersService
 
 
@@ -12,9 +13,16 @@ class PocketIntegration(ExternalServiceABC):
     success_message = "Saved"
     error_message = "ERROR"
 
-    def __init__(self, pocket_client: PocketClient, users_service: UsersService):
+    def __init__(
+        self,
+        *,
+        pocket_client: PocketClient,
+        users_service: UsersService,
+        repository: PocketRepository,
+    ):
         self._pocket_client = pocket_client
         self._users_service = users_service
+        self._repository = repository
 
     async def _disable_integration(
         self,
@@ -24,7 +32,7 @@ class PocketIntegration(ExternalServiceABC):
         status_code: Optional[int] = None,
     ) -> None:
         user = await self._users_service.get_user(chat_id)
-        await self._users_service.disable_pocket_integration(
+        await self.disable_pocket_integration(
             user_id=user.id,  # type: ignore
             error_code=error_code,
             error_message=error_message,
@@ -44,7 +52,7 @@ class PocketIntegration(ExternalServiceABC):
             )
 
     async def _get_access_token(self, chat_id: int) -> Optional[str]:
-        return await self._users_service.get_access_token(chat_id)
+        return await self._repository.get_access_token(chat_id)
 
     async def send(self, *, chat_id: int, url: str) -> None:
         logger.debug("Сохраняем {}...", url)
@@ -68,3 +76,35 @@ class PocketIntegration(ExternalServiceABC):
 
     def get_error_message(self) -> str:
         return self.error_message
+
+    async def get_new_request_token(self) -> Optional[List[Dict]]:
+        return await self._repository.get_new_request_token()
+
+    async def disable_pocket_integration(
+        self,
+        *,
+        user_id: int,
+        error_code: Optional[int] = None,
+        error_message: Optional[str] = None,
+        status_code: Optional[int] = None,
+    ) -> None:
+        logger.info("Отключаем интеграцию у юзера user_id={}...", user_id)
+        await self._repository.disable_pocket_integration(
+            user_id=user_id,
+            error_code=error_code,
+            error_message=error_message,
+            status_code=status_code,
+        )
+
+    async def update_access_token(
+        self,
+        user_id: int,
+        access_token: Dict[str, Any],
+    ) -> None:
+        token = access_token.get("access_token")
+        username = access_token.get("username")
+        await self._repository.update_pocket_meta(
+            user_id=user_id,
+            access_token=token,  # type: ignore
+            username=username,  # type: ignore
+        )
