@@ -1,8 +1,8 @@
+from app.api.schemas.message import Message
 from app.core.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
-from app.core.service_messages.models import ServiceMessage
-from app.core.service_messages.service import ServiceMessagesService
-from app.schemas.message import Message
+from app.core.service_messages.models import InternalMessages
+from app.core.service_messages.service import InternalMessagesService
 
 
 class AuthorizeService(CommandServiceABC):
@@ -10,10 +10,13 @@ class AuthorizeService(CommandServiceABC):
         self,
         *,
         telegram: Telegram,
-        service_messages: ServiceMessagesService,
+        internal_messages_service: InternalMessagesService,
     ):
         self._telegram = telegram
-        self._service_messages = service_messages
+        self._internal_messages_service = internal_messages_service
 
     async def handle(self, update: Message) -> None:
-        await self._service_messages.send(update.message.chat.id, ServiceMessage.authorize_message)
+        await self._internal_messages_service.send(
+            update.message.chat.id,
+            InternalMessages.authorize_message,
+        )

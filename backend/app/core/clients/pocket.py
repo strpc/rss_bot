@@ -72,8 +72,7 @@ class PocketClient:
         if response.status_code != 200:
             logger.error("Ошибка при получении request-токена. headers={}", response.headers)
             return None
-        request_token = response.json().get("code")
-        return request_token
+        return response.json().get("code")
 
     async def get_auth_url(self, request_token: str) -> str:
         url = (

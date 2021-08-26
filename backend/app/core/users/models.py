@@ -10,8 +10,9 @@ class User(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
     username: Optional[str]
-    active: bool = True
     register_at: datetime = Field(alias="register", default_factory=datetime.now)
+    active: bool = True
+    is_blocked: bool = False
 
 
 class PocketIntegraion(BaseModel):

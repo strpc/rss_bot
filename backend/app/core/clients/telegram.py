@@ -3,9 +3,9 @@ from typing import Dict, List, Optional
 
 from loguru import logger
 
+from app.api.schemas.enums import ParseMode
+from app.api.schemas.message import Button
 from app.core.clients.http_ import HttpClientABC, Response
-from app.schemas.enums import ParseMode
-from app.schemas.message import Button
 
 
 class TelegramException(Exception):
@@ -112,6 +112,22 @@ class Telegram:
             "chat_id": chat_id,
             "message_id": message_id,
             "reply_markup": {"inline_keyboard": [[button.dict() for button in inline_keyboard]]},
+        }
+        url = self._format_url(method)
+        return await self._send_post_request(url, body)
+
+    async def answer_callback(
+        self,
+        callback_query_id: int,
+        text: str,
+        show_alert: bool = False,
+    ) -> Response:
+        method = "answerCallbackQuery"
+
+        body = {
+            "callback_query_id": callback_query_id,
+            "text": text,
+            "show_alert": show_alert,
         }
         url = self._format_url(method)
         return await self._send_post_request(url, body)

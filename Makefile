@@ -1,11 +1,11 @@
-include deploy/.env
+include .env
 
 .SILENT:
 .DEFAULT_GOAL := run
 
-env_file = deploy/.env
+env_file = .env
 PYTHON=.venv/bin/python3
-MANAGEPY=app/manage.py
+MANAGEPY=admin/app/manage.py
 
 export $(shell sed 's/=.*//' $(env_file))
 

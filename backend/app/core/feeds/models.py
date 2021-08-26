@@ -7,11 +7,10 @@ from pydantic import BaseModel, Field, validator
 
 class Feed(BaseModel):
     url: str
-    chat_id_url_hash: str
 
 
 class Entry(BaseModel):
-    url: Optional[str] = Field(alias="link")
+    url: str = Field("", alias="link")
     text: Optional[str] = Field(alias="summary")
     title: Optional[str] = Field(alias="title")
 
@@ -28,6 +27,11 @@ class Entry(BaseModel):
         if isinstance(value, str):
             return urlparse(value)._replace(query="", params="").geturl()
         return value
+
+
+class UserFeed(BaseModel):
+    chat_id: int
+    url: str
 
 
 class UserEntry(BaseModel):

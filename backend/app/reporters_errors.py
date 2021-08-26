@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 import asyncio
 import functools
 from typing import Any, Callable

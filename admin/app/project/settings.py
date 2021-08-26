@@ -68,7 +68,7 @@ WSGI_APPLICATION = "project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.getenv("DATABASE_URL"),
+        "NAME": os.getenv("DATABASE_DSN"),
     },
 }
 
@@ -113,12 +113,13 @@ STATIC_URL = "/static/"
 
 STATIC_DIR = BASE_DIR / "static"
 
-if DEBUG is False:
+if not DEBUG:
     STATIC_ROOT = BASE_DIR / "static"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGS_ROOT = BASE_DIR / "log"
 LOGGING = {
@@ -136,7 +137,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG" if DEBUG is True else "INFO",
+            "level": "DEBUG" if DEBUG else "INFO",
             "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
             "formatter": "main_formatter",

@@ -1,13 +1,16 @@
 FROM python:3.8-alpine as builder
 
-COPY requirements-backend.txt .
-RUN pip install --prefix=/install -r ./requirements-backend.txt
-
 ARG TIMEZONE=Europe/Moscow
+
 RUN apk upgrade --update \
+  && apk add musl-dev \
+  && apk add gcc \
   && apk add -U tzdata \
   && ln -fs /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   && echo $TIMEZONE > /etc/timezone
+
+COPY requirements-backend.txt .
+RUN pip install --prefix=/install -r ./requirements-backend.txt
 
 
 # ========== final image

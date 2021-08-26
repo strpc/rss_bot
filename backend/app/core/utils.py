@@ -1,21 +1,11 @@
 import asyncio
-import base64
 import contextvars
 import functools
 import re
-from typing import Any, Callable, Union
+from typing import Any, Callable
 from urllib.parse import urlparse
 
 from loguru import logger
-
-
-def get_hash(*args: Union[str, int]) -> str:
-    hash_ = ""
-    for i in args:
-        if not isinstance(i, (str, int)):
-            continue
-        hash_ += str(i)
-    return base64.b64encode(hash_.encode()).decode()
 
 
 def validate_url(url: str) -> bool:

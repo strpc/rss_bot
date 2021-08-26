@@ -4,7 +4,10 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field, validator
 
-from app.schemas.enums import TypeChat, TypeEntity, TypeUpdate
+from app.api.schemas.enums import TypeChat, TypeEntity, TypeUpdate
+
+
+command_compile = re.compile(r"(^|\s)\/\b[^_][a-zA-Z_]+\b")
 
 
 class User(BaseModel):
@@ -48,7 +51,6 @@ class MessageBody(BaseModel):
         if text is None:
             return v
 
-        command_compile = re.compile(r"(^|\s)\/\b[^_][a-zA-Z_]+\b")
         command = re.search(command_compile, text)
         return command[0][1:] if command else None
 

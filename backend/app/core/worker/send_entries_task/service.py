@@ -2,6 +2,8 @@ from typing import Dict, List, Optional
 
 from loguru import logger
 
+from app.api.schemas.enums import ParseMode
+from app.api.schemas.message import Button
 from app.core.clients.database import Database
 from app.core.clients.telegram import Telegram, TelegramBadBodyRequest, TelegramUserBlocked
 from app.core.feeds.models import UserEntry
@@ -10,8 +12,6 @@ from app.core.users.models import UserIntegration
 from app.core.users.service import UsersService
 from app.core.utils import bold_markdown, escape_md
 from app.core.worker.send_entries_task.schemas import PocketButton
-from app.schemas.enums import ParseMode
-from app.schemas.message import Button
 
 
 class SenderMessages:
@@ -59,6 +59,7 @@ class SenderMessages:
         if new_entries is None:
             logger.info("Нет новых записей для отправки. exit...")
             return
+
         users_integrations: Dict[int, Optional[UserIntegration]] = {}
         logger.info("{} новых записей...", len(new_entries))
         for entry in new_entries:
