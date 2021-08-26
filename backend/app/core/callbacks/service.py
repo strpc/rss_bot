@@ -42,8 +42,10 @@ class CallbackService(CommandServiceABC):
 
         chat_id = update.callback_query.message.chat.id
         message_id = update.callback_query.message.message_id
+        callback_query_id = update.callback_query.id
         payload = update.callback_query.data
         logger.info("payload={}", payload)
+        await self._telegram.answer_callback(callback_query_id, "Saving...")
 
         service = self._get_service(payload.service)  # type: ignore
 

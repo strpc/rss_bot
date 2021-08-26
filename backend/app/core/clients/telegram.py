@@ -115,3 +115,19 @@ class Telegram:
         }
         url = self._format_url(method)
         return await self._send_post_request(url, body)
+
+    async def answer_callback(
+        self,
+        callback_query_id: int,
+        text: str,
+        show_alert: bool = False,
+    ) -> Response:
+        method = "answerCallbackQuery"
+
+        body = {
+            "callback_query_id": callback_query_id,
+            "text": text,
+            "show_alert": show_alert,
+        }
+        url = self._format_url(method)
+        return await self._send_post_request(url, body)
