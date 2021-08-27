@@ -10,6 +10,8 @@ from app.core.clients.pocket import PocketClient
 from app.core.clients.telegram import Telegram
 from app.core.feeds.repository import FeedsRepository
 from app.core.feeds.service import FeedsService
+from app.core.integration.pocket import PocketIntegration
+from app.core.integration.repository import PocketRepository
 from app.core.users.repository import UsersRepository
 from app.core.users.service import UsersService
 from app.core.worker.load_entries_task.service import LoadEntries
@@ -32,16 +34,13 @@ def load_entries(*args: Any, **kwargs: Any) -> None:
     logger.info("Загрузим новые записи...")
 
     async def async_task() -> None:
-        database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
+        database = Database(url=config.db.dsn)
         await database.connect()
         feeds_repository = FeedsRepository(database)
         feeds_service = FeedsService(repository=feeds_repository)
-        users_repository = UsersRepository(database=database)
-        users_service = UsersService(repository=users_repository)
         loader = LoadEntries(
             database=database,
             feeds_service=feeds_service,
-            users_service=users_service,
         )
         await loader.load(limit_feeds=config.limits.load_feed)
         await database.disconnect()
@@ -54,7 +53,7 @@ def pocket_updater(*args: Any, **kwargs: Any) -> None:
     logger.info("Обновим данные авторизации pocket...")
 
     async def async_task() -> None:
-        database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
+        database = Database(url=config.db.dsn)
         await database.connect()
 
         pocket_client = PocketClient(
@@ -65,9 +64,16 @@ def pocket_updater(*args: Any, **kwargs: Any) -> None:
 
         users_repository = UsersRepository(database=database)
         users_service = UsersService(repository=users_repository)
-        await pocket.update_access_tokens(
+
+        pocket_repository = PocketRepository(database=database)
+        pocket_integration = PocketIntegration(
             pocket_client=pocket_client,
             users_service=users_service,
+            repository=pocket_repository,
+        )
+        await pocket.update_access_tokens(
+            pocket_client=pocket_client,
+            pocket_integration=pocket_integration,
         )
         await database.disconnect()
 
@@ -79,7 +85,7 @@ def send_messages(*args: Any, **kwargs: Any) -> None:
     logger.info("Отправим новые записи пользователям...")
 
     async def async_task() -> None:
-        database = Database(url=config.db.url, paramstyle=config.db.paramstyle)
+        database = Database(url=config.db.dsn)
         await database.connect()
 
         feeds_repository = FeedsRepository(database)
@@ -97,8 +103,8 @@ def send_messages(*args: Any, **kwargs: Any) -> None:
             telegram=telegram,
         )
         await sender.send(
-            limit_title=config.limits.title,
-            limit_text=config.limits.text,
+            limit_title=config.limits.title_message,
+            limit_text=config.limits.text_message,
         )
         await database.disconnect()
 

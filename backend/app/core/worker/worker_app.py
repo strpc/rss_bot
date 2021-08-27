@@ -5,10 +5,14 @@ from app.config import get_config
 from app.core.worker.logger import configure_logging
 
 
+APP_NAME = "rss_bot"
+TIMEZONE = "UTC"
+DEFAULT_QUEUE = "rss_bot"
+
 config = get_config()
 configure_logging(config.app.log_level)
 
-app_celery = Celery("rss_bot", broker=config.celery.broker, timezone="UTC")
+app_celery = Celery(APP_NAME, broker=config.celery.broker, timezone=TIMEZONE)
 
 
 if config.app.debug:
@@ -20,7 +24,7 @@ app_celery.autodiscover_tasks(
         "app.core.worker.tasks",
     ],
 )
-app_celery.conf.task_default_queue = "rss_bot"
+app_celery.conf.task_default_queue = DEFAULT_QUEUE
 app_celery.conf.beat_schedule = {
     "chain": {
         "task": "app.core.worker.tasks.run_chain",
