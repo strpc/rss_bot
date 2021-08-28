@@ -21,11 +21,6 @@ dev() {
 
 prod() {
   echo "PROD mode"
-
-  # Collect static files
-  echo "Collect static files..."
-  python app/manage.py collectstatic --noinput
-  echo "Starting server..."
   exec uvicorn app.project.asgi:application \
       --host 0.0.0.0 \
       --port ${PORT} \

@@ -29,6 +29,8 @@ COPY --chown=admin:admin . /app
 
 ENV PYTHONPATH=/app/app
 
+RUN DATABASE_DSN=":memory:" python3 ./app/manage.py collectstatic --noinput
+
 VOLUME ["/app/db/"]
 
 RUN ["chmod", "+x", "./docker/entrypoint.sh"]
