@@ -4,8 +4,10 @@ from django.contrib import admin
 from django.urls import path
 
 
+ADMIN_URL = f"{settings.BASE_URL}/" if not settings.BASE_URL.endswith("/") else settings.BASE_URL
+
 urlpatterns = [
-    path(settings.BASE_URL, admin.site.urls),
+    path(ADMIN_URL, admin.site.urls),
 ]
 
 if settings.DEBUG:
