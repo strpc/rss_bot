@@ -6,6 +6,9 @@ from loguru import logger
 from app.core.clients.http_ import HttpClientABC
 
 
+BASE_AUTHORIZE_POCKET_URL = "https://getpocket.com/auth/authorize"
+
+
 class PocketError(Exception):
     def __init__(
         self,
@@ -75,11 +78,10 @@ class PocketClient:
         return response.json().get("code")
 
     async def get_auth_url(self, request_token: str) -> str:
-        url = (
-            f"https://getpocket.com/auth/authorize?request_token="
-            f"{request_token}&redirect_uri={self._redirect_url}"
+        return (
+            f"{BASE_AUTHORIZE_POCKET_URL}"
+            f"?request_token={request_token}&redirect_uri={self._redirect_url}"
         )
-        return url
 
     async def get_access_token(self, request_token: str) -> Optional[Dict[Any, Any]]:
         url = "https://getpocket.com/v3/oauth/authorize"
