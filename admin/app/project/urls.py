@@ -5,7 +5,7 @@ from django.urls import path
 
 
 urlpatterns = [
-    path("rss_bot/admin/", admin.site.urls),
+    path(settings.BASE_URL, admin.site.urls),
 ]
 
 if settings.DEBUG:
