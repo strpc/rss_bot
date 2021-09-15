@@ -30,7 +30,7 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: all
 
-      - name: Login to GitHub Package Registry.
+      - name: Login to Private Registry.
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
