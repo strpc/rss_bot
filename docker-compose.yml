@@ -22,7 +22,7 @@ x-env-app:
 
 services:
   backend:
-    image: rss_bot_backend:${VERSION:-latest}
+    image: ${PRIVATE_REGISTRY:-}rss_bot_backend:${VERSION:-latest}
     build:
       context: ./backend
       dockerfile: ./docker/backend.dockerfile
@@ -36,7 +36,7 @@ services:
     - ./logs/:/app/docker/logs/
 
   admin:
-    image: rss_bot_admin:${VERSION:-latest}
+    image: ${PRIVATE_REGISTRY:-}rss_bot_admin:${VERSION:-latest}
     build:
       context: ./admin
       dockerfile: ./docker/Dockerfile
@@ -65,7 +65,7 @@ services:
       - static_volume:/app/app/static/
 
   worker:
-    image: rss_bot_worker:${VERSION:-latest}
+    image: ${PRIVATE_REGISTRY:-}rss_bot_worker:${VERSION:-latest}
     build:
       context: ./backend
       dockerfile: ./docker/worker.dockerfile
@@ -80,7 +80,7 @@ services:
     command: [ "worker" ]
 
   beat:
-    image: rss_bot_worker:${VERSION:-latest}
+    image: ${PRIVATE_REGISTRY:-}rss_bot_worker:${VERSION:-latest}
     build:
       context: ./backend
       dockerfile: ./docker/worker.dockerfile
