@@ -116,9 +116,9 @@ jobs:
             export PRIVATE_REGISTRY="localhost/"
             export COMPOSE_HTTP_TIMEOUT=300
 
-            docker pull $(PRIVATE_REGISTRY)/rss_bot_admin:$(VERSION)
-            docker pull $(PRIVATE_REGISTRY)/rss_bot_backend:$(VERSION)
-            docker pull $(PRIVATE_REGISTRY)/rss_bot_worker:$(VERSION)
+            docker pull $PRIVATE_REGISTRY/rss_bot_admin:$VERSION
+            docker pull $PRIVATE_REGISTRY/rss_bot_backend:$VERSION
+            docker pull $PRIVATE_REGISTRY/rss_bot_worker:$VERSION
 
             docker-compose down --remove-orphans -v
             docker-compose -f docker-compose.yml up -d
