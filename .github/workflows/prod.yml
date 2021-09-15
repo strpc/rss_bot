@@ -110,11 +110,16 @@ jobs:
             export LIMIT_COUNT_FEED_USER="${{ secrets.LIMIT_COUNT_FEED_USER }}"
 
             cd ${{ secrets.PROJECT_DIR }}
+            git reset --hard origin/master
             git pull
             echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login localhost -u "${{ secrets.REGISTRY_USER }}" --password-stdin
             export PRIVATE_REGISTRY="localhost/"
             export COMPOSE_HTTP_TIMEOUT=300
-            docker-compose pull
+
+            docker pull $(PRIVATE_REGISTRY)/rss_bot_admin:$(VERSION)
+            docker pull $(PRIVATE_REGISTRY)/rss_bot_backend:$(VERSION)
+            docker pull $(PRIVATE_REGISTRY)/rss_bot_worker:$(VERSION)
+
             docker-compose down --remove-orphans -v
             docker-compose -f docker-compose.yml up -d
 
