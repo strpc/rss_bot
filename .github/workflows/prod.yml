@@ -62,13 +62,13 @@ jobs:
           ./backend/
 
       - name: push admin image.
-        run: docker push ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:${{ env.VERSION }}
+        run: docker push --all-tags ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:${{ env.VERSION }}
 
       - name: push backend image.
-        run: docker push ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:${{ env.VERSION }}
+        run: docker push --all-tags ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:${{ env.VERSION }}
 
       - name: push worker image.
-        run: docker push ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:${{ env.VERSION }}
+        run: docker push --all-tags ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:${{ env.VERSION }}
 
   deploy:
     runs-on: ubuntu-latest
