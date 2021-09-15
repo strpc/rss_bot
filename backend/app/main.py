@@ -40,10 +40,10 @@ def init_app() -> FastAPI:
     if not container.config.app.debug():
         logger.info("Service is started.")
         tg = Telegram(
-            token=container.config().easy_notifyer.token,
-            chat_id=container.config().easy_notifyer.chat_id,
+            token=container.config.easy_notifyer.token(),
+            chat_id=container.config.easy_notifyer.chat_id(),
         )
-        tg.send_message(f"service {container.config().easy_notifyer.service_name}: started..")
+        tg.send_message(f"service {container.config.easy_notifyer.service_name()}: started..")
     else:
         logger.info("Debug is enabled.")
     return application
