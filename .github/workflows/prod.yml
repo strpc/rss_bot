@@ -34,17 +34,13 @@ jobs:
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
-      - name: Pulling images for use cache.
-        run: |
-          docker pull -a --platform $PLATFORM ${{ secrets.REGISTRY_HOST }}/rss_bot_admin || true
-          docker pull -a --platform $PLATFORM ${{ secrets.REGISTRY_HOST }}/rss_bot_backend || true
-          docker pull -a --platform $PLATFORM ${{ secrets.REGISTRY_HOST }}/rss_bot_worker || true
-
       - name: build admin image.
         run: |
           docker build --platform $PLATFORM \
           -f ./admin/docker/Dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:${{ env.VERSION }} \
+          -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest \
           ./admin/
 
       - name: build backend image.
@@ -52,6 +48,8 @@ jobs:
           docker build --platform $PLATFORM \
           -f ./backend/docker/backend.dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:${{ env.VERSION }} \
+          -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest \
           ./backend/
 
       - name: build worker image.
@@ -59,6 +57,8 @@ jobs:
           docker build --platform $PLATFORM \
           -f backend/docker/worker.dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:${{ env.VERSION }} \
+          -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest \
           ./backend/
 
       - name: push admin image.
