@@ -1,8 +1,115 @@
-version: "3.6"
+version: "3.8"
+
+x-env-app:
+  &env-app
+  environment:
+    - DEBUG
+    - LOG_LEVEL
+    - DATABASE_DSN
+    - CELERY_BROKER
+    - CELERY_HOUR_BEAT_INTERVAL
+    - CELERY_MINUTE_BEAT_INTERVAL
+    - TELEGRAM_TOKEN
+    - EASY_NOTIFYER_TOKEN
+    - EASY_NOTIFYER_CHAT_ID
+    - EASY_NOTIFYER_SERVICE_NAME
+    - POCKET_CONSUMER_KEY
+    - POCKET_REDIRECT_URL
+    - LIMIT_LOAD_FEED
+    - LIMIT_TITLE_MESSAGE
+    - LIMIT_TEXT_MESSAGE
+    - LIMIT_COUNT_FEED_USER
+
 services:
-  rabbimq:
-    image: rabbitmq
-    container_name: rabbitmq_rss_bot
+  backend:
+    image: ${PRIVATE_REGISTRY:-}rss_bot_backend:${VERSION:-latest}
+    build:
+      context: ./backend
+      dockerfile: ./docker/backend.dockerfile
+    restart: always
+    hostname: backend
+    depends_on:
+      - nginx
+    <<: *env-app
+    volumes:
+    - ./db/:/app/app/db/
+    - ./logs/:/app/docker/logs/
+
+  admin:
+    image: ${PRIVATE_REGISTRY:-}rss_bot_admin:${VERSION:-latest}
+    build:
+      context: ./admin
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    depends_on:
+      - nginx
+    hostname: admin
+    environment:
+      - DEBUG=False
+      - ALLOWED_HOSTS=admin
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_DSN=${DATABASE_DSN}
+    volumes:
+      - ./db:/app/app/db
+      - ./logs/:/app/docker/logs/
+      - static_volume:/app/app/static/
+
+  nginx:
+    image: nginx:1.21.0
     restart: always
     ports:
-      - 5672:5672
+      - ${NGINX_PORT:-8000}:80
+    volumes:
+      - static_volume  # todo: добавить ассесс лог
+      - ./nginx:/etc/nginx/conf.d
+      - static_volume:/app/app/static/
+
+  worker:
+    image: ${PRIVATE_REGISTRY:-}rss_bot_worker:${VERSION:-latest}
+    build:
+      context: ./backend
+      dockerfile: ./docker/worker.dockerfile
+    restart: always
+    depends_on:
+      - rabbitmq
+    hostname: worker
+    <<: *env-app
+    volumes:
+      - ./db:/app/app/db
+      - ./logs/:/app/docker/logs/
+    command: [ "worker" ]
+
+  beat:
+    image: ${PRIVATE_REGISTRY:-}rss_bot_worker:${VERSION:-latest}
+    build:
+      context: ./backend
+      dockerfile: ./docker/worker.dockerfile
+    hostname: beat
+    restart: always
+    depends_on:
+      - rabbitmq
+    <<: *env-app
+    volumes:
+      - ./db:/app/app/db
+      - ./logs/:/app/docker/logs/
+    command: [ "beat" ]
+
+  rabbitmq:
+    image: rabbitmq:3.8.16
+    restart: always
+    hostname: rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-user}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-hackme}
+
+volumes:
+  static_volume:
+
+networks:
+  default:
+    name: rss_bot

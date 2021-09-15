@@ -5,6 +5,7 @@
 **/migrations/*
 **/__pycache__/*
 **/logs/*
+**/mypy_cache/*
 
 .DS_Store
 *.zip
