@@ -10,8 +10,8 @@ from app.core.users.service import UsersService
 
 
 class PocketIntegration(ExternalServiceABC):
-    success_message = "Saved"
-    error_message = "ERROR"
+    success_message = "Saved \U00002705"
+    error_message = "ERROR \U0000274C"
 
     def __init__(
         self,
@@ -108,3 +108,8 @@ class PocketIntegration(ExternalServiceABC):
             access_token=token,  # type: ignore
             username=username,  # type: ignore
         )
+
+
+if __name__ == "__main__":
+    print(PocketIntegration.success_message)
+    print(PocketIntegration.error_message)

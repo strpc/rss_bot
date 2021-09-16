@@ -5,7 +5,7 @@ from app.api.schemas.message import Button
 
 class PocketButton(Button):
     service = ServiceIntegration.pocket
-    text = "Save to Pocket"
+    text = u"Save to Pocket \U0001F516"
 
     def add_callback_data(self, entry_id: int) -> None:
         self.callback_data = CallbackIntegrationServicePayload(
