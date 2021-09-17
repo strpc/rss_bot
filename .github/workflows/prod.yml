@@ -40,7 +40,6 @@ jobs:
           docker build --platform ${PLATFORM} \
                     -f ./admin/docker/Dockerfile \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
-                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
                     --target builder \
                     ./admin/
 
@@ -48,7 +47,6 @@ jobs:
           docker build --platform ${PLATFORM} \
                     -f ./backend/docker/backend.dockerfile \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
-                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
                     --target builder \
                     ./backend/
 
@@ -56,7 +54,6 @@ jobs:
           docker build --platform ${PLATFORM} \
                     -f backend/docker/worker.dockerfile \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
-                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
                     --target builder \
                     ./backend/
 
@@ -66,7 +63,6 @@ jobs:
           -f ./admin/docker/Dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest \
-          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
           ./admin/
 
       - name: build backend image.
@@ -75,7 +71,6 @@ jobs:
           -f ./backend/docker/backend.dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest \
-          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
           ./backend/
 
       - name: build worker image.
@@ -84,7 +79,6 @@ jobs:
           -f backend/docker/worker.dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest \
-          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
           ./backend/
 
       - name: push admin image.
