@@ -34,26 +34,29 @@ jobs:
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
-      - name: Pulling or create cache.
+      - name: Pulling and verify cache.
         run: |
-          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder || \
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder || true
           docker build --platform ${PLATFORM} \
                     -f ./admin/docker/Dockerfile \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
+                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
                     --target builder \
                     ./admin/
 
-          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder || \
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder || true
           docker build --platform ${PLATFORM} \
                     -f ./backend/docker/backend.dockerfile \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
+                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
                     --target builder \
                     ./backend/
 
-          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder || \
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder || true
           docker build --platform ${PLATFORM} \
                     -f backend/docker/worker.dockerfile \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
+                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
                     --target builder \
                     ./backend/
 
