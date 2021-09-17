@@ -34,6 +34,12 @@ jobs:
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
+      - name: Pulling images for use cache.
+        run: |
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest || true
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest || true
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest || true
+
       - name: build admin image.
         run: |
           docker build --platform $PLATFORM \
