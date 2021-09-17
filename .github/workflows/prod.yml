@@ -34,11 +34,28 @@ jobs:
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
-      - name: Pulling images for use cache.
+      - name: Pulling or create cache.
         run: |
-          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest || true
-          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest || true
-          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest || true
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder || \
+          docker build --platform ${PLATFORM} \
+                    -f ./admin/docker/Dockerfile \
+                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
+                    --target builder \
+                    ./admin/
+
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder || \
+          docker build --platform ${PLATFORM} \
+                    -f ./backend/docker/backend.dockerfile \
+                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
+                    --target builder \
+                    ./backend/
+
+          docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder || \
+          docker build --platform ${PLATFORM} \
+                    -f backend/docker/worker.dockerfile \
+                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
+                    --target builder \
+                    ./backend/
 
       - name: build admin image.
         run: |
@@ -46,7 +63,7 @@ jobs:
           -f ./admin/docker/Dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest \
-          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
           ./admin/
 
       - name: build backend image.
@@ -55,7 +72,7 @@ jobs:
           -f ./backend/docker/backend.dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest \
-          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
           ./backend/
 
       - name: build worker image.
@@ -64,7 +81,7 @@ jobs:
           -f backend/docker/worker.dockerfile \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest \
-          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
           ./backend/
 
       - name: push admin image.
