@@ -114,7 +114,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          command_timeout: 20m
+          command_timeout: 30m
           script: |
             export VERSION="${{ env.VERSION }}"
             export DEBUG="${{ secrets.DEBUG }}"
