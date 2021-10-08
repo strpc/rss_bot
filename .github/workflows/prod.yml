@@ -114,6 +114,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          command_timeout: 20m
           script: |
             export VERSION="${{ env.VERSION }}"
             export DEBUG="${{ secrets.DEBUG }}"
@@ -136,17 +137,26 @@ jobs:
             export LIMIT_COUNT_FEED_USER="${{ secrets.LIMIT_COUNT_FEED_USER }}"
 
             cd ${{ secrets.PROJECT_DIR }}
+            echo "Pulling project..."
             git fetch --all
             git reset --hard origin/master
+
+            echo "Login in private registry..."
             echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login localhost -u "${{ secrets.REGISTRY_USER }}" --password-stdin
             export PRIVATE_REGISTRY="localhost/"
             export COMPOSE_HTTP_TIMEOUT=300
 
+            echo "Pulling rss_bot_admin image..."
             docker pull ${PRIVATE_REGISTRY}rss_bot_admin:${VERSION}
+            echo "Pulling rss_bot_backend image..."
             docker pull ${PRIVATE_REGISTRY}rss_bot_backend:${VERSION}
+            echo "Pulling rss_bot_worker image..."
             docker pull ${PRIVATE_REGISTRY}rss_bot_worker:${VERSION}
 
+            echo "Down stack..."
             docker-compose down --remove-orphans -v
+
+            echo "Up stack..."
             docker-compose -f docker-compose.yml up -d
 
       - name: send message to telegram
