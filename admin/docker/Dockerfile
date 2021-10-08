@@ -4,8 +4,7 @@ COPY requirements.txt .
 RUN pip install --prefix=/install -r ./requirements.txt
 
 ARG TIMEZONE=Europe/Moscow
-RUN apk upgrade --update \
-  && apk add -U tzdata \
+RUN apk add --no-cache tzdata \
   && ln -fs /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   && echo $TIMEZONE > /etc/timezone
 

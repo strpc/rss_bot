@@ -2,10 +2,10 @@ FROM python:3.8-alpine as builder
 
 ARG TIMEZONE=Europe/Moscow
 
-RUN apk upgrade --update \
-  && apk add musl-dev \
-  && apk add gcc \
-  && apk add -U tzdata \
+RUN apk add --no-cache \
+  musl-dev  \
+  gcc \
+  tzdata \
   && ln -fs /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
   && echo $TIMEZONE > /etc/timezone
 
