@@ -64,6 +64,7 @@ jobs:
         run: |
           docker build --platform ${PLATFORM} \
           -f ./admin/docker/Dockerfile \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest \
           ./admin/
@@ -72,6 +73,7 @@ jobs:
         run: |
           docker build --platform ${PLATFORM} \
           -f ./backend/docker/backend.dockerfile \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest \
           ./backend/
@@ -80,6 +82,7 @@ jobs:
         run: |
           docker build --platform ${PLATFORM} \
           -f backend/docker/worker.dockerfile \
+          --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest \
           ./backend/
