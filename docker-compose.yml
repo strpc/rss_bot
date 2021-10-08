@@ -70,6 +70,12 @@ services:
       context: ./backend
       dockerfile: ./docker/worker.dockerfile
     restart: always
+    healthcheck:
+      test:
+        - "CMD"
+        - "sh"
+        - "-c"
+        - "celery --broker=$BROKER inspect ping | grep OK || exit 1"
     depends_on:
       - rabbitmq
     hostname: worker
@@ -86,6 +92,12 @@ services:
       dockerfile: ./docker/worker.dockerfile
     hostname: beat
     restart: always
+    healthcheck:
+      test:
+        - "CMD"
+        - "sh"
+        - "-c"
+        - "celery --broker=$BROKER inspect ping | grep OK || exit 1"
     depends_on:
       - rabbitmq
     <<: *env-app
@@ -99,7 +111,11 @@ services:
     restart: always
     hostname: rabbitmq
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test:
+        - "CMD"
+        - "rabbitmq-diagnostics"
+        - "-q"
+        - "ping"
       interval: 30s
       timeout: 15s
       retries: 5
