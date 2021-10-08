@@ -76,6 +76,9 @@ services:
         - "sh"
         - "-c"
         - "celery --broker=$BROKER inspect ping | grep OK || exit 1"
+      interval: 120s
+      timeout: 30s
+      retries: 10
     depends_on:
       - rabbitmq
     hostname: worker
@@ -98,6 +101,9 @@ services:
         - "sh"
         - "-c"
         - "celery --broker=$BROKER inspect ping | grep OK || exit 1"
+      interval: 120s
+      timeout: 30s
+      retries: 10
     depends_on:
       - rabbitmq
     <<: *env-app
