@@ -39,6 +39,7 @@ jobs:
           docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder || true
           docker build --platform ${PLATFORM} \
                     -f ./admin/docker/Dockerfile \
+                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
                     --target builder \
                     ./admin/
@@ -46,6 +47,7 @@ jobs:
           docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder || true
           docker build --platform ${PLATFORM} \
                     -f ./backend/docker/backend.dockerfile \
+                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
                     --target builder \
                     ./backend/
@@ -53,6 +55,7 @@ jobs:
           docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder || true
           docker build --platform ${PLATFORM} \
                     -f backend/docker/worker.dockerfile \
+                    --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
                     -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
                     --target builder \
                     ./backend/
