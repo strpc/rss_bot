@@ -75,7 +75,7 @@ services:
         - "CMD"
         - "sh"
         - "-c"
-        - "celery --broker=$BROKER inspect ping | grep OK || exit 1"
+        - "celery --broker=${CELERY_BROKER} inspect ping | grep OK || exit 1"
       interval: 120s
       timeout: 30s
       retries: 10
@@ -100,7 +100,7 @@ services:
         - "CMD"
         - "sh"
         - "-c"
-        - "celery --broker=$BROKER inspect ping | grep OK || exit 1"
+        - "celery --broker=${CELERY_BROKER} inspect ping | grep OK || exit 1"
       interval: 120s
       timeout: 30s
       retries: 10
