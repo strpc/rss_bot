@@ -7,7 +7,7 @@ from loguru import logger
 
 from app import __version__
 from app.api import deps
-from app.api.endpoints import message
+from app.api.endpoints import healthcheck, message
 from app.config import MainConfig
 from app.containers import Container
 from app.logger import configure_logging
@@ -36,6 +36,7 @@ def init_app() -> FastAPI:
     application.add_exception_handler(RequestValidationError, validation_exception_handler)
 
     application.include_router(message.router, prefix="/rss_bot/backend")
+    application.include_router(healthcheck.router, prefix="/healthcheck")
 
     if not container.config.app.debug():
         logger.info("Service is started.")
