@@ -28,6 +28,15 @@ services:
       dockerfile: ./docker/backend.dockerfile
     restart: always
     hostname: backend
+    healthcheck:
+      test:
+        - "CMD"
+        - "sh"
+        - "-c"
+        - "curl --fail http://localhost:${RSS_BOT_PORT:-8000}/healthcheck || exit 1"
+      interval: 120s
+      timeout: 30s
+      retries: 10
     depends_on:
       - nginx
     <<: *env-app
