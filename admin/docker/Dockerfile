@@ -13,6 +13,8 @@ RUN apk add --no-cache tzdata \
 FROM python:3.8-alpine as production
 LABEL maintainer="https://github.com/strpc"
 
+RUN apk add --no-cache curl
+
 ENV PYTHONUNBUFFERED 1
 
 RUN adduser --uid 1000 --home /app --disabled-password --gecos "" admin && \
