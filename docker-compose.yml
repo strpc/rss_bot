@@ -57,6 +57,15 @@ services:
   nginx:
     image: nginx:1.21.0
     restart: always
+    healthcheck:
+      test:
+        - "CMD"
+        - "sh"
+        - "-c"
+        - "service nginx status || exit 1"
+      interval: 120s
+      timeout: 30s
+      retries: 10
     ports:
       - ${NGINX_PORT:-8000}:80
     volumes:
