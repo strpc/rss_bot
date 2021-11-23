@@ -1,4 +1,4 @@
-from app.core.clients.telegram import Telegram
+from app.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
 from app.core.commands.dto import Update
 from app.core.service_messages.models import InternalMessages

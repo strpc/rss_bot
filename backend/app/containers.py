@@ -3,10 +3,10 @@ import functools
 from aiocache import Cache
 from dependency_injector import containers, providers
 
-from app.core.clients.database import Database
-from app.core.clients.http_ import HttpClient
-from app.core.clients.pocket import PocketClient
-from app.core.clients.telegram import Telegram
+from app.clients.database import Database
+from app.clients.http_ import HttpClient
+from app.clients.pocket import PocketClient
+from app.clients.telegram import Telegram
 from app.core.commands.add_feed.service import CommandAddFeedService
 from app.core.commands.authorize_pocket.repository import PocketAuthRepository
 from app.core.commands.authorize_pocket.service import AuthorizePocketService

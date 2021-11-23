@@ -3,11 +3,11 @@ from typing import Any
 
 from loguru import logger
 
+from app.clients.database import Database
+from app.clients.http_ import HttpClient
+from app.clients.pocket import PocketClient
+from app.clients.telegram import Telegram
 from app.config import MainConfig, get_config
-from app.core.clients.database import Database
-from app.core.clients.http_ import HttpClient
-from app.core.clients.pocket import PocketClient
-from app.core.clients.telegram import Telegram
 from app.core.feeds.repository import FeedsRepository
 from app.core.feeds.service import FeedsService
 from app.core.integration.pocket import PocketIntegration

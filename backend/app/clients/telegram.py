@@ -5,7 +5,7 @@ from loguru import logger
 
 from app.api.endpoints.update.enums import ParseMode
 from app.api.endpoints.update.schemas import Button
-from app.core.clients.http_ import HttpClientABC, Response
+from app.clients.http_ import HttpClientABC, Response
 
 
 class TelegramException(Exception):

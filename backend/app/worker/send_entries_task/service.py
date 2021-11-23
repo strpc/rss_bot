@@ -4,8 +4,8 @@ from loguru import logger
 
 from app.api.endpoints.update.enums import ParseMode
 from app.api.endpoints.update.schemas import Button
-from app.core.clients.database import Database
-from app.core.clients.telegram import Telegram, TelegramBadBodyRequest, TelegramUserBlocked
+from app.clients.database import Database
+from app.clients.telegram import Telegram, TelegramBadBodyRequest, TelegramUserBlocked
 from app.core.feeds.models import UserEntry
 from app.core.feeds.service import FeedsService
 from app.core.users.models import UserIntegration

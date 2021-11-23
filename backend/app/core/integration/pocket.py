@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 
 from loguru import logger
 
-from app.core.clients.pocket import PocketClient, PocketError
+from app.clients.pocket import PocketClient, PocketError
 from app.core.integration.exceptions import SendingError
 from app.core.integration.integration_abc import ExternalServiceABC
 from app.core.integration.repository import PocketRepository

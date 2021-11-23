@@ -2,7 +2,7 @@ from typing import Optional, Type
 
 from aiocache import Cache
 
-from app.core.clients.database import Database
+from app.clients.database import Database
 from app.core.service_messages.models import InternalMessages
 
 

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from app.core.clients.database import Database
+from app.clients.database import Database
 
 
 class PocketAuthRepository:

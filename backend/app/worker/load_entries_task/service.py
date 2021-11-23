@@ -2,7 +2,7 @@ from typing import AsyncIterator, Optional
 
 from loguru import logger
 
-from app.core.clients.database import Database
+from app.clients.database import Database
 from app.core.feeds.models import Entry, UserFeed
 from app.core.feeds.service import FeedsService
 

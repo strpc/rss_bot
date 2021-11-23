@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from app.core.clients.database import Database
+from app.clients.database import Database
 
 
 class PocketRepository:

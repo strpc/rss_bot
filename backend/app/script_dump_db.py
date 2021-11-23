@@ -8,7 +8,7 @@ from types import TracebackType
 from loguru import logger
 from pydantic import BaseModel, Field, parse_obj_as, validator
 
-from app.core.clients.database import Database
+from app.clients.database import Database
 
 
 CURRENT_DIR = os.path.abspath(os.path.dirname(__name__))
