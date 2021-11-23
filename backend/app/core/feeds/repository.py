@@ -2,7 +2,7 @@ from typing import Optional, Tuple
 
 from pydantic import parse_obj_as
 
-from app.core.clients.database import Database
+from app.clients.database import Database
 from app.core.feeds.models import Entry, Feed, UserEntry, UserFeed
 
 

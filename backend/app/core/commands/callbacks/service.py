@@ -4,7 +4,7 @@ from loguru import logger
 
 from app.api.endpoints.update.enums import ServiceIntegration
 from app.api.endpoints.update.schemas import Button
-from app.core.clients.telegram import Telegram
+from app.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
 from app.core.commands.dto import Update
 from app.core.feeds.service import FeedsService

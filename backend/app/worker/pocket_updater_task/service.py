@@ -1,6 +1,6 @@
 from loguru import logger
 
-from app.core.clients.pocket import PocketClient, PocketError
+from app.clients.pocket import PocketClient, PocketError
 from app.core.integration.pocket import PocketIntegration
 
 

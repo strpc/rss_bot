@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 from httpx import Response
 from loguru import logger
 
-from app.core.clients.http_ import HttpClientABC
+from app.clients.http_ import HttpClientABC
 
 
 BASE_AUTHORIZE_POCKET_URL = "https://getpocket.com/auth/authorize"

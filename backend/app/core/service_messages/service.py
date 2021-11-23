@@ -1,6 +1,6 @@
 from loguru import logger
 
-from app.core.clients.telegram import Telegram
+from app.clients.telegram import Telegram
 from app.core.service_messages import models
 from app.core.service_messages.repository import InternalMessagesRepository
 

@@ -1,8 +1,8 @@
-from typing import AsyncGenerator, Optional
+from typing import AsyncIterator, Optional
 
 from loguru import logger
 
-from app.core.clients.database import Database
+from app.clients.database import Database
 from app.core.feeds.models import Entry, UserFeed
 from app.core.feeds.service import FeedsService
 
@@ -26,13 +26,13 @@ class LoadEntries:
         self,
         feed_user: UserFeed,
         limit_feeds: int,
-    ) -> AsyncGenerator[Entry]:  # type: ignore
+    ) -> AsyncIterator[Entry]:  # type: ignore
         logger.debug("Загружаем записи фида {}...", feed_user.url)
         entries = await self._feeds_service.load_entries(feed_user.url, limit_feeds)
 
         if entries is None:
             logger.warning("У фида отсутствуют статьи. {}", feed_user.url)
-            return
+            raise StopAsyncIteration
 
         for entry in entries:
             logger.debug("Проверим существует лм уже запись {} в базе...", entry)
@@ -61,6 +61,7 @@ class LoadEntries:
             return
 
         logger.info("{} фидов для проверки на новые записи", len(active_rss_users))
+        count_new_entries = 0
         for feed_user in active_rss_users:
             logger.debug(
                 "Загружаем фид {} юзера {}...",
@@ -73,3 +74,5 @@ class LoadEntries:
                     new_entry,
                     feed_user.url,
                 )
+                count_new_entries += 1
+        logger.info("Загружено {} новых записей.", count_new_entries)

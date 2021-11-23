@@ -1,5 +1,5 @@
-from app.core.clients.pocket import PocketClient
-from app.core.clients.telegram import Telegram
+from app.clients.pocket import PocketClient
+from app.clients.telegram import Telegram
 from app.core.commands.authorize_pocket.repository import PocketAuthRepository
 from app.core.commands.command_abc import CommandServiceABC
 from app.core.commands.dto import Update
