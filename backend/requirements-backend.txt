@@ -6,9 +6,9 @@ click==8.0.1
 dependency-injector==4.35.2
 easy-notifyer==0.2.1
 fastapi==0.65.1
-feedparser==6.0.2
+feedparser==6.0.5
 h11==0.12.0
-httpcore==0.13.3
+httpcore==0.13.5
 httpx==0.18.1
 idna==3.2
 loguru==0.5.3
