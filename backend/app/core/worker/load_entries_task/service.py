@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, Optional
+from typing import AsyncIterator, Optional
 
 from loguru import logger
 
@@ -26,13 +26,13 @@ class LoadEntries:
         self,
         feed_user: UserFeed,
         limit_feeds: int,
-    ) -> AsyncGenerator[Entry]:  # type: ignore
+    ) -> AsyncIterator[Entry]:  # type: ignore
         logger.debug("Загружаем записи фида {}...", feed_user.url)
         entries = await self._feeds_service.load_entries(feed_user.url, limit_feeds)
 
         if entries is None:
             logger.warning("У фида отсутствуют статьи. {}", feed_user.url)
-            return
+            raise StopAsyncIteration
 
         for entry in entries:
             logger.debug("Проверим существует лм уже запись {} в базе...", entry)
