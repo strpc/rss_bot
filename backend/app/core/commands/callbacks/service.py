@@ -3,7 +3,8 @@ from typing import Optional
 from loguru import logger
 
 from app.api.endpoints.update.enums import ServiceIntegration
-from app.api.endpoints.update.schemas import Button
+
+# from app.api.endpoints.update.schemas import Button
 from app.clients.telegram import Telegram
 from app.core.commands.command_abc import CommandServiceABC
 from app.core.commands.dto import Update
@@ -66,7 +67,8 @@ class CallbackService(CommandServiceABC):
                 button.callback_data.sended = True
                 button.callback_data = button.callback_data.json()
 
-            new_buttons.append(Button(**button.dict()))
+            # new_buttons.append(Button(**button.dict()))
+            new_buttons.append(button)
 
         await self._telegram.update_buttons(
             chat_id=update.chat_id,
