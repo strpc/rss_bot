@@ -1,4 +1,4 @@
-from app.api.schemas.enums import ServiceIntegration
+from app.api.endpoints.update.enums import ServiceIntegration
 from app.core.integration.integration_abc import ExternalServiceABC
 from app.core.integration.pocket import PocketIntegration
 

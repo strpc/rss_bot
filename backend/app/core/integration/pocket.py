@@ -108,8 +108,3 @@ class PocketIntegration(ExternalServiceABC):
             access_token=token,  # type: ignore
             username=username,  # type: ignore
         )
-
-
-if __name__ == "__main__":
-    print(PocketIntegration.success_message)
-    print(PocketIntegration.error_message)
