@@ -8,6 +8,9 @@ from urllib.parse import urlparse
 from loguru import logger
 
 
+ESCAPE_MARKDOWN_PATTERN = re.compile(r"([_*\[\]()~`>#+\-=|{}.!\\])")
+
+
 def validate_url(url: str) -> bool:
     logger.debug("Провалидируем url {} ...", url)
     parsed_url = urlparse(url)
@@ -39,8 +42,7 @@ async def run_in_threadpool(func: Callable, *args: Any, **kwargs: Any) -> Any:
 
 
 def escape_md(text: str) -> str:
-    pattern = re.compile(r"([_*\[\]()~`>#+\-=|{}.!\\])")
-    return re.sub(pattern=pattern, repl=r"\\\1", string=text)
+    return ESCAPE_MARKDOWN_PATTERN.sub(repl=r"\\\1", string=text)
 
 
 def bold_markdown(text: str) -> str:
