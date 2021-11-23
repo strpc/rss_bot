@@ -3,7 +3,7 @@ from typing import Any
 
 from loguru import logger
 
-from app.config import get_config
+from app.config import MainConfig, get_config
 from app.core.clients.database import Database
 from app.core.clients.http_ import HttpClient
 from app.core.clients.pocket import PocketClient
@@ -20,20 +20,17 @@ from app.core.worker.send_entries_task.service import SenderMessages
 from app.core.worker.worker_app import app_celery
 
 
-config = get_config()
-
-
-@app_celery.task()
+@app_celery.task(ignore_result=True)
 def run_chain() -> None:
     chain = load_entries.s() | pocket_updater.s() | send_messages.s()
     chain()
 
 
-@app_celery.task()
+@app_celery.task(ignore_result=True)
 def load_entries(*args: Any, **kwargs: Any) -> None:
     logger.info("Загрузим новые записи...")
 
-    async def async_task() -> None:
+    async def async_task(config: MainConfig) -> None:
         database = Database(url=config.db.dsn)
         await database.connect()
         feeds_repository = FeedsRepository(database)
@@ -44,15 +41,17 @@ def load_entries(*args: Any, **kwargs: Any) -> None:
         )
         await loader.load(limit_feeds=config.limits.load_feed)
         await database.disconnect()
+        return None
 
-    asyncio.run(async_task())
+    _config = get_config()
+    return asyncio.run(async_task(_config))
 
 
-@app_celery.task()
+@app_celery.task(ignore_result=True)
 def pocket_updater(*args: Any, **kwargs: Any) -> None:
     logger.info("Обновим данные авторизации pocket...")
 
-    async def async_task() -> None:
+    async def async_task(config: MainConfig) -> None:
         database = Database(url=config.db.dsn)
         await database.connect()
 
@@ -76,15 +75,21 @@ def pocket_updater(*args: Any, **kwargs: Any) -> None:
             pocket_integration=pocket_integration,
         )
         await database.disconnect()
+        return None
 
-    asyncio.run(async_task())
+    _config = get_config()
+    if _config.pocket.consumer_key is None:
+        logger.info("Pocket consumer key is not set. Exit...")
+        return None
+
+    return asyncio.run(async_task(_config))
 
 
-@app_celery.task()
+@app_celery.task(ignore_result=True)
 def send_messages(*args: Any, **kwargs: Any) -> None:
     logger.info("Отправим новые записи пользователям...")
 
-    async def async_task() -> None:
+    async def async_task(config: MainConfig) -> None:
         database = Database(url=config.db.dsn)
         await database.connect()
 
@@ -108,4 +113,5 @@ def send_messages(*args: Any, **kwargs: Any) -> None:
         )
         await database.disconnect()
 
-    asyncio.run(async_task())
+    _config = get_config()
+    return asyncio.run(async_task(_config))

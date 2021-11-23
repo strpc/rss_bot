@@ -2,8 +2,8 @@ from typing import Dict, List, Optional
 
 from loguru import logger
 
-from app.api.schemas.enums import ParseMode
-from app.api.schemas.message import Button
+from app.api.endpoints.update.enums import ParseMode
+from app.api.endpoints.update.schemas import Button
 from app.core.clients.database import Database
 from app.core.clients.telegram import Telegram, TelegramBadBodyRequest, TelegramUserBlocked
 from app.core.feeds.models import UserEntry
@@ -54,14 +54,13 @@ class SenderMessages:
         return integration_services
 
     async def send(self, limit_title: int, limit_text: int) -> None:
-        logger.info("Ищем новые записи для отправки пользователям...")
         new_entries = await self._feeds_service.get_unsended_entries()
         if new_entries is None:
             logger.info("Нет новых записей для отправки. exit...")
             return
 
         users_integrations: Dict[int, Optional[UserIntegration]] = {}
-        logger.info("{} новых записей...", len(new_entries))
+        logger.debug("{} новых записей...", len(new_entries))
         for entry in new_entries:
             if entry.chat_id in users_integrations:
                 user_integration = users_integrations[entry.chat_id]
@@ -92,3 +91,4 @@ class SenderMessages:
 
             else:
                 await self._feeds_service.mark_sended_entry(entry.id)
+        logger.info("Записи отправлены.")
