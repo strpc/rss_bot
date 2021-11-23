@@ -75,4 +75,6 @@ class LoadEntries:
                     feed_user.url,
                 )
                 count_new_entries += 1
-        logger.info("Загружено {} новых записей.", count_new_entries)
+
+        if count_new_entries > 0:
+            logger.info("Загружено {} новых записей.", count_new_entries)
