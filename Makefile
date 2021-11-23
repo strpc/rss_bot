@@ -1,7 +1,7 @@
 include .env
 
-.SILENT:
-.DEFAULT_GOAL := run
+#.SILENT:
+#.DEFAULT_GOAL := run
 
 env_file = .env
 PYTHON=.venv/bin/python3
@@ -9,14 +9,28 @@ MANAGEPY=admin/app/manage.py
 
 export $(shell sed 's/=.*//' $(env_file))
 
-run:
-	$(PYTHON) $(MANAGEPY) runsslserver 0.0.0.0:8000 --certificate cert.pem --key private.key
+.PHONY: dev dev_build dev_down django backend db_migrate makemigrations_django migrate_django celery beat shutdown_celery status_celery tasks_celery isort black clean
+
+dev:
+	docker-compose up
+
+dev_build:
+	docker-compose up --build
+
+dev_down:
+	docker-compose down -v
+
+django:
+	cd admin && DEBUG=True python3 app/manage.py runserver 0.0.0.0:8001
+
+backend:
+	PYTHONPATH=$(shell pwd)/backend uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 db_migrate:
 	make makemigrations_django && make migrate_django
 
 makemigrations_django:
-	$(PYTHON) $(MANAGEPY) makemigrations
+	$(PYTHON) $(MANAGEPY) makemigrations bot
 
 migrate_django:
 	$(PYTHON) $(MANAGEPY) migrate
@@ -35,15 +49,6 @@ status_celery:
 
 tasks_celery:
 	celery inspect registered
-
-up:
-	docker-compose up -d
-
-upb:
-	docker-compose up -d --force-recreate --build
-
-down:
-	docker-compose down
 
 isort:
 	git status -s --untracked-files=no | awk '{ print $2}' | xargs isort --lines-after-imports=2
@@ -73,9 +78,3 @@ clean:
 	@rm -f .flake
 	@rm -f .install-deps
 	@rm -f .install-cython
-
-django:
-	cd admin && DEBUG=True python3 app/manage.py runserver
-
-run_backend:
-	PYTHONPATH=$(shell pwd)/backend uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload

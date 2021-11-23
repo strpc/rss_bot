@@ -3,16 +3,17 @@ import functools
 from aiocache import Cache
 from dependency_injector import containers, providers
 
-from app.core.callbacks.service import CallbackService
 from app.core.clients.database import Database
 from app.core.clients.http_ import HttpClient
 from app.core.clients.pocket import PocketClient
 from app.core.clients.telegram import Telegram
 from app.core.commands.add_feed.service import CommandAddFeedService
-from app.core.commands.authorize.service import AuthorizeService
 from app.core.commands.authorize_pocket.repository import PocketAuthRepository
 from app.core.commands.authorize_pocket.service import AuthorizePocketService
+from app.core.commands.callbacks.service import CallbackService
 from app.core.commands.delete_feed.service import CommandDeleteFeedService
+from app.core.commands.help.service import CommandHelpService
+from app.core.commands.integrations.service import CommandIntegrationsService
 from app.core.commands.list_feed.service import CommandListFeedService
 from app.core.commands.start.service import CommandStartService
 from app.core.feeds.repository import FeedsRepository
@@ -69,6 +70,12 @@ class Container(containers.DeclarativeContainer):
         internal_messages_service=internal_messages_service,
     )
 
+    command_help_service = providers.Factory(
+        CommandHelpService,
+        telegram=telegram_client,
+        internal_messages_service=internal_messages_service,
+    )
+
     add_feed_service = providers.Factory(
         CommandAddFeedService,
         feeds_service=feeds_service,
@@ -91,8 +98,8 @@ class Container(containers.DeclarativeContainer):
         internal_messages_service=internal_messages_service,
     )
 
-    authorize_service = providers.Factory(
-        AuthorizeService,
+    integrations_service = providers.Factory(
+        CommandIntegrationsService,
         telegram=telegram_client,
         internal_messages_service=internal_messages_service,
     )

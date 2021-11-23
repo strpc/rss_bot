@@ -10,7 +10,7 @@ ADMIN_URL = f"{settings.BASE_URL}/" if not settings.BASE_URL.endswith("/") else 
 
 urlpatterns = [
     path(ADMIN_URL, admin.site.urls),
-    path("healthcheck", ping),
+    path("healthcheck/", ping),
 ]
 
 if settings.DEBUG:

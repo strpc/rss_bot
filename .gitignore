@@ -2,7 +2,6 @@
 **/.idea/*
 **/.venv/*
 **/temp/*
-**/migrations/*
 **/__pycache__/*
 **/logs/*
 **/mypy_cache/*

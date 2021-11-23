@@ -1,6 +1,5 @@
-from app.api.schemas.callback import CallbackIntegrationServicePayload
-from app.api.schemas.enums import ServiceIntegration
-from app.api.schemas.message import Button
+from app.api.endpoints.update.enums import ServiceIntegration
+from app.api.endpoints.update.schemas import Button, CallbackIntegrationServicePayload
 
 
 class PocketButton(Button):

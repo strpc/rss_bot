@@ -29,8 +29,8 @@ class TelegramConfig(BaseSettings):
 
 
 class EasyNotifyerConfig(TelegramConfig):
-    chat_id: Union[str, int, List[int], List[str]]
-    service_name: str
+    chat_id: Optional[Union[str, int, List[int], List[str]]]
+    service_name: Optional[str]
 
     class Config:
         env_prefix = "easy_notifyer_"
@@ -70,7 +70,7 @@ class MainConfig(BaseSettings):
     app: AppSettings = AppSettings()
     celery: CeleryConfig = CeleryConfig()
     db: DBSettings = DBSettings()
-    easy_notifyer: Optional[EasyNotifyerConfig] = EasyNotifyerConfig()
+    easy_notifyer: EasyNotifyerConfig = EasyNotifyerConfig()
     limits: LimitConfig = LimitConfig()
     telegram: TelegramConfig = TelegramConfig()
     pocket: PocketConfig = PocketConfig()

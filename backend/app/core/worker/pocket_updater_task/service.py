@@ -11,11 +11,10 @@ async def update_access_tokens(
 ) -> None:
     request_tokens = await pocket_integration.get_new_request_token()
     if request_tokens is None:
-        logger.info("Нет новых request_token-ов")
+        logger.debug("Нет новых request_token-ов")
         return
 
     logger.info("Новых {} request_token-ов", len(request_tokens))
-    logger.debug("Получаем access токены...")
     for item in request_tokens:
         logger.debug("Обрабатываем {}...", item)
 

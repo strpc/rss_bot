@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable
 
 from easy_notifyer import Telegram
 from fastapi import FastAPI, Request, Response, status
@@ -7,7 +7,8 @@ from loguru import logger
 
 from app import __version__
 from app.api import deps
-from app.api.endpoints import healthcheck, message
+from app.api.endpoints import healthcheck
+from app.api.endpoints.update import views as updates
 from app.config import MainConfig
 from app.containers import Container
 from app.logger import configure_logging
@@ -23,7 +24,7 @@ def init_app() -> FastAPI:
     container = Container()
     container.config.from_pydantic(MainConfig())
     container.init_resources()
-    container.wire(modules=[deps, message])
+    container.wire(modules=[deps, updates])
     application.state.container = container
 
     configure_logging(container.config.app.log_level())
@@ -35,7 +36,7 @@ def init_app() -> FastAPI:
 
     application.add_exception_handler(RequestValidationError, validation_exception_handler)
 
-    application.include_router(message.router, prefix="/rss_bot/backend")
+    application.include_router(updates.router, prefix="/rss_bot/backend")
     application.include_router(healthcheck.router, prefix="/healthcheck")
 
     if not container.config.app.debug():
@@ -50,7 +51,7 @@ def init_app() -> FastAPI:
     return application
 
 
-async def validation_exception_handler(request: Request, exc: Optional[BaseException]) -> Response:
+async def validation_exception_handler(_: Request, exc: RequestValidationError) -> Response:
     logger.error(str(exc))
     return Response(status_code=status.HTTP_200_OK)
 

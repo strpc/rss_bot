@@ -1,18 +1,90 @@
 [
   {
-    "model": "myapp.person",
+    "model": "bot.ServiceMessage",
     "pk": 1,
     "fields": {
-      "first_name": "John",
-      "last_name": "Lennon"
+      "title": "hello_user",
+      "text": "Hello! I am a bot for watching feeds and sending new items to you.\nSend:\n\n/add_feed [url] to add new feed.\n/list_feed to view all your feeds.\n/delete_feed to delete feed.\n/integrations to show what integrations I have."
     }
   },
   {
-    "model": "myapp.person",
+    "model": "bot.ServiceMessage",
     "pk": 2,
     "fields": {
-      "first_name": "Paul",
-      "last_name": "McCartney"
+      "title": "unsupported_update",
+      "text": "This update don't support. Sorry"
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 3,
+    "fields": {
+      "title": "incorrect_rss",
+      "text": "Incorrect url rss. Example:\n/add_feed https://github.com/kubernetes/kubernetes/commits.atom"
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 4,
+    "fields": {
+      "title": "not_have_active",
+      "text": "You don't have active feed."
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 5,
+    "fields": {
+      "title": "limit_achieved",
+      "text": "You have achieved limit for feed.\nPlease contact to author to add more."
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 6,
+    "fields": {
+      "title": "integrations",
+      "text": "Please send /authorize_pocket for activate Pocket integration.\nSend /unauthorize_pocket for deactivate Pocket integration."
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 7,
+    "fields": {
+      "title": "error",
+      "text": "Erorr"
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 8,
+    "fields": {
+      "title": "already_added_feed",
+      "text": "Feed have already added."
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 9,
+    "fields": {
+      "title": "url_not_founded",
+      "text": "Feed did not find. Please, retry."
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 10,
+    "fields": {
+      "title": "help",
+      "text": "Send:\n\n/add_feed [url] to add new feed.\n/list_feed to view all your feeds.\n/delete_feed to delete feed.\n/integrations to show what integrations I have."
+    }
+  },
+  {
+    "model": "bot.ServiceMessage",
+    "pk": 11,
+    "fields": {
+      "title": "unauthorize_pocket",
+      "text": "Pocket integration is disabled."
     }
   }
 ]

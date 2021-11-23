@@ -3,7 +3,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 
-from .models import Article, ArticleUser, PocketIntegration, RSSUsers, ServiceMessage, User
+from .models import RSS, Article, ArticleUser, PocketIntegration, RSSUsers, ServiceMessage, User
 
 
 class BaseAdminModel(admin.ModelAdmin):
@@ -50,6 +50,12 @@ class UserAdmin(BaseAdminModel):
         return obj.rss.url  # type: ignore
 
     user_rss.short_description = "RSS"  # type: ignore
+
+
+@admin.register(RSS)
+class AdminRSS(admin.ModelAdmin):
+    list_display = ("url",)
+    list_display_links = ("url",)
 
 
 @admin.register(RSSUsers)

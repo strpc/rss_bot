@@ -2,8 +2,7 @@ from typing import Optional, Union
 
 from loguru import logger
 
-from app.api.schemas.callback import Callback
-from app.api.schemas.message import Message
+from app.api.endpoints.update.schemas import Callback, Message
 from app.core.users.models import User, UserIntegration
 from app.core.users.repository import UsersRepository
 
@@ -32,7 +31,7 @@ class UsersService:
 
         user = await self.get_user(chat_id)
         if user is not None:
-            logger.info("Юзер найден.")
+            logger.debug("Юзер найден.")
             return user
 
         logger.info("Юзер не найден. Создаем нового юзера...")

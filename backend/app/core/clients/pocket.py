@@ -50,7 +50,7 @@ class PocketClient:
         }
 
     async def _send_post_request(self, url: str, headers: Dict[str, Any], body: Any) -> Response:
-        logger.info("Отправляем post запрос body={}\nheaders={}", body, headers)
+        logger.debug("Отправляем post запрос body={}\nheaders={}", body, headers)
         return await self._client.post(url, headers=headers, body=body)
 
     @staticmethod

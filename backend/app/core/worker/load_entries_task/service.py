@@ -1,4 +1,4 @@
-from typing import AsyncIterator, Optional
+from typing import AsyncGenerator, Optional
 
 from loguru import logger
 
@@ -26,7 +26,7 @@ class LoadEntries:
         self,
         feed_user: UserFeed,
         limit_feeds: int,
-    ) -> Optional[AsyncIterator[Entry]]:
+    ) -> AsyncGenerator[Entry]:  # type: ignore
         logger.debug("Загружаем записи фида {}...", feed_user.url)
         entries = await self._feeds_service.load_entries(feed_user.url, limit_feeds)
 
@@ -62,7 +62,7 @@ class LoadEntries:
 
         logger.info("{} фидов для проверки на новые записи", len(active_rss_users))
         for feed_user in active_rss_users:
-            logger.info(
+            logger.debug(
                 "Загружаем фид {} юзера {}...",
                 feed_user.url[:30],
                 feed_user.chat_id,

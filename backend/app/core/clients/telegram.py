@@ -3,8 +3,8 @@ from typing import Dict, List, Optional
 
 from loguru import logger
 
-from app.api.schemas.enums import ParseMode
-from app.api.schemas.message import Button
+from app.api.endpoints.update.enums import ParseMode
+from app.api.endpoints.update.schemas import Button
 from app.core.clients.http_ import HttpClientABC, Response
 
 
@@ -40,7 +40,7 @@ class Telegram:
         url: str,
         body: Dict,
     ) -> Response:
-        logger.info("Отправляем post запрос body={}", body)
+        logger.debug("Отправляем post запрос body={}", body)
         response = await self._client.post(url=url, body=body)
         if response.status_code == 200:
             return response
