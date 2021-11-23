@@ -28,13 +28,10 @@ def empty_decorator(*args: Any, **kwargs: Any) -> Callable:  # noqa
 
 def get_telegram_reporter() -> Callable:
     config = get_config()
-    if config.app.debug:
+    if config.app.debug or config.easy_notifyer.token is None:
         return empty_decorator()
     return _telegram_reporter(
         token=config.easy_notifyer.token,
         chat_id=config.easy_notifyer.chat_id,
         service_name=config.easy_notifyer.service_name,
     )
-
-
-telegram_reporter = get_telegram_reporter()
