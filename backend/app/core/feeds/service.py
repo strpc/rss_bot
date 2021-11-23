@@ -42,9 +42,11 @@ class FeedsService:
     async def validate_feed(url: str) -> bool:
         logger.debug("Проверяем валидность фида {}...", url)
         try:
-            return bool((await run_in_threadpool(feedparser.parse, url)).get("entries"))
+            is_valid_feed = bool((await run_in_threadpool(feedparser.parse, url)).get("entries"))
+            logger.debug("validated feed={}.", is_valid_feed)
+            return is_valid_feed
         except (URLError, InvalidURL):
-            logger.warning("Фид невалиден {}", url)
+            logger.debug("Фид невалиден {}", url)
             return False
 
     async def add_new_feed_user(self, chat_id: int, url: str) -> None:

@@ -5,6 +5,9 @@ from urllib.parse import urlparse
 from pydantic import BaseModel, Field, validator
 
 
+TAGS_PATTERN = re.compile(r"<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
+
+
 class Feed(BaseModel):
     url: str
 
@@ -17,9 +20,9 @@ class Entry(BaseModel):
     @validator("text")
     def remove_tags(cls, value: Optional[str]) -> Optional[str]:
         if isinstance(value, str):
-            cleanr = re.compile(r"<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
-            cleantext = re.sub(cleanr, "", value)
-            return cleantext.replace("\n", " ").strip()
+
+            cleaned_text = TAGS_PATTERN.sub("", value)
+            return cleaned_text.replace("\n", " ").strip()
         return value
 
     @validator("url")
