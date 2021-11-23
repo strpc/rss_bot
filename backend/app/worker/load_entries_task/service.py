@@ -61,6 +61,7 @@ class LoadEntries:
             return
 
         logger.info("{} фидов для проверки на новые записи", len(active_rss_users))
+        count_new_entries = 0
         for feed_user in active_rss_users:
             logger.debug(
                 "Загружаем фид {} юзера {}...",
@@ -73,3 +74,5 @@ class LoadEntries:
                     new_entry,
                     feed_user.url,
                 )
+                count_new_entries += 1
+        logger.info("Загружено {} новых записей.", count_new_entries)
