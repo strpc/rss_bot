@@ -35,8 +35,8 @@ class RSS(models.Model):
 
     class Meta:
         db_table = "bot_rss"
-        verbose_name = "RSS"
-        verbose_name_plural = "RSS"
+        verbose_name = "RSS-фиды"
+        verbose_name_plural = "RSS-фиды"
 
 
 class RSSUsers(models.Model):
@@ -48,8 +48,8 @@ class RSSUsers(models.Model):
 
     class Meta:
         db_table = "bot_rss_user"
-        verbose_name = "RSS"
-        verbose_name_plural = "RSS"
+        verbose_name = "RSS-подписки пользователя"
+        verbose_name_plural = "RSS-подписки пользователей"
         unique_together = (("user", "rss"),)
 
 
@@ -86,7 +86,7 @@ class ArticleUser(models.Model):
     class Meta:
         db_table = "bot_user_articles"
         verbose_name = "Статья пользователя"
-        verbose_name_plural = "Статьи пользователя"
+        verbose_name_plural = "Статьи пользователей"
         unique_together = (("user", "article"),)
 
 
