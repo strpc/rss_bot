@@ -2,7 +2,7 @@ from celery import Celery
 from celery.schedules import crontab
 
 from app.config import get_config
-from app.core.worker.logger import configure_logging
+from app.worker.logger import configure_logging
 
 
 APP_NAME = "rss_bot"
@@ -21,13 +21,13 @@ if config.app.debug:
 
 app_celery.autodiscover_tasks(
     [
-        "app.core.worker.tasks",
+        "app.worker.tasks",
     ],
 )
 app_celery.conf.task_default_queue = DEFAULT_QUEUE
 app_celery.conf.beat_schedule = {
     "chain": {
-        "task": "app.core.worker.tasks.run_chain",
+        "task": "app.worker.tasks.run_chain",
         "schedule": crontab(
             hour=config.celery.hour_beat_interval,
             minute=config.celery.minute_beat_interval,

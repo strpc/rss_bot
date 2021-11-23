@@ -4,7 +4,7 @@ set -e
 beat() {
   echo "Starting beat..."
 
-  exec celery -A app.core.worker.worker_app:app_celery beat \
+  exec celery -A app.worker.worker_app:app_celery beat \
       --loglevel=${LOG_LEVEL:-info} \
       --pidfile=
   }
@@ -12,7 +12,7 @@ beat() {
 worker() {
   echo "Starting worker..."
 
-  exec celery -A app.core.worker.worker_app:app_celery worker \
+  exec celery -A app.worker.worker_app:app_celery worker \
       -E \
       --concurrency=${CONCURRENCY:-1} \
       -n rss_bot@%h \

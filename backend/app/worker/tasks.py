@@ -14,10 +14,10 @@ from app.core.integration.pocket import PocketIntegration
 from app.core.integration.repository import PocketRepository
 from app.core.users.repository import UsersRepository
 from app.core.users.service import UsersService
-from app.core.worker.load_entries_task.service import LoadEntries
-from app.core.worker.pocket_updater_task import service as pocket
-from app.core.worker.send_entries_task.service import SenderMessages
-from app.core.worker.worker_app import app_celery
+from app.worker.load_entries_task.service import LoadEntries
+from app.worker.pocket_updater_task import service as pocket
+from app.worker.send_entries_task.service import SenderMessages
+from app.worker.worker_app import app_celery
 
 
 @app_celery.task(ignore_result=True)

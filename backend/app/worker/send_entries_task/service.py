@@ -11,7 +11,7 @@ from app.core.feeds.service import FeedsService
 from app.core.users.models import UserIntegration
 from app.core.users.service import UsersService
 from app.core.utils import bold_markdown, escape_md
-from app.core.worker.send_entries_task.schemas import PocketButton
+from app.worker.send_entries_task.schemas import PocketButton
 
 
 class SenderMessages:
