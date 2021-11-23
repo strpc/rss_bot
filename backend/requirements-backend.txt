@@ -1,11 +1,12 @@
 aiocache==0.11.1
 aiosqlite==0.17.0
+anyio==3.4.0
 asgiref==3.3.4
 certifi==2021.5.30
 click==8.0.1
 dependency-injector==4.35.2
 easy-notifyer==0.2.1
-fastapi==0.65.1
+fastapi==0.70.0
 feedparser==6.0.5
 h11==0.12.0
 httpcore==0.13.5
@@ -15,7 +16,8 @@ loguru==0.5.3
 pydantic==1.8.2
 rfc3986==1.5.0
 sgmllib3k==1.0.0
+six==1.16.0
 sniffio==1.2.0
-starlette==0.14.2
+starlette==0.16.0
 typing-extensions==3.10.0.0
 uvicorn==0.14.0
