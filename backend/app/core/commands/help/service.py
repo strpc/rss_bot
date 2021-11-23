@@ -9,7 +9,7 @@ from app.reporters_errors import get_telegram_reporter
 telegram_reporter = get_telegram_reporter()
 
 
-class CommandStartService(CommandServiceABC):
+class CommandHelpService(CommandServiceABC):
     def __init__(
         self,
         *,
@@ -23,5 +23,5 @@ class CommandStartService(CommandServiceABC):
     async def handle(self, update: Update) -> None:
         await self._internal_messages_service.send(
             update.chat_id,
-            InternalMessages.hello_user,
+            InternalMessages.help,
         )
