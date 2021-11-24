@@ -41,6 +41,7 @@ class CallbackService(CommandServiceABC):
             logger.info("Повторный клик на кнопку.")
             return
 
+        logger.info("Сохранение ссылки в {}", update.payload.service)  # type: ignore
         logger.debug("payload={}", update.payload)
         await self._telegram.answer_callback(update.callback_query.id, "Saving...")  # type: ignore
 
