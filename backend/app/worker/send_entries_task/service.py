@@ -3,7 +3,6 @@ from typing import Dict, List, Optional
 from loguru import logger
 
 from app.api.endpoints.update.enums import ParseMode
-from app.api.endpoints.update.schemas import Button
 from app.clients.database import Database
 from app.clients.telegram import Telegram, TelegramBadBodyRequest, TelegramUserBlocked
 from app.core.feeds.models import UserEntry
@@ -43,11 +42,10 @@ class SenderMessages:
     def _create_buttons(
         entry: UserEntry,
         user_integration: UserIntegration,
-    ) -> List[Button]:
+    ) -> List[PocketButton]:
         integration_services = []
         if user_integration.pocket_access_token is not None:
-            pocket_button = PocketButton()
-            pocket_button.add_callback_data(entry.id)
+            pocket_button = PocketButton(callback_data=entry.id)
             integration_services.append(pocket_button)
 
         logger.debug("У пользователя {} активированных сервисов.", len(integration_services))
