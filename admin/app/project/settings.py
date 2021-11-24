@@ -18,6 +18,7 @@ DEBUG = os.getenv("DEBUG", False) in ("True", "true")
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", os.getenv("ALLOWED_HOSTS")]
 
+LIMIT_SYMBOLS_ADMIN_FIELDS = 30
 
 # Application definition
 

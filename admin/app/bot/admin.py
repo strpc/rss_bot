@@ -1,9 +1,15 @@
 # # mypy: ignore-errors
+from typing import List, Tuple
+
 from django import forms
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.admin.filters import SimpleListFilter
+from django.db.models import QuerySet
+from django.http import HttpRequest
 
 from .models import RSS, Article, ArticleUser, PocketIntegration, RSSUsers, ServiceMessage, User
+from .utils import limit_word
 
 
 class BaseAdminModel(admin.ModelAdmin):
@@ -58,6 +64,25 @@ class AdminRSS(admin.ModelAdmin):
     list_display_links = ("url",)
 
 
+class URLFilter(SimpleListFilter):
+    title = "URL RSS"
+    parameter_name = "rss__url"
+
+    def lookups(self, request: HttpRequest, model_admin: admin.ModelAdmin) -> List[Tuple[str, str]]:
+        qs = model_admin.get_queryset(request)
+        return [
+            (url.rss.url, limit_word(url.rss.url, settings.LIMIT_SYMBOLS_ADMIN_FIELDS))
+            for url in qs
+        ]
+
+    def queryset(self, request: HttpRequest, queryset: QuerySet) -> QuerySet:
+        if self.value():
+            params = {self.parameter_name: self.value()}
+            return queryset.filter(**params)
+        else:
+            return queryset.filter()
+
+
 @admin.register(RSSUsers)
 class AdminRSSUsers(BaseAdminModel):
     fields = (
@@ -84,9 +109,23 @@ class AdminRSSUsers(BaseAdminModel):
     )
     list_filter = (
         "user__username",
-        "rss__url",
+        URLFilter,
         "active",
     )
+
+
+class URLArticleFilter(URLFilter):
+    parameter_name = "article__rss__url"
+
+    def lookups(self, request: HttpRequest, model_admin: admin.ModelAdmin) -> List[Tuple[str, str]]:
+        qs = model_admin.get_queryset(request)
+        return [
+            (
+                url.article.rss.url,
+                limit_word(url.article.rss.url, settings.LIMIT_SYMBOLS_ADMIN_FIELDS),
+            )
+            for url in qs
+        ]
 
 
 @admin.register(ArticleUser)
@@ -120,7 +159,7 @@ class AdminArticleUser(BaseAdminModel):
     list_filter = (
         "sended",
         "user__username",
-        "article__rss__url",
+        URLArticleFilter,
     )
 
     def get_title_article(self, obj: ArticleUser) -> str:
@@ -152,7 +191,7 @@ class AdminArticle(BaseAdminModel):
         "get_rss_url",
         "added",
     )
-    list_filter = ("rss__url",)
+    list_filter = (URLFilter,)
 
     def get_rss_url(self, obj: Article) -> str:
         return obj.rss.url

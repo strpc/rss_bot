@@ -1,7 +1,10 @@
 # mypy: ignore-errors
 from datetime import datetime
 
+from django.conf import settings
 from django.db import models
+
+from .utils import limit_word
 
 
 class User(models.Model):
@@ -31,7 +34,7 @@ class RSS(models.Model):
     url = models.CharField("URL RSS", max_length=2000, null=False, blank=False, unique=True)
 
     def __str__(self) -> str:
-        return str(self.url)
+        return limit_word(str(self.url), settings.LIMIT_SYMBOLS_ADMIN_FIELDS)
 
     class Meta:
         db_table = "bot_rss"
@@ -61,10 +64,7 @@ class Article(models.Model):
     added = models.DateTimeField("Добавлено", auto_now_add=True)
 
     def __str__(self):
-        return (
-            f"{self.url} "
-            # f'{self.added.astimezone().strftime("%d.%m.%Y %H:%M")}'
-        )
+        return limit_word(str(self.url), settings.LIMIT_SYMBOLS_ADMIN_FIELDS)
 
     class Meta:
         db_table = "bot_articles"
