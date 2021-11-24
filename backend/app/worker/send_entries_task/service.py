@@ -89,4 +89,4 @@ class SenderMessages:
 
             else:
                 await self._feeds_service.mark_sended_entry(entry.id)
-        logger.info("Записи отправлены.")
+        logger.info("Отправлено {} записей", len(new_entries))
