@@ -13,7 +13,7 @@ class LoggingRoute(APIRoute):
 
         async def custom_route_handler(request: Request) -> Response:
             body = await request.json()
-            logger.debug(body)
+            logger.info(body)
 
             chat_id, username, uuid = self._get_body_values(body)
             before = time.time()
