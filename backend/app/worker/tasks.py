@@ -1,5 +1,4 @@
 import asyncio
-from typing import Any
 
 from loguru import logger
 
@@ -21,13 +20,7 @@ from app.worker.worker_app import app_celery
 
 
 @app_celery.task(ignore_result=True)
-def run_chain() -> None:
-    chain = load_entries.s() | pocket_updater.s() | send_messages.s()
-    chain()
-
-
-@app_celery.task(ignore_result=True)
-def load_entries(*args: Any, **kwargs: Any) -> None:
+def load_entries() -> None:
     logger.info("Загрузим новые записи...")
 
     async def async_task(config: MainConfig) -> None:
@@ -48,7 +41,7 @@ def load_entries(*args: Any, **kwargs: Any) -> None:
 
 
 @app_celery.task(ignore_result=True)
-def pocket_updater(*args: Any, **kwargs: Any) -> None:
+def pocket_updater() -> None:
     logger.info("Обновим данные авторизации pocket...")
 
     async def async_task(config: MainConfig) -> None:
@@ -86,7 +79,7 @@ def pocket_updater(*args: Any, **kwargs: Any) -> None:
 
 
 @app_celery.task(ignore_result=True)
-def send_messages(*args: Any, **kwargs: Any) -> None:
+def send_messages() -> None:
     logger.info("Отправим новые записи пользователям...")
 
     async def async_task(config: MainConfig) -> None:

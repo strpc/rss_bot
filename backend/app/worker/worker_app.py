@@ -8,6 +8,11 @@ from app.worker.logger import configure_logging
 APP_NAME = "rss_bot"
 TIMEZONE = "UTC"
 DEFAULT_QUEUE = "rss_bot"
+TASKS_NAMES = (
+    "load_entries",
+    "pocket_updater",
+    "send_messages",
+)
 
 config = get_config()
 configure_logging(config.app.log_level)
@@ -25,13 +30,22 @@ app_celery.autodiscover_tasks(
     ],
 )
 app_celery.conf.task_default_queue = DEFAULT_QUEUE
-app_celery.conf.beat_schedule = {
-    "chain": {
-        "task": "app.worker.tasks.run_chain",
-        "schedule": crontab(
-            hour=config.celery.hour_beat_interval,
-            minute=config.celery.minute_beat_interval,
-        ),
-        "options": {"queue": "rss_bot"},
+
+schedule_options = {
+    "schedule": crontab(
+        hour=config.celery.hour_beat_interval,
+        minute=config.celery.minute_beat_interval,
+    ),
+    "options": {
+        "queue": DEFAULT_QUEUE,
+        "expires": 300,
     },
+}
+
+app_celery.conf.beat_schedule = {
+    task_name: {
+        "task": f"app.worker.tasks.{task_name}",
+        **schedule_options,
+    }
+    for task_name in TASKS_NAMES
 }
