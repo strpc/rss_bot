@@ -14,6 +14,9 @@ from app.containers import Container
 from app.logger import configure_logging
 
 
+BASE_URL = "/rss_bot/backend"
+
+
 def init_app() -> FastAPI:
     application = FastAPI(
         version=__version__,
@@ -36,8 +39,8 @@ def init_app() -> FastAPI:
 
     application.add_exception_handler(RequestValidationError, validation_exception_handler)
 
-    application.include_router(updates.router, prefix="/rss_bot/backend")
-    application.include_router(healthcheck.router, prefix="/healthcheck")
+    application.include_router(updates.router, prefix=BASE_URL)
+    application.include_router(healthcheck.router, prefix=f"{BASE_URL}/healthcheck")
 
     if not container.config.app.debug():
         logger.info("Service is started.")
