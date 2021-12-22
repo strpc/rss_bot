@@ -9,8 +9,8 @@ from app.project.healthcheck import ping
 ADMIN_URL = f"{settings.BASE_URL}/" if not settings.BASE_URL.endswith("/") else settings.BASE_URL
 
 urlpatterns = [
+    path(f"{ADMIN_URL[:-1]}/healthcheck/", ping),
     path(ADMIN_URL, admin.site.urls),
-    path("healthcheck/", ping),
 ]
 
 if settings.DEBUG:
