@@ -139,7 +139,7 @@ jobs:
             cd ${{ secrets.PROJECT_DIR }}
             echo "Pulling project..."
             git reset --hard origin/HEAD
-            git pull --depth=1
+            git pull --rebase origin HEAD
 
             echo "Login in private registry..."
             echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login localhost -u "${{ secrets.REGISTRY_USER }}" --password-stdin
@@ -154,7 +154,7 @@ jobs:
             docker pull ${PRIVATE_REGISTRY}rss_bot_worker:${VERSION}
 
             echo "Down stack..."
-            docker-compose down --remove-orphans -v
+            docker-compose -f docker-compose.yml down --remove-orphans -v
 
             echo "Up stack..."
             docker-compose -f docker-compose.yml up -d
