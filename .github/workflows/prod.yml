@@ -154,7 +154,7 @@ jobs:
             docker pull ${PRIVATE_REGISTRY}rss_bot_worker:${VERSION}
 
             echo "Down stack..."
-            docker-compose down --remove-orphans -v
+            docker-compose -f docker-compose.yml down --remove-orphans -v
 
             echo "Up stack..."
             docker-compose -f docker-compose.yml up -d
