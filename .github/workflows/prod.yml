@@ -12,6 +12,7 @@ jobs:
 
     env:
       PLATFORM: linux/arm/v7
+      DOCKER_BUILDKIT: 1
 
     steps:
       - name: Checkout code.
