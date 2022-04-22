@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login "${{ secrets.REGISTRY_HOST }}" -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
-      - name: Pulling and verify cache.
+      - name: Build admin builder image.
         run: |
           docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder || true
           docker build --platform ${PLATFORM} \
@@ -46,6 +46,8 @@ jobs:
                     --target builder \
                     ./admin/
 
+      - name: Build backend builder image.
+        run: |
           docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder || true
           docker build --platform ${PLATFORM} \
                     -f ./backend/docker/backend.dockerfile \
@@ -55,6 +57,8 @@ jobs:
                     --target builder \
                     ./backend/
 
+      - name: Build worker builder image.
+        run: |
           docker pull --platform ${PLATFORM} ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder || true
           docker build --platform ${PLATFORM} \
                     -f backend/docker/worker.dockerfile \
