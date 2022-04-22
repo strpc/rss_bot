@@ -39,24 +39,24 @@ jobs:
           docker build --platform ${PLATFORM} \
                     -f ./admin/docker/Dockerfile \
                     --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
-                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
                     --build-arg BUILDKIT_INLINE_CACHE=1 \
+                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
                     --target builder \
                     ./admin/
 
           docker build --platform ${PLATFORM} \
                     -f ./backend/docker/backend.dockerfile \
                     --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
-                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
                     --build-arg BUILDKIT_INLINE_CACHE=1 \
+                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
                     --target builder \
                     ./backend/
 
           docker build --platform ${PLATFORM} \
                     -f backend/docker/worker.dockerfile \
                     --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
-                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
                     --build-arg BUILDKIT_INLINE_CACHE=1 \
+                    -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
                     --target builder \
                     ./backend/
 
@@ -65,6 +65,7 @@ jobs:
           docker build --platform ${PLATFORM} \
           -f ./admin/docker/Dockerfile \
           --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:builder \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_admin:latest \
           ./admin/
@@ -74,6 +75,7 @@ jobs:
           docker build --platform ${PLATFORM} \
           -f ./backend/docker/backend.dockerfile \
           --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:builder \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_backend:latest \
           ./backend/
@@ -83,6 +85,7 @@ jobs:
           docker build --platform ${PLATFORM} \
           -f backend/docker/worker.dockerfile \
           --cache-from ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:builder \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:${{ env.VERSION }} \
           -t ${{ secrets.REGISTRY_HOST }}/rss_bot_worker:latest \
           ./backend/
