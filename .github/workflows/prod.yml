@@ -149,7 +149,8 @@ jobs:
 
             cd ${{ secrets.PROJECT_DIR }}
             echo "Pulling project..."
-            git reset --hard origin/HEAD
+            git checkout -f HEAD
+            git reset --hard origin/master
             git pull --rebase origin HEAD
 
             echo "Login in private registry..."
