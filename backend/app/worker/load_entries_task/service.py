@@ -32,7 +32,7 @@ class LoadEntries:
 
         if entries is None:
             logger.warning("У фида отсутствуют статьи. {}", feed_user.url)
-            raise StopAsyncIteration
+            return
 
         for entry in entries:
             logger.debug("Проверим существует лм уже запись {} в базе...", entry)
